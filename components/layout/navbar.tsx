@@ -77,7 +77,7 @@ export function Navbar() {
           {/* Desktop CTA + Theme Toggle */}
           <div className="hidden md:flex items-center gap-3">
             <ThemeToggle />
-            <Button href={getWhatsAppUrl()} size="sm">
+            <Button href="#final-cta" size="sm">
               Mulai Project
             </Button>
           </div>

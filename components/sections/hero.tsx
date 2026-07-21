@@ -41,6 +41,16 @@ export function HeroSection() {
               <ArrowRight className="h-5 w-5" />
             </Button>
           </div>
+
+          <div className="mt-8 flex justify-center">
+            <a 
+              href="/pricing" 
+              className="text-sm font-medium text-muted hover:text-foreground transition-colors inline-flex items-center gap-1 group"
+            >
+              Atau lihat daftar harga layanan kami
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </a>
+          </div>
         </div>
       </Container>
 

@@ -35,7 +35,7 @@ export function PricingCard({ plan }: PricingCardProps) {
         <h3 className="font-display text-lg font-semibold text-foreground">
           {plan.name}
         </h3>
-        <p className="mt-2 text-sm text-muted leading-relaxed min-h-[40px]">
+        <p className="mt-2 text-sm text-muted leading-relaxed min-h-10">
           {plan.subheadline}
         </p>
       </div>

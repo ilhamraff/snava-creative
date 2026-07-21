@@ -12,11 +12,11 @@ export function PricingFeatureItem({ feature }: PricingFeatureItemProps) {
       <div className="mt-0.5 shrink-0">
         {feature.included ? (
           <div className="flex h-5 w-5 items-center justify-center rounded-full bg-accent/10 text-accent">
-            <Check className="h-3.5 w-3.5 stroke-[3]" />
+            <Check className="h-3.5 w-3.5 stroke-3" />
           </div>
         ) : (
           <div className="flex h-5 w-5 items-center justify-center rounded-full bg-surface-elevated text-muted">
-            <X className="h-3.5 w-3.5 stroke-[3]" />
+            <X className="h-3.5 w-3.5 stroke-3" />
           </div>
         )}
       </div>

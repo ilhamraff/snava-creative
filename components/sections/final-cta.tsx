@@ -6,7 +6,7 @@ import { ArrowRight, MessageCircle } from 'lucide-react'
 
 export function FinalCTASection() {
   return (
-    <AnimatedSection className="py-20 lg:py-28">
+    <AnimatedSection id="final-cta" className="py-20 lg:py-28">
       <Container>
         <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-accent/20 via-accent/10 to-transparent border border-accent/20 px-6 py-16 text-center sm:px-12 lg:py-24">
           {/* Background decorative blobs */}
