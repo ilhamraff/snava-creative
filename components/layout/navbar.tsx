@@ -6,6 +6,8 @@ import { Menu, X } from 'lucide-react'
 import Image from 'next/image'
 import { cn } from '@/lib/utils/cn'
 import { Button } from '@/components/ui/button'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
+import { useTheme } from '@/components/theme-provider'
 import { siteSettings, getWhatsAppUrl } from '@/lib/data/site-settings'
 
 const navLinks = [
@@ -19,6 +21,7 @@ const navLinks = [
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { theme } = useTheme()
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50)
@@ -32,13 +35,15 @@ export function Navbar() {
     return () => { document.body.style.overflow = '' }
   }, [mobileOpen])
 
+  const logoSrc = theme === 'dark' ? '/assets/logo-white.png' : '/assets/logo-black.png'
+
   return (
     <>
       <header
         className={cn(
           'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
           scrolled
-            ? 'bg-black/80 backdrop-blur-xl border-b border-border'
+            ? 'bg-background/80 backdrop-blur-xl border-b border-border'
             : 'bg-transparent'
         )}
       >
@@ -46,7 +51,7 @@ export function Navbar() {
           {/* Logo */}
           <a href="#" className="flex items-center">
             <Image
-              src="/assets/logo-white.png"
+              src={logoSrc}
               alt={siteSettings.siteName}
               width={140}
               height={40}
@@ -61,28 +66,32 @@ export function Navbar() {
               <a
                 key={link.href}
                 href={link.href}
-                className="text-sm text-muted hover:text-white transition-colors duration-200"
+                className="text-sm text-muted hover:text-foreground transition-colors duration-200"
               >
                 {link.label}
               </a>
             ))}
           </div>
 
-          {/* Desktop CTA */}
-          <div className="hidden md:block">
+          {/* Desktop CTA + Theme Toggle */}
+          <div className="hidden md:flex items-center gap-3">
+            <ThemeToggle />
             <Button href={getWhatsAppUrl()} size="sm">
               Mulai Project
             </Button>
           </div>
 
-          {/* Mobile Hamburger */}
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden p-2 text-white cursor-pointer"
-            aria-label={mobileOpen ? 'Tutup menu' : 'Buka menu'}
-          >
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          {/* Mobile: Theme Toggle + Hamburger */}
+          <div className="flex md:hidden items-center gap-2">
+            <ThemeToggle />
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="p-2 text-foreground cursor-pointer"
+              aria-label={mobileOpen ? 'Tutup menu' : 'Buka menu'}
+            >
+              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
         </nav>
       </header>
 
@@ -94,7 +103,7 @@ export function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl md:hidden"
+            className="fixed inset-0 z-40 bg-background/95 backdrop-blur-xl md:hidden"
           >
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -111,7 +120,7 @@ export function Navbar() {
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.15 + i * 0.05 }}
-                  className="text-2xl font-display font-semibold text-white hover:text-accent transition-colors"
+                  className="text-2xl font-display font-semibold text-foreground hover:text-accent transition-colors"
                 >
                   {link.label}
                 </motion.a>

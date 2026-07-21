@@ -6,7 +6,7 @@
    ============================================================ */
 
 @theme {
-  /* Colors */
+  /* Colors — Dark mode defaults */
   --color-black: #000000;
   --color-charcoal: #4D4D4D;
   --color-white: #FFFFFF;
@@ -18,6 +18,10 @@
   --color-border: #1F1F1F;
   --color-muted: #737373;
 
+  /* Semantic tokens — remappable per theme */
+  --color-background: #000000;
+  --color-foreground: #FFFFFF;
+
   /* Typography — CSS vars set by next/font in layout.tsx */
   --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
   --font-display: var(--font-plus-jakarta), system-ui, -apple-system, sans-serif;
@@ -28,6 +32,21 @@
   --animate-float-slow: float-slow 20s ease-in-out infinite;
   --animate-float-reverse: float-reverse 25s ease-in-out infinite;
   --animate-float-medium: float-medium 18s ease-in-out infinite;
+}
+
+/* ============================================================
+   Light Mode Overrides
+   Applied when html[data-theme="light"]
+   ============================================================ */
+
+html[data-theme="light"] {
+  --color-charcoal: #9CA3AF;
+  --color-surface: #FFFFFF;
+  --color-surface-elevated: #F3F4F6;
+  --color-border: #E5E7EB;
+  --color-muted: #6B7280;
+  --color-background: #FAFAFA;
+  --color-foreground: #111111;
 }
 
 /* ============================================================
@@ -68,15 +87,22 @@ html {
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--color-black);
-  color: var(--color-white);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
   margin: 0;
   overflow-x: hidden;
 }
 
+/* Smooth theme transition */
+html:not(.no-transition),
+html:not(.no-transition) body,
+html:not(.no-transition) * {
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+}
+
 ::selection {
   background-color: var(--color-accent);
-  color: var(--color-white);
+  color: #FFFFFF;
 }
 
 /* Focus visible — accessible keyboard navigation */
@@ -92,7 +118,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-black);
+  background: var(--color-background);
 }
 
 ::-webkit-scrollbar-thumb {

@@ -30,7 +30,7 @@ export function Accordion({ items }: AccordionProps) {
         >
           <button
             onClick={() => toggle(index)}
-            className="flex w-full items-center justify-between gap-4 p-5 text-left text-white font-medium transition-colors cursor-pointer"
+            className="flex w-full items-center justify-between gap-4 p-5 text-left text-foreground font-medium transition-colors cursor-pointer"
             aria-expanded={openIndex === index}
           >
             <span className="text-[15px] leading-snug">{item.question}</span>

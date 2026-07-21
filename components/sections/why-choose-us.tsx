@@ -43,7 +43,7 @@ export function WhyChooseUsSection() {
                   {Icon && <Icon className="h-5 w-5" />}
                 </div>
                 <div>
-                  <h3 className="font-display text-sm font-semibold text-white">
+                  <h3 className="font-display text-sm font-semibold text-foreground">
                     {item.title}
                   </h3>
                   <p className="mt-1 text-sm text-muted leading-relaxed">

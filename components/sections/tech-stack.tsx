@@ -20,7 +20,7 @@ export function TechStackSection() {
               key={tech.name}
               className="group flex w-28 sm:w-32 md:w-40 flex-col items-center gap-3 rounded-xl border border-border bg-surface p-4 transition-all duration-300 hover:border-charcoal/60 hover:bg-surface-elevated"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-surface-elevated transition-colors group-hover:bg-white/5 p-2">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-surface-elevated transition-colors group-hover:bg-foreground/5 p-2">
                 <Image 
                   src={tech.icon}
                   alt={tech.name}
@@ -29,7 +29,7 @@ export function TechStackSection() {
                   className="object-contain w-full h-full"
                 />
               </div>
-              <span className="text-xs text-muted transition-colors group-hover:text-white text-center">
+              <span className="text-xs text-muted transition-colors group-hover:text-foreground text-center">
                 {tech.name}
               </span>
             </div>

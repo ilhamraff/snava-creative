@@ -67,7 +67,7 @@ export function AboutSection() {
                 <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10 text-accent transition-colors group-hover:bg-accent/20">
                   {Icon && <Icon className="h-5 w-5" />}
                 </div>
-                <h3 className="font-display text-sm font-semibold text-white">
+                <h3 className="font-display text-sm font-semibold text-foreground">
                   {value.title}
                 </h3>
                 <p className="mt-1 text-sm text-muted leading-relaxed">

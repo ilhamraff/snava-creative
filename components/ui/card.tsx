@@ -12,7 +12,7 @@ export function Card({ children, className, hover = true }: CardProps) {
       className={cn(
         'rounded-2xl border border-border bg-surface p-6',
         hover &&
-          'transition-all duration-300 hover:border-charcoal/60 hover:bg-surface-elevated hover:-translate-y-1 hover:shadow-lg hover:shadow-black/20',
+          'transition-all duration-300 hover:border-charcoal/60 hover:bg-surface-elevated hover:-translate-y-1 hover:shadow-lg hover:shadow-foreground/5',
         className
       )}
     >

@@ -14,7 +14,7 @@ export function FinalCTASection() {
           <div className="absolute -bottom-20 -left-20 h-48 w-48 rounded-full bg-accent-light/10 blur-[60px]" aria-hidden="true" />
 
           <div className="relative z-10">
-            <h2 className="mx-auto max-w-2xl font-display text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-[2.75rem] lg:leading-tight">
+            <h2 className="mx-auto max-w-2xl font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem] lg:leading-tight">
               {finalCtaData.headline}
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-base text-muted lg:text-lg">

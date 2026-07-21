@@ -58,7 +58,7 @@ export function ServicesSection() {
                     <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-accent/10 text-accent">
                       {Icon && <Icon className="h-5 w-5" />}
                     </div>
-                    <h3 className="font-display text-base font-semibold text-white">
+                    <h3 className="font-display text-base font-semibold text-foreground">
                       {service.title}
                     </h3>
                     <p className="mt-2 text-sm text-muted leading-relaxed">

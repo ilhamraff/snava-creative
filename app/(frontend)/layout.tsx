@@ -1,6 +1,7 @@
 import React from 'react'
 import type { Metadata } from 'next'
 import { Plus_Jakarta_Sans, Inter, JetBrains_Mono } from 'next/font/google'
+import { ThemeProvider } from '@/components/theme-provider'
 import { Navbar } from '@/components/layout/navbar'
 import './styles.css'
 
@@ -25,10 +26,24 @@ const jetbrains = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://snavacreative.vercel.app"),
+
   title: 'Snava Creative — Creative Digital Agency',
+
   description:
     'Creative agency yang membantu UMKM, startup, dan perusahaan membangun brand yang kuat melalui desain kreatif, video profesional, dan strategi visual yang tepat sasaran.',
-  keywords: [
+  
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/site.webmanifest",
+
+  keywords: [ 
     'creative agency',
     'digital agency',
     'branding',
@@ -40,6 +55,7 @@ export const metadata: Metadata = {
     'Indonesia',
     'Jakarta',
   ],
+
   openGraph: {
     title: 'Snava Creative — Creative Digital Agency',
     description:
@@ -48,12 +64,14 @@ export const metadata: Metadata = {
     locale: 'id_ID',
     siteName: 'Snava Creative',
   },
+
   twitter: {
     card: 'summary_large_image',
     title: 'Snava Creative — Creative Digital Agency',
     description:
       'Creative agency yang membantu bisnis tampil menonjol melalui desain dan strategi visual yang tepat.',
   },
+  
   robots: {
     index: true,
     follow: true,
@@ -69,8 +87,15 @@ export default function RootLayout({
     <html
       lang="id"
       className={`${plusJakarta.variable} ${inter.variable} ${jetbrains.variable}`}
+      suppressHydrationWarning
     >
       <head>
+        {/* Prevent flash of wrong theme on page load */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('snava-theme');if(t){document.documentElement.setAttribute('data-theme',t)}else{document.documentElement.setAttribute('data-theme','dark')}}catch(e){document.documentElement.setAttribute('data-theme','dark')}})()`,
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -96,8 +121,10 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <Navbar />
-        <main>{children}</main>
+        <ThemeProvider>
+          <Navbar />
+          <main>{children}</main>
+        </ThemeProvider>
       </body>
     </html>
   )

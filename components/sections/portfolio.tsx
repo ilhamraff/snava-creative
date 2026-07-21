@@ -36,7 +36,7 @@ export function PortfolioSection() {
                 'rounded-full px-5 py-2 text-sm font-medium transition-all duration-200 cursor-pointer',
                 active === cat
                   ? 'bg-accent text-white shadow-lg shadow-accent/20'
-                  : 'bg-surface text-muted border border-border hover:text-white hover:border-charcoal'
+                  : 'bg-surface text-muted border border-border hover:text-foreground hover:border-charcoal'
               )}
             >
               {cat}
@@ -67,7 +67,7 @@ export function PortfolioSection() {
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
-                {/* Hover Overlay */}
+                {/* Hover Overlay — kept dark intentionally for readability on images */}
                 <div className="absolute inset-0 flex items-end bg-linear-to-t from-black/80 via-black/30 to-transparent p-5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                   <div>
                     <Badge variant="accent">{item.category}</Badge>
