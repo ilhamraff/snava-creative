@@ -120,3 +120,31 @@ export interface FinalCTAData {
   ctaPrimary: CTA
   ctaSecondary: CTA
 }
+
+export interface PricingFeature {
+  name: string
+  included: boolean
+  tooltip?: string
+}
+
+export interface PricingPlan {
+  id: string
+  serviceCategory: string
+  name: string
+  badge?: string
+  subheadline: string
+  price: string
+  billingPeriod?: string
+  description: string
+  features: PricingFeature[]
+  cta: CTA
+  isPopular?: boolean
+  isCustom?: boolean
+}
+
+export interface PricingSectionData {
+  headline: string
+  subheadline: string
+  defaultCategory?: string
+}
+

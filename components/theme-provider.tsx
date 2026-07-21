@@ -14,13 +14,13 @@ const ThemeContext = createContext<ThemeContextValue | undefined>(undefined)
 const STORAGE_KEY = 'snava-theme'
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('dark')
+  const [theme, setTheme] = useState<Theme>('light')
   const [mounted, setMounted] = useState(false)
 
-  // Initialize theme from localStorage (default: dark)
+  // Initialize theme from localStorage (default: light)
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY) as Theme | null
-    const initial: Theme = stored || 'dark'
+    const initial: Theme = stored || 'light'
     setTheme(initial)
     document.documentElement.setAttribute('data-theme', initial)
     setMounted(true)
