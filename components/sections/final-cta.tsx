@@ -1,42 +1,40 @@
 import { Container } from '@/components/ui/container'
 import { Button } from '@/components/ui/button'
-import { AnimatedSection } from '@/components/ui/animated-section'
 import { finalCtaData } from '@/lib/data/footer'
-import { ArrowRight, MessageCircle } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 
 export function FinalCTASection() {
   return (
-    <AnimatedSection id="final-cta" className="py-20 lg:py-28">
+    <section id="final-cta" className="py-24 lg:py-32 bg-foreground text-background">
       <Container>
-        <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-accent/20 via-accent/10 to-transparent border border-accent/20 px-6 py-16 text-center sm:px-12 lg:py-24">
-          {/* Background decorative blobs */}
-          <div className="absolute -top-20 -right-20 h-60 w-60 rounded-full bg-accent/10 blur-[80px]" aria-hidden="true" />
-          <div className="absolute -bottom-20 -left-20 h-48 w-48 rounded-full bg-accent-light/10 blur-[60px]" aria-hidden="true" />
-
-          <div className="relative z-10">
-            <h2 className="mx-auto max-w-2xl font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem] lg:leading-tight">
-              {finalCtaData.headline}
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl text-base text-muted lg:text-lg">
-              {finalCtaData.subheadline}
-            </p>
-            <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Button href={finalCtaData.ctaPrimary.url} size="lg">
-                <MessageCircle className="h-5 w-5" />
-                {finalCtaData.ctaPrimary.label}
-              </Button>
-              <Button
-                href={finalCtaData.ctaSecondary.url}
-                variant="secondary"
-                size="lg"
-              >
-                {finalCtaData.ctaSecondary.label}
-                <ArrowRight className="h-5 w-5" />
-              </Button>
-            </div>
+        <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
+          <h2 className="font-display text-4xl sm:text-6xl lg:text-[5rem] font-medium tracking-tight leading-[1.1] mb-8">
+            {finalCtaData.headline}
+          </h2>
+          
+          <p className="text-lg md:text-xl font-light text-background/80 mb-12 max-w-2xl">
+            {finalCtaData.subheadline}
+          </p>
+          
+          <div className="flex flex-col sm:flex-row items-center gap-6">
+            <Button 
+              href={finalCtaData.ctaPrimary.url} 
+              size="lg" 
+              className="rounded-none px-8 bg-background text-foreground hover:bg-background/90 text-base"
+            >
+              {finalCtaData.ctaPrimary.label}
+              <ArrowRight className="ml-2 w-4 h-4" />
+            </Button>
+            
+            <a 
+              href={finalCtaData.ctaSecondary.url}
+              className="text-sm font-medium text-background/70 hover:text-background transition-colors inline-flex items-center gap-2 group uppercase tracking-widest border-b border-transparent hover:border-background pb-1"
+            >
+              {finalCtaData.ctaSecondary.label}
+            </a>
           </div>
         </div>
       </Container>
-    </AnimatedSection>
+    </section>
   )
 }

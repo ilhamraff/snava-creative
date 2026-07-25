@@ -23,8 +23,8 @@
   --color-foreground: #FFFFFF;
 
   /* Typography — CSS vars set by next/font in layout.tsx */
-  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
-  --font-display: var(--font-plus-jakarta), system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-dm-sans), system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-space-grotesk), sans-serif;
   --font-mono: var(--font-jetbrains), "Fira Code", monospace;
 
   /* Custom animations */

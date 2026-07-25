@@ -4,10 +4,9 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import Image from 'next/image'
 import { Container } from '@/components/ui/container'
-import { SectionHeader } from '@/components/ui/section-header'
-import { Badge } from '@/components/ui/badge'
 import { portfolioItems, portfolioCategories } from '@/lib/data/portfolio'
 import { cn } from '@/lib/utils/cn'
+import { ArrowRight } from 'lucide-react'
 
 export function PortfolioSection() {
   const [active, setActive] = useState('Semua')
@@ -18,65 +17,81 @@ export function PortfolioSection() {
       : portfolioItems.filter((p) => p.category === active)
 
   return (
-    <section id="portfolio" className="py-20 lg:py-28">
+    <section id="portfolio" className="py-24 lg:py-32 bg-background">
       <Container>
-        <SectionHeader
-          eyebrow="Portfolio"
-          title="Project Terbaru"
-          subtitle="Beberapa karya terbaik yang telah kami hasilkan untuk klien."
-        />
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+          <div className="max-w-2xl">
+            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-foreground">
+              Selected Works
+            </h2>
+          </div>
 
-        {/* Filter Tabs */}
-        <div className="mb-10 flex flex-wrap justify-center gap-2">
-          {portfolioCategories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActive(cat)}
-              className={cn(
-                'rounded-full px-5 py-2 text-sm font-medium transition-all duration-200 cursor-pointer',
-                active === cat
-                  ? 'bg-accent text-white shadow-lg shadow-accent/20'
-                  : 'bg-surface text-muted border border-border hover:text-foreground hover:border-charcoal'
-              )}
-            >
-              {cat}
-            </button>
-          ))}
+          {/* Filter Tabs - Minimalist */}
+          <div className="flex flex-wrap gap-6 border-b border-border/50 pb-2">
+            {portfolioCategories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActive(cat)}
+                className={cn(
+                  'text-sm tracking-wider uppercase transition-colors duration-300 relative',
+                  active === cat
+                    ? 'text-foreground font-medium'
+                    : 'text-muted hover:text-foreground/80'
+                )}
+              >
+                {cat}
+                {active === cat && (
+                  <motion.div
+                    layoutId="portfolio-active-tab"
+                    className="absolute -bottom-[9px] left-0 right-0 h-[1px] bg-foreground"
+                  />
+                )}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Portfolio Grid */}
+        {/* Portfolio Grid - Editorial 2-column */}
         <motion.div
           layout
-          className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
+          className="grid gap-12 sm:grid-cols-2"
         >
           <AnimatePresence mode="popLayout">
-            {filtered.map((item) => (
+            {filtered.map((item, index) => (
               <motion.div
                 key={item.slug}
                 layout
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.3, ease: [0.25, 0.4, 0.25, 1] }}
-                className="group relative aspect-4/3 overflow-hidden rounded-2xl border border-border"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                className={cn(
+                  "group cursor-pointer",
+                  index % 2 !== 0 ? "md:mt-24" : "" // Staggered masonry effect
+                )}
               >
-                <Image
-                  src={item.thumbnail}
-                  alt={item.title}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                />
-                {/* Hover Overlay — kept dark intentionally for readability on images */}
-                <div className="absolute inset-0 flex items-end bg-linear-to-t from-black/80 via-black/30 to-transparent p-5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                <div className="relative aspect-4/5 md:aspect-3/4 overflow-hidden bg-surface mb-6">
+                  <Image
+                    src={item.thumbnail}
+                    alt={item.title}
+                    fill
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    sizes="(max-width: 640px) 100vw, 50vw"
+                  />
+                  <div className="absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/10" />
+                </div>
+                
+                <div className="flex justify-between items-start">
                   <div>
-                    <Badge variant="accent">{item.category}</Badge>
-                    <h3 className="mt-2 font-display text-base font-semibold text-white leading-snug">
+                    <h3 className="font-display text-2xl font-medium text-foreground group-hover:text-foreground/80 transition-colors">
                       {item.title}
                     </h3>
-                    <p className="mt-1 text-xs text-white/60">
-                      {item.client} · {item.year}
+                    <p className="mt-2 text-sm text-muted uppercase tracking-wider">
+                      {item.category} — {item.year}
                     </p>
+                  </div>
+                  <div className="w-10 h-10 rounded-full border border-border flex items-center justify-center opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+                    <ArrowRight className="w-4 h-4" />
                   </div>
                 </div>
               </motion.div>

@@ -2,15 +2,15 @@ import type { HeroData } from '@/lib/types'
 import { getWhatsAppUrl } from './site-settings'
 
 export const heroData: HeroData = {
-  headline: 'Wujudkan Identitas Digital yang Membedakan Bisnis Anda',
+  headline: 'Crafting Brands, Preserving Moments',
   subheadline:
-    'Kami membantu UMKM, startup, dan perusahaan membangun brand yang kuat melalui desain kreatif, video profesional, dan strategi visual yang tepat sasaran.',
+    'Kami menghadirkan layanan branding, desain, website, produksi foto & video, hingga dokumentasi profesional untuk membantu bisnis berkembang dan setiap momen berharga tampil lebih bermakna',
   ctaPrimary: {
     label: 'Konsultasi Gratis',
     url: getWhatsAppUrl(),
   },
   ctaSecondary: {
-    label: 'Lihat Portfolio',
+    label: 'Jelajahi Portfolio',
     url: '#portfolio',
   },
 }

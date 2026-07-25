@@ -11,12 +11,11 @@ import { useTheme } from '@/components/theme-provider'
 import { siteSettings, getWhatsAppUrl } from '@/lib/data/site-settings'
 
 const navLinks = [
+  { label: 'Portfolio', href: '/#portfolio' },
   { label: 'Tentang', href: '/#tentang' },
   { label: 'Layanan', href: '/#layanan' },
-  { label: 'Portfolio', href: '/#portfolio' },
-  { label: 'Harga', href: '/pricing' },
   { label: 'Testimoni', href: '/#testimoni' },
-  { label: 'FAQ', href: '/#faq' },
+  { label: 'Harga', href: '/#pricing' },
 ]
 
 export function Navbar() {
@@ -74,7 +73,7 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* Desktop CTA + Theme Toggle */}
+          {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3">
             <ThemeToggle />
             <Button href="#final-cta" size="sm">
@@ -82,7 +81,7 @@ export function Navbar() {
             </Button>
           </div>
 
-          {/* Mobile: Theme Toggle + Hamburger */}
+          {/* Mobile: Hamburger & Theme Toggle */}
           <div className="flex md:hidden items-center gap-2">
             <ThemeToggle />
             <button
