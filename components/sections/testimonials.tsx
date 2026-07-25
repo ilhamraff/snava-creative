@@ -44,7 +44,7 @@ export function TestimonialsSection() {
           
           <div className="mb-16 flex items-center gap-6">
             <h2 className="font-display text-2xl md:text-3xl text-foreground font-medium">Client Stories</h2>
-            <div className="h-[1px] flex-1 bg-border/50" />
+            <div className="h-px flex-1 bg-border/50" />
             <div className="flex gap-2">
               <button
                 onClick={() => paginate(-1)}
@@ -75,7 +75,7 @@ export function TestimonialsSection() {
                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                 className="flex flex-col md:flex-row gap-12 lg:gap-20"
               >
-                <blockquote className="flex-1 font-display text-3xl sm:text-4xl lg:text-5xl font-medium text-foreground leading-[1.3] tracking-tight">
+                <blockquote className="flex-1 font-display text-2xl sm:text-3xl lg:text-4xl font-medium text-foreground leading-[1.3] tracking-tight">
                   "{testimonial.content}"
                 </blockquote>
 

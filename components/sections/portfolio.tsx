@@ -51,51 +51,51 @@ export function PortfolioSection() {
           </div>
         </div>
 
-        {/* Portfolio Grid - Editorial 2-column */}
+        {/* Portfolio Grid - Aligned 3-column Layout */}
         <motion.div
           layout
-          className="grid gap-12 sm:grid-cols-2"
+          className="grid gap-10 md:grid-cols-2 md:gap-x-8 md:gap-y-16 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-16"
         >
           <AnimatePresence mode="popLayout">
             {filtered.map((item, index) => (
               <motion.div
                 key={item.slug}
                 layout
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.98 }}
-                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                className={cn(
-                  "group cursor-pointer",
-                  index % 2 !== 0 ? "md:mt-24" : "" // Staggered masonry effect
-                )}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.5, delay: index * 0.04, ease: [0.16, 1, 0.3, 1] }}
+                className="group cursor-pointer flex flex-col"
               >
-                <div className="relative aspect-4/5 md:aspect-3/4 overflow-hidden bg-surface mb-6">
-                  <Image
-                    src={item.thumbnail}
-                    alt={item.title}
-                    fill
-                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                    sizes="(max-width: 640px) 100vw, 50vw"
-                  />
-                  <div className="absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/10" />
-                </div>
-                
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-display text-2xl font-medium text-foreground group-hover:text-foreground/80 transition-colors">
-                      {item.title}
-                    </h3>
-                    <p className="mt-2 text-sm text-muted uppercase tracking-wider">
-                      {item.category} — {item.year}
-                    </p>
+                  <div className="relative aspect-[4/5] sm:aspect-[3/4] lg:aspect-[4/5] overflow-hidden bg-surface mb-5">
+                    <Image
+                      src={item.thumbnail}
+                      alt={item.title}
+                      fill
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                    <div className="absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/10 dark:group-hover:bg-black/20" />
                   </div>
-                  <div className="w-10 h-10 rounded-full border border-border flex items-center justify-center opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-                    <ArrowRight className="w-4 h-4" />
+                  
+                  <div className="flex justify-between items-start gap-4 mt-auto">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 text-xs font-mono text-muted uppercase tracking-widest mb-1.5">
+                        <span>{item.category}</span>
+                        <span>—</span>
+                        <span>{item.year}</span>
+                      </div>
+                      <h3 className="font-display text-xl sm:text-2xl lg:text-xl font-medium text-foreground group-hover:text-accent transition-colors duration-300 leading-snug">
+                        {item.title}
+                      </h3>
+                    </div>
+                    <div className="w-9 h-9 rounded-full border border-border group-hover:border-foreground/30 bg-surface/50 flex items-center justify-center opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 group-hover:bg-foreground group-hover:text-background transition-all duration-300 shrink-0 mt-1">
+                      <ArrowRight className="w-4 h-4" />
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              )
+            )}
           </AnimatePresence>
         </motion.div>
       </Container>

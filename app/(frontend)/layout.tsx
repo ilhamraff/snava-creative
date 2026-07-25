@@ -1,6 +1,6 @@
 import React from 'react'
 import type { Metadata } from 'next'
-import { DM_Sans, JetBrains_Mono, Space_Grotesk } from 'next/font/google'
+import { Hind, JetBrains_Mono, Montserrat, Space_Grotesk } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Navbar } from '@/components/layout/navbar'
 import './styles.css'
@@ -12,9 +12,16 @@ const spaceGrotesk = Space_Grotesk({
   weight: ['500'],
 })
 
-const dmSans = DM_Sans({
+const hind = Hind({
   subsets: ['latin'],
-  variable: '--font-dm-sans',
+  variable: '--font-hind',
+  display: 'swap',
+  weight: ['500'],
+})
+
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  variable: '--font-montserrat',
   display: 'swap',
 })
 
@@ -86,7 +93,7 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${spaceGrotesk.variable} ${dmSans.variable} ${jetbrains.variable}`}
+      className={`${spaceGrotesk.variable} ${hind.variable} ${jetbrains.variable}`}
       suppressHydrationWarning
     >
       <head>
