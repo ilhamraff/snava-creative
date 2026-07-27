@@ -6,6 +6,7 @@
 export interface SiteSettings {
   siteName: string
   tagline: string
+  logo?: string
   contactEmail: string
   contactPhone: string
   whatsappNumber: string
@@ -17,7 +18,6 @@ export interface SiteSettings {
 export interface SocialLink {
   platform: string
   url: string
-  icon: string
 }
 
 export interface CTA {

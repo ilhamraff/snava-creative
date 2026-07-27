@@ -3,15 +3,7 @@
 import { Container } from '@/components/ui/container'
 import { siteSettings } from '@/lib/data/site-settings'
 import { footerData } from '@/lib/data/footer'
-import { FaInstagram, FaLinkedin, FaBehance, FaDribbble } from 'react-icons/fa'
-import { IconType } from 'react-icons'
-
-const socialIconMap: Record<string, IconType> = {
-  FaInstagram,
-  FaLinkedin,
-  FaBehance,
-  FaDribbble,
-}
+import { getSocialIcon } from '@/lib/utils/social-icons'
 
 export function FooterSection() {
   return (
@@ -32,7 +24,7 @@ export function FooterSection() {
             {/* Social Icons */}
             <div className="mt-8 flex gap-4">
               {siteSettings.socialMedia.map((social) => {
-                const Icon = socialIconMap[social.icon]
+                const Icon = getSocialIcon(social.platform)
                 return (
                   <a
                     key={social.platform}

@@ -9,10 +9,10 @@ export const siteSettings: SiteSettings = {
   whatsappMessage: 'Halo Snava Creative, saya tertarik untuk konsultasi tentang project saya.',
   address: 'Jakarta, Indonesia',
   socialMedia: [
-    { platform: 'Instagram', url: 'https://instagram.com/snavacreative', icon: 'FaInstagram' },
-    { platform: 'LinkedIn', url: 'https://linkedin.com/company/snavacreative', icon: 'FaLinkedin' },
-    { platform: 'Behance', url: 'https://behance.net/snavacreative', icon: 'FaBehance' },
-    { platform: 'Dribbble', url: 'https://dribbble.com/snavacreative', icon: 'FaDribbble' },
+    { platform: 'Instagram', url: 'https://instagram.com/snavacreative' },
+    { platform: 'LinkedIn', url: 'https://linkedin.com/company/snavacreative' },
+    { platform: 'Behance', url: 'https://behance.net/snavacreative' },
+    { platform: 'Dribbble', url: 'https://dribbble.com/snavacreative' },
   ],
 }
 
