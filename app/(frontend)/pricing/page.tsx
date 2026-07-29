@@ -1,7 +1,7 @@
 import { PricingSection } from '@/components/pricing/pricing-section'
 import { FinalCTASection } from '@/components/sections/final-cta'
 import { FAQSection } from '@/components/sections/faq'
-import { FooterSection } from '@/components/sections/footer'
+import { FooterSectionServer } from '@/components/sections/footer-server'
 import { pricingSectionData, pricingPlans } from '@/lib/data/pricing'
 import { Metadata } from 'next'
 
@@ -21,7 +21,7 @@ export default function PricingPage() {
       </div>
       <FAQSection />
       <FinalCTASection />
-      <FooterSection />
+      <FooterSectionServer />
     </>
   )
 }

@@ -6,7 +6,7 @@ import { ClientLogosSection } from '@/components/sections/client-logos'
 import { TestimonialsSection } from '@/components/sections/testimonials'
 import { PricingSection } from '@/components/pricing/pricing-section'
 import { FinalCTASection } from '@/components/sections/final-cta'
-import { FooterSection } from '@/components/sections/footer'
+import { FooterSectionServer } from '@/components/sections/footer-server'
 
 import { pricingSectionData, pricingPlans } from '@/lib/data/pricing'
 
@@ -33,7 +33,7 @@ export default function HomePage() {
       />
 
       <FinalCTASection />
-      <FooterSection />
+      <FooterSectionServer />
     </>
   )
 }

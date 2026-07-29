@@ -1,11 +1,15 @@
 'use client'
 
 import { Container } from '@/components/ui/container'
-import { siteSettings } from '@/lib/data/site-settings'
-import { footerData } from '@/lib/data/footer'
+import type { SiteSettings, FooterData } from '@/lib/types'
 import { getSocialIcon } from '@/lib/utils/social-icons'
 
-export function FooterSection() {
+interface FooterSectionProps {
+  siteSettings: SiteSettings
+  footerData: FooterData
+}
+
+export function FooterSection({ siteSettings, footerData }: FooterSectionProps) {
   return (
     <footer className="pt-24 pb-12 bg-background">
       <Container>
@@ -95,7 +99,7 @@ export function FooterSection() {
                   {siteSettings.contactPhone}
                 </a>
               </li>
-              <li className="pt-2 max-w-[200px] leading-relaxed">
+              <li className="pt-2 max-w-50 leading-relaxed">
                 {siteSettings.address}
               </li>
             </ul>
@@ -121,3 +125,4 @@ export function FooterSection() {
     </footer>
   )
 }
+

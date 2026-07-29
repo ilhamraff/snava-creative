@@ -1,7 +1,9 @@
 import { Container } from '@/components/ui/container'
-import { aboutData } from '@/lib/data/about'
+import { getAboutData } from '@/lib/data/get-about'
 
-export function AboutSection() {
+export async function AboutSection() {
+  const aboutData = await getAboutData()
+
   return (
     <section id="tentang" className="py-24 lg:py-32 bg-foreground text-background">
       <Container>

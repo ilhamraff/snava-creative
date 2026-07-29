@@ -1,9 +1,11 @@
 import { Container } from '@/components/ui/container'
 import { Button } from '@/components/ui/button'
-import { finalCtaData } from '@/lib/data/footer'
+import { getFinalCtaData } from '@/lib/data/get-site-settings'
 import { ArrowRight } from 'lucide-react'
 
-export function FinalCTASection() {
+export async function FinalCTASection() {
+  const finalCtaData = await getFinalCtaData()
+
   return (
     <section id="final-cta" className="py-24 lg:py-32 bg-foreground text-background">
       <Container>
