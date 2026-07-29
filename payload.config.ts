@@ -10,6 +10,9 @@ import { Users } from "./collections/Users";
 import { Media } from "./collections/Media";
 import { SiteSettings } from "./globals/SiteSettings";
 import { AboutPage } from "./globals/AboutPage";
+import { ServicesSection } from "./globals/ServicesSection";
+import { Categories } from "./collections/Categories";
+import { Portfolio } from "./collections/Portfolio";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -37,8 +40,8 @@ export default buildConfig({
       },
     },
   },
-  collections: [Users, Media],
-  globals: [SiteSettings, AboutPage],
+  collections: [Users, Media, Categories, Portfolio],
+  globals: [SiteSettings, AboutPage, ServicesSection],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {

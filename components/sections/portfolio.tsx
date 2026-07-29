@@ -4,17 +4,22 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import Image from 'next/image'
 import { Container } from '@/components/ui/container'
-import { portfolioItems, portfolioCategories } from '@/lib/data/portfolio'
+import type { PortfolioItem } from '@/lib/types'
 import { cn } from '@/lib/utils/cn'
 import { ArrowRight } from 'lucide-react'
 
-export function PortfolioSection() {
+interface PortfolioSectionProps {
+  categories: string[]
+  items: PortfolioItem[]
+}
+
+export function PortfolioSection({ categories, items }: PortfolioSectionProps) {
   const [active, setActive] = useState('Semua')
 
   const filtered =
     active === 'Semua'
-      ? portfolioItems
-      : portfolioItems.filter((p) => p.category === active)
+      ? items
+      : items.filter((p) => p.category === active)
 
   return (
     <section id="portfolio" className="py-24 lg:py-32 bg-background">
@@ -28,7 +33,7 @@ export function PortfolioSection() {
 
           {/* Filter Tabs - Minimalist */}
           <div className="flex flex-wrap gap-6 border-b border-border/50 pb-2">
-            {portfolioCategories.map((cat) => (
+            {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActive(cat)}

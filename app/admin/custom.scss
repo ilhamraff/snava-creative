@@ -1,0 +1,45 @@
+/* ============================================================
+   Payload CMS Custom Admin Theme
+   ============================================================ */
+
+/* Override CSS Variables used by Payload's Admin UI */
+:root {
+  /* Snava Creative Primary Accent Color (Indigo) */
+  --theme-success-400: #6366F1;
+  --theme-success-500: #4F46E5; /* Button backgrounds, active borders */
+  --theme-success-600: #3730A3; /* Hover states */
+
+  /* Override the default generic blue/green that Payload uses for active states */
+  --theme-elevation-150: var(--theme-success-500);
+  --theme-elevation-200: var(--theme-success-500);
+  --theme-elevation-250: var(--theme-success-600);
+  --theme-elevation-300: var(--theme-success-600);
+
+  /* Force the primary buttons (usually success or default) to use Snava Accent */
+  --theme-bg-success: var(--theme-success-500);
+  --theme-bg-success-hover: var(--theme-success-600);
+  
+  --theme-bg-primary: var(--theme-success-500);
+  --theme-bg-primary-hover: var(--theme-success-600);
+}
+
+/* Specific component overrides if CSS vars are not enough */
+.btn--style-primary {
+  background-color: var(--theme-success-500) !important;
+  color: #ffffff !important;
+  border-color: var(--theme-success-500) !important;
+}
+
+.btn--style-primary:hover {
+  background-color: var(--theme-success-600) !important;
+  border-color: var(--theme-success-600) !important;
+}
+
+/* Sidebar active item text color */
+.nav__link--active .nav__link-label {
+  color: var(--theme-success-500) !important;
+}
+
+.nav__link--active .nav__link-icon {
+  fill: var(--theme-success-500) !important;
+}

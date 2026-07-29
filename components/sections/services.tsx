@@ -2,23 +2,29 @@
 
 import { motion } from 'motion/react'
 import { Container } from '@/components/ui/container'
-import { services } from '@/lib/data/services'
+import type { Service } from '@/lib/types'
 import { staggerContainer, fadeInUp } from '@/lib/utils/motion'
 import { ArrowRight } from 'lucide-react'
 
-export function ServicesSection() {
+interface ServicesSectionProps {
+  title: string
+  description: string
+  services: Service[]
+}
+
+export function ServicesSection({ title, description, services }: ServicesSectionProps) {
   return (
     <section id="layanan" className="py-24 lg:py-32 bg-background">
       <Container>
         <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
           <div className="max-w-2xl">
             <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-foreground">
-              Capabilities
+              {title}
             </h2>
           </div>
           <div className="max-w-sm">
             <p className="text-base text-muted font-light leading-relaxed">
-              Dari identitas brand hingga konten video, kami siap membantu bisnis Anda tampil menonjol dengan desain yang disengaja.
+              {description}
             </p>
           </div>
         </div>

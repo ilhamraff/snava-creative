@@ -1,7 +1,7 @@
 import { HeroSection } from '@/components/sections/hero'
-import { PortfolioSection } from '@/components/sections/portfolio'
+import { PortfolioSectionServer } from '@/components/sections/portfolio-server'
 import { AboutSection } from '@/components/sections/about'
-import { ServicesSection } from '@/components/sections/services'
+import { ServicesSectionServer } from '@/components/sections/services-server'
 import { ClientLogosSection } from '@/components/sections/client-logos'
 import { TestimonialsSection } from '@/components/sections/testimonials'
 import { PricingSection } from '@/components/pricing/pricing-section'
@@ -16,9 +16,9 @@ export default function HomePage() {
   return (
     <>
       <HeroSection />
-      <PortfolioSection />
+      <PortfolioSectionServer />
       <AboutSection />
-      <ServicesSection />
+      <ServicesSectionServer />
       <ClientLogosSection />
       <TestimonialsSection />
       
