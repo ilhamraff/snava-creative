@@ -3,6 +3,14 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    localPatterns: [
+      {
+        pathname: "/api/media/file/**",
+      },
+      {
+        pathname: "/**", // Allow all standard local assets (like /assets/logo-black.png)
+      },
+    ],
     remotePatterns: [
       {
         protocol: "https",

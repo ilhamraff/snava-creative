@@ -16,7 +16,7 @@ export function ServicesSection({ title, description, services }: ServicesSectio
   return (
     <section id="layanan" className="py-24 lg:py-32 bg-background">
       <Container>
-        <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+        <div className="flex flex-col md:flex-row justify-between items-start mb-20 gap-8">
           <div className="max-w-2xl">
             <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-foreground">
               {title}

@@ -1,5 +1,6 @@
 import React from 'react'
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import { Hind, JetBrains_Mono, Montserrat, Space_Grotesk } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Navbar } from '@/components/layout/navbar'
@@ -98,12 +99,15 @@ export default function RootLayout({
     >
       <head>
         {/* Prevent flash of wrong theme on page load (default: light) */}
-        <script
+        <Script
+          id="theme-script"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('snava-theme');if(t){document.documentElement.setAttribute('data-theme',t)}else{document.documentElement.setAttribute('data-theme','light')}}catch(e){document.documentElement.setAttribute('data-theme','light')}})()`,
           }}
         />
-        <script
+        <Script
+          id="json-ld"
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({

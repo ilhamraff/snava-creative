@@ -72,7 +72,7 @@ export function PortfolioSection({ categories, items }: PortfolioSectionProps) {
                 transition={{ duration: 0.5, delay: index * 0.04, ease: [0.16, 1, 0.3, 1] }}
                 className="group cursor-pointer flex flex-col"
               >
-                  <div className="relative aspect-[4/5] sm:aspect-[3/4] lg:aspect-[4/5] overflow-hidden bg-surface mb-5">
+                  <div className="relative aspect-4/5 sm:aspect-3/4 lg:aspect-4/5 overflow-hidden bg-surface mb-5">
                     <Image
                       src={item.thumbnail}
                       alt={item.title}

@@ -36,7 +36,7 @@ export function PricingSection({ data, plans, hideTabs = false, viewMoreUrl, cla
   return (
     <section id="pricing" className={cn('py-24 lg:py-32 bg-background', className)}>
       <Container>
-        <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+        <div className="flex flex-col md:flex-row justify-between items-start mb-20 gap-8">
           <div className="max-w-2xl">
             <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-foreground">
               Engagement Models
