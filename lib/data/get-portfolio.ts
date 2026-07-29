@@ -13,11 +13,13 @@ export interface PortfolioDataResponse {
 /**
  * Fetch Portfolio data from Payload CMS with fallback to static data.
  *
- * 1. Fetches all Categories to build dynamic filter tabs.
- * 2. Fetches up to 6 Portfolio items where isFeatured is true.
- * 3. Falls back to static data if CMS is empty or unavailable.
+ * @param limit Batas maksimal item yang diambil. Default 100.
+ * @param onlyFeatured Jika true, hanya mengambil portfolio yang di-set 'isFeatured'.
  */
-export async function getPortfolioData(): Promise<PortfolioDataResponse> {
+export async function getPortfolioData(
+  limit: number = 100,
+  onlyFeatured: boolean = false
+): Promise<PortfolioDataResponse> {
   try {
     const payload = await getPayloadClient()
 
@@ -28,15 +30,17 @@ export async function getPortfolioData(): Promise<PortfolioDataResponse> {
     })
     const cmsCategories = categoriesRes.docs.map((c: any) => c.name)
 
-    // Fetch Featured Portfolios
+    // Build query constraints
+    const whereClause: any = {}
+    if (onlyFeatured) {
+      whereClause.isFeatured = { equals: true }
+    }
+
+    // Fetch Portfolios
     const portfolioRes = await (payload as any).find({
       collection: 'portfolio',
-      where: {
-        isFeatured: {
-          equals: true,
-        },
-      },
-      limit: 6,
+      where: Object.keys(whereClause).length > 0 ? whereClause : undefined,
+      limit: limit,
       depth: 1, // To automatically populate the related Category and Media objects
       sort: '-createdAt',
     })

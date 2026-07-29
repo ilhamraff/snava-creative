@@ -94,8 +94,8 @@ export function PricingSection({ data, plans, hideTabs = false, viewMoreUrl, cla
 
         {/* Optional View More Button */}
         {viewMoreUrl && (
-          <div className="mt-16 pt-8 border-t border-border/50 flex justify-center">
-            <Button href={viewMoreUrl} variant="secondary" className="bg-transparent border-none text-foreground hover:bg-surface transition-colors uppercase tracking-widest text-xs font-semibold">
+          <div className="mt-16 flex justify-center">
+            <Button href={viewMoreUrl} size="lg" className="rounded-none px-10 bg-foreground text-background hover:bg-foreground/90">
               Lihat Semua Paket Layanan
             </Button>
           </div>

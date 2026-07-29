@@ -4,12 +4,18 @@ import { Container } from '@/components/ui/container'
 import type { SiteSettings, FooterData } from '@/lib/types'
 import { getSocialIcon } from '@/lib/utils/social-icons'
 
+import Image from 'next/image'
+import { useTheme } from '@/components/theme-provider'
+
 interface FooterSectionProps {
   siteSettings: SiteSettings
   footerData: FooterData
 }
 
 export function FooterSection({ siteSettings, footerData }: FooterSectionProps) {
+  const { theme } = useTheme()
+  const logoSrc = theme === 'dark' ? '/assets/logo-white.png' : '/assets/logo-black.png'
+
   return (
     <footer className="pt-24 pb-12 bg-background">
       <Container>
@@ -17,8 +23,14 @@ export function FooterSection({ siteSettings, footerData }: FooterSectionProps) 
           {/* Brand */}
           <div className="lg:col-span-1 flex flex-col justify-between">
             <div>
-              <a href="#" className="font-display text-2xl font-medium text-foreground tracking-tight">
-                {siteSettings.siteName}
+              <a href="#" className="flex items-center">
+                <Image
+                  src={logoSrc}
+                  alt={siteSettings.siteName}
+                  width={140}
+                  height={40}
+                  className="h-10 w-auto object-contain"
+                />
               </a>
               <p className="mt-4 text-sm text-muted font-light leading-relaxed max-w-xs">
                 {footerData.description}

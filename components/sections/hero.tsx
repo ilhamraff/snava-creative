@@ -2,11 +2,15 @@
 
 import { Container } from '@/components/ui/container'
 import { Button } from '@/components/ui/button'
-import { heroData } from '@/lib/data/hero'
+import type { HeroData } from '@/lib/types'
 import { ArrowRight } from 'lucide-react'
 import { motion } from 'motion/react'
 
-export function HeroSection() {
+interface HeroSectionProps {
+  data: HeroData
+}
+
+export function HeroSection({ data }: HeroSectionProps) {
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background">
       {/* Subtle Noise / Grain Overlay for editorial feel */}
@@ -23,7 +27,7 @@ export function HeroSection() {
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="font-display text-4xl font-bold tracking-tight text-foreground sm:text-6xl md:text-7xl lg:text-[6rem] lg:leading-[0.95]"
           >
-            {heroData.headline}
+            {data.headline}
           </motion.h1>
           
           <motion.div 
@@ -33,7 +37,7 @@ export function HeroSection() {
             className="mt-8 max-w-2xl border-l border-foreground/20 pl-6"
           >
             <p className="text-base text-muted sm:text-lg lg:text-xl font-light leading-relaxed">
-              {heroData.subheadline}
+              {data.subheadline}
             </p>
           </motion.div>
 
@@ -43,8 +47,8 @@ export function HeroSection() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="mt-12 flex flex-col items-start justify-start gap-4 sm:flex-row sm:items-center sm:gap-6 flex-wrap"
           >
-            <Button href={heroData.ctaPrimary.url} size="lg" className="rounded-none px-8 bg-foreground text-background hover:bg-foreground/90">
-              {heroData.ctaPrimary.label}
+            <Button href={data.ctaPrimary.url} size="lg" className="rounded-none px-8 bg-foreground text-background hover:bg-foreground/90">
+              {data.ctaPrimary.label}
               <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
             
@@ -53,10 +57,10 @@ export function HeroSection() {
             </Button> */}
 
             <a 
-              href={heroData.ctaSecondary.url}
+              href={data.ctaSecondary.url}
               className="text-sm font-medium text-muted hover:text-foreground transition-colors inline-flex items-center gap-2 group uppercase tracking-widest border-b border-transparent hover:border-foreground pb-1"
             >
-              {heroData.ctaSecondary.label}
+              {data.ctaSecondary.label}
             </a>
           </motion.div>
         </div>

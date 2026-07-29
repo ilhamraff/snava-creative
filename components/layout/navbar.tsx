@@ -131,7 +131,7 @@ export function Navbar() {
                 transition={{ delay: 0.15 + navLinks.length * 0.05 }}
               >
                 <Button
-                  href={getWhatsAppUrl()}
+                  href="#final-cta"
                   size="lg"
                   onClick={() => setMobileOpen(false)}
                 >

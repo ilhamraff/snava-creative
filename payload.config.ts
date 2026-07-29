@@ -11,6 +11,7 @@ import { Media } from "./collections/Media";
 import { SiteSettings } from "./globals/SiteSettings";
 import { AboutPage } from "./globals/AboutPage";
 import { ServicesSection } from "./globals/ServicesSection";
+import { HeroSection } from "./globals/HeroSection";
 import { Categories } from "./collections/Categories";
 import { Portfolio } from "./collections/Portfolio";
 import { Testimonials } from "./collections/Testimonials";
@@ -42,7 +43,7 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, Categories, Portfolio, Testimonials],
-  globals: [SiteSettings, AboutPage, ServicesSection],
+  globals: [SiteSettings, HeroSection, AboutPage, ServicesSection],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {

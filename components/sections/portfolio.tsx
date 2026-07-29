@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import Image from 'next/image'
 import { Container } from '@/components/ui/container'
+import { Button } from '@/components/ui/button'
 import type { PortfolioItem } from '@/lib/types'
 import { cn } from '@/lib/utils/cn'
 import { ArrowRight } from 'lucide-react'
@@ -11,9 +12,11 @@ import { ArrowRight } from 'lucide-react'
 interface PortfolioSectionProps {
   categories: string[]
   items: PortfolioItem[]
+  showViewAll?: boolean
+  hideHeader?: boolean
 }
 
-export function PortfolioSection({ categories, items }: PortfolioSectionProps) {
+export function PortfolioSection({ categories, items, showViewAll = false, hideHeader = false }: PortfolioSectionProps) {
   const [active, setActive] = useState('Semua')
 
   const filtered =
@@ -25,11 +28,16 @@ export function PortfolioSection({ categories, items }: PortfolioSectionProps) {
     <section id="portfolio" className="py-24 lg:py-32 bg-background">
       <Container>
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
-          <div className="max-w-2xl">
-            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-foreground">
-              Selected Works
-            </h2>
-          </div>
+          {/* Header Title - Hidden if hideHeader is true */}
+          {!hideHeader ? (
+            <div className="max-w-2xl">
+              <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-foreground">
+                Selected Works
+              </h2>
+            </div>
+          ) : (
+            <div className="hidden md:block flex-1" /> /* Spacer if header is hidden */
+          )}
 
           {/* Filter Tabs - Minimalist */}
           <div className="flex flex-wrap gap-6 border-b border-border/50 pb-2">
@@ -94,15 +102,21 @@ export function PortfolioSection({ categories, items }: PortfolioSectionProps) {
                         {item.title}
                       </h3>
                     </div>
-                    <div className="w-9 h-9 rounded-full border border-border group-hover:border-foreground/30 bg-surface/50 flex items-center justify-center opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 group-hover:bg-foreground group-hover:text-background transition-all duration-300 shrink-0 mt-1">
-                      <ArrowRight className="w-4 h-4" />
-                    </div>
+                    
                   </div>
                 </motion.div>
               )
             )}
           </AnimatePresence>
         </motion.div>
+
+        {showViewAll && (
+          <div className="mt-16 flex justify-center">
+            <Button href="/portfolio" size="lg" className="rounded-none px-10 bg-foreground text-background hover:bg-foreground/90">
+              Lihat Semua Karya
+            </Button>
+          </div>
+        )}
       </Container>
     </section>
   )

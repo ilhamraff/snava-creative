@@ -1,4 +1,4 @@
-import { HeroSection } from '@/components/sections/hero'
+import { HeroSectionServer } from '@/components/sections/hero-server'
 import { PortfolioSectionServer } from '@/components/sections/portfolio-server'
 import { AboutSection } from '@/components/sections/about'
 import { ServicesSectionServer } from '@/components/sections/services-server'
@@ -19,8 +19,8 @@ export default function HomePage() {
   
   return (
     <>
-      <HeroSection />
-      <PortfolioSectionServer />
+      <HeroSectionServer />
+      <PortfolioSectionServer limit={6} onlyFeatured={true} showViewAll={true} />
       <AboutSection />
       <ServicesSectionServer />
       <ClientLogosSection />
