@@ -3,10 +3,14 @@
 import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { Container } from '@/components/ui/container'
-import { testimonials } from '@/lib/data/testimonials'
+import type { Testimonial } from '@/lib/types'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 
-export function TestimonialsSection() {
+interface TestimonialsSectionProps {
+  testimonials: Testimonial[]
+}
+
+export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
   const [current, setCurrent] = useState(0)
   const [direction, setDirection] = useState(0)
 
@@ -18,7 +22,10 @@ export function TestimonialsSection() {
       }
       return (prev - 1 + testimonials.length) % testimonials.length
     })
-  }, [])
+  }, [testimonials.length])
+
+  // Safeguard in case the array is empty
+  if (!testimonials || testimonials.length === 0) return null
 
   const testimonial = testimonials[current]
 

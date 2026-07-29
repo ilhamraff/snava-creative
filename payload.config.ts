@@ -13,6 +13,7 @@ import { AboutPage } from "./globals/AboutPage";
 import { ServicesSection } from "./globals/ServicesSection";
 import { Categories } from "./collections/Categories";
 import { Portfolio } from "./collections/Portfolio";
+import { Testimonials } from "./collections/Testimonials";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -40,7 +41,7 @@ export default buildConfig({
       },
     },
   },
-  collections: [Users, Media, Categories, Portfolio],
+  collections: [Users, Media, Categories, Portfolio, Testimonials],
   globals: [SiteSettings, AboutPage, ServicesSection],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",

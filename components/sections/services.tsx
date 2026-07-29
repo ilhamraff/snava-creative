@@ -45,26 +45,26 @@ export function ServicesSection({ title, description, services }: ServicesSectio
                 <motion.div 
                   key={service.title} 
                   variants={fadeInUp}
-                  className="group relative border-b border-border/50 py-8 md:py-12 transition-colors hover:bg-surface/30 cursor-pointer"
+                  className="group relative border-b border-border/50 py-8 md:py-12 transition-colors duration-500 hover:bg-surface/30 cursor-pointer"
                 >
                   <div className="flex flex-col md:flex-row md:items-center gap-6 px-4">
                     <div className="w-16 md:w-32 shrink-0">
-                      <span className="font-mono text-sm md:text-base text-muted group-hover:text-foreground transition-colors">
+                      <span className="font-mono text-sm md:text-base text-muted group-hover:text-foreground transition-colors duration-500">
                         {number}
                       </span>
                     </div>
                     
                     <div className="flex-1 md:pr-12">
-                      <h3 className="font-display text-2xl md:text-4xl font-medium text-foreground mb-4 group-hover:pl-4 transition-all duration-300">
+                      <h3 className="font-display text-2xl md:text-4xl font-medium text-foreground mb-4 transform transition-transform duration-500 ease-out group-hover:translate-x-4">
                         {service.title}
                       </h3>
-                      <p className="text-base md:text-lg text-muted font-light leading-relaxed max-w-2xl group-hover:pl-4 transition-all duration-300 delay-75">
+                      <p className="text-base md:text-lg text-muted font-light leading-relaxed max-w-2xl transform transition-transform duration-500 ease-out delay-75 group-hover:translate-x-4">
                         {service.description}
                       </p>
                     </div>
 
-                    <div className="hidden md:flex shrink-0 items-center justify-center w-12 h-12 rounded-full border border-transparent group-hover:border-foreground/20 group-hover:bg-foreground group-hover:text-background transition-all duration-300">
-                      <ArrowRight className="w-5 h-5 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 delay-100" />
+                    <div className="hidden md:flex shrink-0 items-center justify-center w-12 h-12 rounded-full border border-transparent group-hover:border-foreground/20 group-hover:bg-foreground group-hover:text-background transition-all duration-500 ease-out">
+                      <ArrowRight className="w-5 h-5 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out delay-150" />
                     </div>
                   </div>
                 </motion.div>

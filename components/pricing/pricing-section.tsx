@@ -67,7 +67,7 @@ export function PricingSection({ data, plans, hideTabs = false, viewMoreUrl, cla
                 {activeCategory === category && (
                   <motion.div
                     layoutId="pricing-active-tab"
-                    className="absolute -bottom-[9px] left-0 right-0 h-[1px] bg-foreground"
+                    className="absolute -bottom-2.25 left-0 right-0 h-px bg-foreground"
                   />
                 )}
               </button>

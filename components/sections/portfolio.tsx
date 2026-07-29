@@ -48,7 +48,7 @@ export function PortfolioSection({ categories, items }: PortfolioSectionProps) {
                 {active === cat && (
                   <motion.div
                     layoutId="portfolio-active-tab"
-                    className="absolute -bottom-[9px] left-0 right-0 h-[1px] bg-foreground"
+                    className="absolute -bottom-2.25 left-0 right-0 h-px bg-foreground"
                   />
                 )}
               </button>
