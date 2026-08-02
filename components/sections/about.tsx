@@ -12,9 +12,9 @@ export async function AboutSection() {
             {aboutData.title}
           </h2>
           
-          <div className="font-sans text-lg md:text-xl lg:text-2xl font-light text-background/80 leading-relaxed mb-16">
-            <p className="mb-6">{aboutData.description}</p>
-            <p>{aboutData.vision}</p>
+          <div className="font-sans text-lg md:text-xl lg:text-2xl text-background/80 leading-relaxed mb-16">
+            <p className="mb-6 font-semibold">{aboutData.description}</p>
+            <p className='font-light italic'>{aboutData.vision}</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-x-12 gap-y-10 text-left pt-16 border-t border-background/20">

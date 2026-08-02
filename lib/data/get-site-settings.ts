@@ -75,13 +75,13 @@ export async function getFooterData(): Promise<FooterData> {
   const settings = await getSiteSettings()
   return {
     description:
-      'Creative agency yang membantu bisnis tampil menonjol melalui desain dan strategi visual yang tepat.',
+      'Creative agency that helps businesses stand out through thoughtful design and visual strategy.',
     quickLinks: [
-      { label: 'Tentang', href: '#tentang' },
-      { label: 'Layanan', href: '#layanan' },
+      { label: 'About', href: '#tentang' },
+      { label: 'Services', href: '#layanan' },
       { label: 'Portfolio', href: '#portfolio' },
-      { label: 'Testimoni', href: '#testimoni' },
-      { label: 'FAQ', href: '#faq' },
+      // { label: 'Testimonials', href: '#testimoni' },
+      // { label: 'FAQ', href: '#faq' },
     ],
     serviceLinks: [
       { label: 'Branding', href: '#layanan' },
@@ -101,15 +101,15 @@ export async function getFinalCtaData(): Promise<FinalCTAData> {
   const settings = await getSiteSettings()
   const waUrl = getWhatsAppUrlFromSettings(settings)
   return {
-    headline: 'Siap Membawa Bisnis Anda ke Level Berikutnya?',
+    headline: 'Ready to Take Your Brand to the Next Level?',
     subheadline:
-      'Konsultasikan kebutuhan kreatif Anda dengan tim kami. Gratis, tanpa komitmen.',
+      'Let’s discuss your creative needs with our team. Free, with no commitment.',
     ctaPrimary: {
-      label: 'Hubungi Kami Sekarang',
+      label: 'Contact Us Now',
       url: waUrl,
     },
     ctaSecondary: {
-      label: 'Lihat Layanan',
+      label: 'View Services',
       url: '#layanan',
     },
   }

@@ -10,7 +10,7 @@ export async function FinalCTASection() {
     <section id="final-cta" className="py-24 lg:py-32 bg-foreground text-background">
       <Container>
         <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
-          <h2 className="font-display text-4xl sm:text-6xl lg:text-[5rem] font-medium tracking-tight leading-[1.1] mb-8">
+          <h2 className="font-display text-2xl sm:text-4xl lg:text-[4rem] font-medium tracking-tight leading-[1.1] mb-8">
             {finalCtaData.headline}
           </h2>
           

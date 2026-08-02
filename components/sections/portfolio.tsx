@@ -17,10 +17,10 @@ interface PortfolioSectionProps {
 }
 
 export function PortfolioSection({ categories, items, showViewAll = false, hideHeader = false }: PortfolioSectionProps) {
-  const [active, setActive] = useState('Semua')
+  const [active, setActive] = useState('All')
 
   const filtered =
-    active === 'Semua'
+    active === 'All'
       ? items
       : items.filter((p) => p.category === active)
 
@@ -113,7 +113,7 @@ export function PortfolioSection({ categories, items, showViewAll = false, hideH
         {showViewAll && (
           <div className="mt-16 flex justify-center">
             <Button href="/portfolio" size="lg" className="rounded-none px-10 bg-foreground text-background hover:bg-foreground/90">
-              Lihat Semua Karya
+              View All Work
             </Button>
           </div>
         )}

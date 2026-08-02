@@ -82,9 +82,9 @@ export async function getPortfolioData(
       }
     }
 
-    // Always ensure "Semua" is the first category tab
+    // Always ensure "All" is the first category tab
     return {
-      categories: ['Semua', ...cmsCategories],
+      categories: ['All', ...cmsCategories],
       items: cmsItems,
     }
   } catch (error) {

@@ -10,7 +10,10 @@ export const metadata: Metadata = {
   description: 'Pilih paket layanan kreatif yang sesuai dengan skala bisnis Anda. Transparan tanpa biaya tersembunyi.',
 }
 
+import { notFound } from 'next/navigation'
+
 export default function PricingPage() {
+  notFound()
   return (
     <>
       <div className="pt-16"> {/* Spacer for fixed navbar */}

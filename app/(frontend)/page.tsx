@@ -23,9 +23,10 @@ export default function HomePage() {
       <PortfolioSectionServer limit={6} onlyFeatured={true} showViewAll={true} />
       <AboutSection />
       <ServicesSectionServer />
-      <ClientLogosSection />
-      <TestimonialsSectionServer />
+      {/* <ClientLogosSection /> */}
+      {/* <TestimonialsSectionServer /> */}
       
+      {/* 
       <PricingSection 
         data={{
           ...pricingSectionData,
@@ -35,6 +36,7 @@ export default function HomePage() {
         hideTabs={true}
         viewMoreUrl="/pricing"
       />
+      */}
 
       <FinalCTASection />
       <FooterSectionServer />

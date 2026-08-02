@@ -59,7 +59,7 @@ export function FooterSection({ siteSettings, footerData }: FooterSectionProps) 
 
           {/* Quick Links */}
           <div className="lg:ml-auto">
-            <h3 className="text-xs font-semibold text-foreground tracking-widest uppercase mb-6">Navigasi</h3>
+            <h3 className="text-xs font-semibold text-foreground tracking-widest uppercase mb-6">Navigation</h3>
             <ul className="space-y-3">
               {footerData.quickLinks.map((link) => (
                 <li key={link.label}>
@@ -76,7 +76,7 @@ export function FooterSection({ siteSettings, footerData }: FooterSectionProps) 
 
           {/* Services */}
           <div>
-            <h3 className="text-xs font-semibold text-foreground tracking-widest uppercase mb-6">Layanan</h3>
+            <h3 className="text-xs font-semibold text-foreground tracking-widest uppercase mb-6">Services</h3>
             <ul className="space-y-3">
               {footerData.serviceLinks.map((link) => (
                 <li key={link.label}>
@@ -93,7 +93,7 @@ export function FooterSection({ siteSettings, footerData }: FooterSectionProps) 
 
           {/* Contact */}
           <div>
-            <h3 className="text-xs font-semibold text-foreground tracking-widest uppercase mb-6">Kontak</h3>
+            <h3 className="text-xs font-semibold text-foreground tracking-widest uppercase mb-6">Contact</h3>
             <ul className="space-y-3 text-sm font-light text-muted">
               <li>
                 <a

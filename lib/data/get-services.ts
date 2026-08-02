@@ -13,8 +13,8 @@ export interface ServicesDataResponse {
  */
 export async function getServicesData(): Promise<ServicesDataResponse> {
   const defaultResponse = {
-    title: 'Capabilities',
-    description: 'Dari identitas brand hingga konten video, kami siap membantu bisnis Anda tampil menonjol dengan desain yang disengaja.',
+    title: 'Our Services',
+    description: 'From brand identity to video content, we help businesses stand out with purposeful design.',
     services: fallbackServices,
   }
 

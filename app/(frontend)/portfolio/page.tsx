@@ -14,10 +14,10 @@ export default function PortfolioPage() {
         <Container>
           <div className="max-w-3xl">
             <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground mb-6">
-              Our Complete Works
+              Recent Work
             </h1>
             <p className="text-lg md:text-xl text-muted font-light leading-relaxed">
-              Kumpulan portfolio lengkap dari project-project pilihan yang telah kami kerjakan dengan sepenuh hati.
+              Explore some of our latest projects, crafted with purpose to help brands stand out.
             </p>
           </div>
         </Container>

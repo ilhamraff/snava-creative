@@ -34,12 +34,15 @@ const jetbrains = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://snavacreative.vercel.app"),
+  metadataBase: new URL("https://snavacreative.id"),
 
-  title: 'Snava Creative — Creative Digital Agency',
+  title: {
+    default: 'Creative Digital Agency | Snava Creative',
+    template: '%s | Snava Creative',
+  },
 
   description:
-    'Creative agency yang membantu UMKM, startup, dan perusahaan membangun brand yang kuat melalui desain kreatif, video profesional, dan strategi visual yang tepat sasaran.',
+    'Your complete creative partner for building standout brands through strategic design, compelling visuals, and creative solutions',
   
   icons: {
     icon: [
@@ -53,6 +56,8 @@ export const metadata: Metadata = {
 
   keywords: [ 
     'creative agency',
+    'snava creative',
+    'snava',
     'digital agency',
     'branding',
     'desain grafis',
@@ -61,23 +66,32 @@ export const metadata: Metadata = {
     'landing page',
     'logo design',
     'Indonesia',
-    'Jakarta',
+    'Bandung',
   ],
 
   openGraph: {
     title: 'Snava Creative — Creative Digital Agency',
     description:
-      'Creative agency yang membantu bisnis tampil menonjol melalui desain dan strategi visual yang tepat.',
+      'Your complete creative partner for standout brands and visuals.',
     type: 'website',
     locale: 'id_ID',
     siteName: 'Snava Creative',
+    images: [
+      {
+        url: '/assets/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Snava Creative Open Graph Image',
+      },
+    ],
   },
 
   twitter: {
     card: 'summary_large_image',
     title: 'Snava Creative — Creative Digital Agency',
     description:
-      'Creative agency yang membantu bisnis tampil menonjol melalui desain dan strategi visual yang tepat.',
+      'Your complete creative partner for standout brands and visuals.',
+    images: ['/assets/og-image.png'],
   },
   
   robots: {
@@ -115,17 +129,16 @@ export default function RootLayout({
               '@type': 'Organization',
               name: 'Snava Creative',
               description:
-                'Creative agency yang membantu bisnis tampil menonjol melalui desain dan strategi visual.',
-              url: 'https://snavacreative.com',
+                'Your complete creative partner for standout brands and visuals.',
+              url: 'https://snavacreative.id',
               contactPoint: {
                 '@type': 'ContactPoint',
-                telephone: '+62-812-3456-789',
+                telephone: '+62-821-1983-889',
                 contactType: 'customer service',
                 availableLanguage: 'Indonesian',
               },
               sameAs: [
                 'https://instagram.com/snavacreative',
-                'https://linkedin.com/company/snavacreative',
               ],
             }),
           }}

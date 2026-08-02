@@ -69,4 +69,4 @@ export const portfolioItems: PortfolioItem[] = [
   },
 ]
 
-export const portfolioCategories = ['Semua', 'Branding', 'Social Media', 'Video', 'Web']
+export const portfolioCategories = ['All', 'Branding', 'Social Media', 'Video', 'Web']

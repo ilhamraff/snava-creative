@@ -12,10 +12,10 @@ import { siteSettings, getWhatsAppUrl } from '@/lib/data/site-settings'
 
 const navLinks = [
   { label: 'Portfolio', href: '/#portfolio' },
-  { label: 'Tentang', href: '/#tentang' },
-  { label: 'Layanan', href: '/#layanan' },
-  { label: 'Testimoni', href: '/#testimoni' },
-  { label: 'Harga', href: '/#pricing' },
+  { label: 'About Us', href: '/#tentang' },
+  { label: 'Services', href: '/#layanan' },
+  // { label: 'Testimony', href: '/#testimoni' },
+  // { label: 'Pricing', href: '/#pricing' },
 ]
 
 export function Navbar() {
@@ -77,7 +77,7 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-3">
             <ThemeToggle />
             <Button href="#final-cta" size="sm">
-              Mulai Project
+              Start Project
             </Button>
           </div>
 
@@ -135,7 +135,7 @@ export function Navbar() {
                   size="lg"
                   onClick={() => setMobileOpen(false)}
                 >
-                  Mulai Project
+                  Start Project
                 </Button>
               </motion.div>
             </motion.div>
