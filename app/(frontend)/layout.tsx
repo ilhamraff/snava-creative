@@ -1,7 +1,7 @@
 import React from 'react'
 import type { Metadata } from 'next'
 import Script from 'next/script'
-import { Hind, JetBrains_Mono, Montserrat, Space_Grotesk } from 'next/font/google'
+import { Hind, JetBrains_Mono, Space_Grotesk } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Navbar } from '@/components/layout/navbar'
 import './styles.css'
@@ -20,12 +20,6 @@ const hind = Hind({
   weight: ['500'],
 })
 
-const montserrat = Montserrat({
-  subsets: ['latin'],
-  variable: '--font-montserrat',
-  display: 'swap',
-})
-
 const jetbrains = JetBrains_Mono({
   subsets: ['latin'],
   variable: '--font-jetbrains',
@@ -34,7 +28,10 @@ const jetbrains = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://snavacreative.id"),
+  metadataBase: new URL("https://www.snavacreative.id"),
+  alternates: {
+    canonical: 'https://www.snavacreative.id',
+  },
 
   title: {
     default: 'Creative Digital Agency | Snava Creative',
@@ -73,6 +70,7 @@ export const metadata: Metadata = {
     title: 'Snava Creative — Creative Digital Agency',
     description:
       'Your complete creative partner for standout brands and visuals.',
+    url: 'https://www.snavacreative.id',
     type: 'website',
     locale: 'id_ID',
     siteName: 'Snava Creative',
@@ -130,7 +128,7 @@ export default function RootLayout({
               name: 'Snava Creative',
               description:
                 'Your complete creative partner for standout brands and visuals.',
-              url: 'https://snavacreative.id',
+              url: 'https://www.snavacreative.id',
               contactPoint: {
                 '@type': 'ContactPoint',
                 telephone: '+62-821-1983-889',

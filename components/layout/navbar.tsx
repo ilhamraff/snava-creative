@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils/cn'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useTheme } from '@/components/theme-provider'
-import { siteSettings, getWhatsAppUrl } from '@/lib/data/site-settings'
+import { siteSettings } from '@/lib/data/site-settings'
 
 const navLinks = [
   { label: 'Portfolio', href: '/#portfolio' },
