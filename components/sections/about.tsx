@@ -13,7 +13,7 @@ export async function AboutSection() {
           </h2>
           
           <div className="font-sans text-lg md:text-xl lg:text-2xl text-background/80 leading-relaxed mb-16">
-            <p className="mb-6 font-semibold">{aboutData.description}</p>
+            <p className="mb-6 font-light">{aboutData.description}</p>
             <p className='font-light italic'>{aboutData.vision}</p>
           </div>
 

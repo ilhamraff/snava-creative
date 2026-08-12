@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import React, { ReactNode } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { cn } from '@/lib/utils/cn'
 
@@ -8,14 +8,18 @@ interface PricingGridProps {
 }
 
 export function PricingGrid({ children, className }: PricingGridProps) {
+  const count = React.Children.count(children)
+  const isTwo = count === 2
+
   return (
     <motion.div
       layout
       className={cn(
-        'mx-auto grid max-w-7xl gap-8',
-        'grid-cols-1',               // Mobile: 1 column
-        'sm:grid-cols-2',            // Tablet: 2 columns
-        'lg:grid-cols-3',            // Desktop: 3 columns
+        'mx-auto grid gap-8',
+        isTwo ? 'max-w-4xl' : 'max-w-7xl',
+        'grid-cols-1',
+        'sm:grid-cols-2',
+        isTwo ? 'lg:grid-cols-2' : 'lg:grid-cols-3',
         className
       )}
     >

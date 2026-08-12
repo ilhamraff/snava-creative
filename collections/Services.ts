@@ -162,5 +162,43 @@ export const Services: CollectionConfig = {
         },
       ],
     },
+    {
+      name: 'hero',
+      label: 'Hero Section (Detail Page)',
+      type: 'group',
+      fields: [
+        { name: 'headline', label: 'Headline', type: 'text' },
+        { name: 'description', label: 'Deskripsi', type: 'textarea' },
+        { name: 'image', label: 'Gambar Hero', type: 'upload', relationTo: 'media' },
+      ],
+    },
+    {
+      name: 'problems',
+      label: 'Problem Section',
+      type: 'array',
+      fields: [
+        { name: 'title', label: 'Judul Masalah', type: 'text', required: true },
+        { name: 'description', label: 'Deskripsi', type: 'textarea', required: true },
+      ],
+    },
+    {
+      name: 'capabilities',
+      label: 'What We Do Section',
+      type: 'array',
+      fields: [
+        { name: 'title', label: 'Nama Layanan', type: 'text', required: true },
+        { name: 'description', label: 'Deskripsi', type: 'textarea', required: true },
+        { name: 'icon', label: 'Icon (Lucide)', type: 'text', admin: { description: 'Contoh: PenTool, Camera, Layout' } },
+      ],
+    },
+    {
+      name: 'faqs',
+      label: 'FAQ Khusus Layanan',
+      type: 'array',
+      fields: [
+        { name: 'question', label: 'Pertanyaan', type: 'text', required: true },
+        { name: 'answer', label: 'Jawaban', type: 'textarea', required: true },
+      ],
+    },
   ],
 }

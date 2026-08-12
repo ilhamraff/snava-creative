@@ -65,5 +65,15 @@ export const Portfolio: CollectionConfig = {
         description: 'Jika dicentang, portfolio ini akan muncul di grid halaman depan (maksimal 6)',
       },
     },
+    {
+      name: 'relatedServices',
+      label: 'Layanan Terkait',
+      type: 'relationship',
+      relationTo: 'services' as any,
+      hasMany: true,
+      admin: {
+        description: 'Pilih layanan (seperti Social Media Management) yang berkaitan dengan portfolio ini agar muncul di halaman layanan tersebut.',
+      },
+    },
   ],
 }

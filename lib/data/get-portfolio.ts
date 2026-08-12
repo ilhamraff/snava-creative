@@ -95,3 +95,55 @@ export async function getPortfolioData(
     }
   }
 }
+
+/**
+ * Fetch Portfolio data by Service relationship.
+ */
+export async function getPortfolioByService(serviceId: string, limit: number = 6): Promise<PortfolioItem[]> {
+  try {
+    const payload = await getPayloadClient()
+
+    const portfolioRes = await (payload as any).find({
+      collection: 'portfolio',
+      where: {
+        relatedServices: {
+          contains: serviceId, // Check if the serviceId is in the relatedServices array
+        }
+      },
+      limit: limit,
+      depth: 1, // To automatically populate the related Category and Media objects
+      sort: '-createdAt',
+    })
+
+    const cmsItems: PortfolioItem[] = portfolioRes.docs.map((item: any) => {
+      const categoryName =
+        typeof item.category === 'object' && item.category !== null
+          ? item.category.name
+          : 'Uncategorized'
+
+      let thumbnailUrl = ''
+      if (item.thumbnail) {
+        if (typeof item.thumbnail === 'object' && item.thumbnail.url) {
+          thumbnailUrl = item.thumbnail.url
+        } else if (typeof item.thumbnail === 'string') {
+          thumbnailUrl = item.thumbnail
+        }
+      }
+
+      return {
+        title: item.title,
+        slug: item.slug,
+        category: categoryName,
+        thumbnail: thumbnailUrl,
+        description: item.description || '',
+        client: item.client || '',
+        year: item.year || '',
+      }
+    })
+
+    return cmsItems
+  } catch (error) {
+    console.error(`Error fetching portfolio for service ${serviceId}:`, error)
+    return []
+  }
+}

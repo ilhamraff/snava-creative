@@ -4,6 +4,8 @@ import { motion } from 'motion/react'
 import { Container } from '@/components/ui/container'
 import type { Service } from '@/lib/types'
 import { staggerContainer, fadeInUp } from '@/lib/utils/motion'
+import Link from 'next/link'
+import { ArrowUpRight } from 'lucide-react'
 
 
 interface ServicesSectionProps {
@@ -45,9 +47,9 @@ export function ServicesSection({ title, description, services }: ServicesSectio
                 <motion.div 
                   key={service.title} 
                   variants={fadeInUp}
-                  className="group relative border-b border-border/50 py-8 md:py-12 transition-colors duration-500 hover:bg-foreground/5 cursor-pointer"
+                  className="group relative border-b border-border/50 transition-colors duration-500 hover:bg-foreground/5"
                 >
-                  <div className="flex flex-col md:flex-row md:items-center gap-6 px-4">
+                  <Link href={`/services/${service.slug}`} className="flex flex-col md:flex-row md:items-center gap-6 px-4 py-8 md:py-12 w-full h-full">
                     <div className="w-16 md:w-32 shrink-0">
                       <span className="font-mono text-sm md:text-base text-muted group-hover:text-foreground transition-colors duration-500">
                         {number}
@@ -62,7 +64,12 @@ export function ServicesSection({ title, description, services }: ServicesSectio
                         {service.description}
                       </p>
                     </div>
-                  </div>
+
+                    <div className="shrink-0 flex items-center mt-2 md:mt-0 text-muted group-hover:text-foreground transition-colors duration-500">
+                      <span className="md:hidden text-sm font-medium uppercase tracking-widest mr-3">Detail Layanan</span>
+                      <ArrowUpRight className="w-6 h-6 md:w-8 md:h-8 transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-500" />
+                    </div>
+                  </Link>
                 </motion.div>
               )
             })}

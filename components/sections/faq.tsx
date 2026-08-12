@@ -2,9 +2,13 @@ import { Container } from '@/components/ui/container'
 import { SectionHeader } from '@/components/ui/section-header'
 import { Accordion } from '@/components/ui/accordion'
 import { AnimatedSection } from '@/components/ui/animated-section'
-import { faqItems } from '@/lib/data/faq'
+import { faqItems as defaultFaqItems } from '@/lib/data/faq'
 
-export function FAQSection() {
+interface FAQSectionProps {
+  items?: { question: string; answer: string; order?: number }[]
+}
+
+export function FAQSection({ items = defaultFaqItems }: FAQSectionProps) {
   return (
     <AnimatedSection id="faq" className="py-20 lg:py-28 border-t border-border/50">
       <Container>
@@ -16,8 +20,8 @@ export function FAQSection() {
 
         <div className="mx-auto max-w-3xl">
           <Accordion
-            items={faqItems
-              .sort((a, b) => a.order - b.order)
+            items={items
+              .sort((a, b) => (a.order || 0) - (b.order || 0))
               .map((item) => ({
                 question: item.question,
                 answer: item.answer,
