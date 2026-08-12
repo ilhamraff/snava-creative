@@ -24,15 +24,31 @@ export async function getServicesData(): Promise<ServicesDataResponse> {
       slug: 'services-section',
     })
 
+    const servicesCollection = await (payload as any).find({
+      collection: 'services',
+      where: {
+        isActive: {
+          equals: true,
+        },
+      },
+      sort: 'sortOrder',
+      limit: 100,
+    })
+
     if (!servicesRes || !servicesRes.title) {
       return defaultResponse
     }
 
-    const cmsServices: Service[] = (servicesRes.services || []).map((item: any, index: number) => ({
+    const cmsServices: Service[] = (servicesCollection.docs || []).map((item: any, index: number) => ({
+      id: item.id,
       title: item.title,
+      slug: item.slug,
+      category: item.category,
       description: item.description,
       icon: item.icon,
-      order: index + 1, // Urutan berdasarkan urutan array di Payload
+      order: item.sortOrder || index + 1,
+      isActive: item.isActive,
+      packages: item.packages || [],
     }))
 
     return {
@@ -41,6 +57,7 @@ export async function getServicesData(): Promise<ServicesDataResponse> {
       services: cmsServices.length > 0 ? cmsServices : fallbackServices,
     }
   } catch (error) {
+    console.error('Error fetching services:', error)
     return defaultResponse
   }
 }

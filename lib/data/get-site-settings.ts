@@ -101,15 +101,15 @@ export async function getFinalCtaData(): Promise<FinalCTAData> {
   const settings = await getSiteSettings()
   const waUrl = getWhatsAppUrlFromSettings(settings)
   return {
-    headline: 'Ready to Take Your Brand to the Next Level?',
+    headline: 'Siap Bawa Brand Anda ke Level Selanjutnya?',
     subheadline:
-      'Let’s discuss your creative needs with our team. Free, with no commitment.',
+      'Mari diskusikan kebutuhan kreatif Anda dengan tim kami. Gratis, tanpa komitmen.',
     ctaPrimary: {
-      label: 'Contact Us Now',
+      label: 'Hubungi Kami Sekarang',
       url: waUrl,
     },
     ctaSecondary: {
-      label: 'View Services',
+      label: 'Lihat Semua Layanan',
       url: '#layanan',
     },
   }

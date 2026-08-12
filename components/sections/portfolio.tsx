@@ -32,7 +32,7 @@ export function PortfolioSection({ categories, items, showViewAll = false, hideH
           {!hideHeader ? (
             <div className="max-w-2xl">
               <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-foreground">
-                Selected Works
+                Karya Terbaik Kami
               </h2>
             </div>
           ) : (
@@ -113,7 +113,7 @@ export function PortfolioSection({ categories, items, showViewAll = false, hideH
         {showViewAll && (
           <div className="mt-16 flex justify-center">
             <Button href="/portfolio" size="lg" className="rounded-none px-10 bg-foreground text-background hover:bg-foreground/90">
-              View All Work
+              Lihat Semua Karya
             </Button>
           </div>
         )}

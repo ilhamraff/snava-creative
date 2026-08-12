@@ -10,15 +10,35 @@ export const metadata: Metadata = {
   description: 'Pilih paket layanan kreatif yang sesuai dengan skala bisnis Anda. Transparan tanpa biaya tersembunyi.',
 }
 
-import { notFound } from 'next/navigation'
+import { getServicesData } from '@/lib/data/get-services'
+import { getPricingSectionData } from '@/lib/data/get-pricing-section'
+import { PricingPlan } from '@/lib/types'
 
-export default function PricingPage() {
-  notFound()
+export default async function PricingPage() {
+  const [servicesData, pricingGlobal] = await Promise.all([
+    getServicesData(),
+    getPricingSectionData()
+  ])
+  
+  // Transform packages into PricingPlan array
+  const pricingPlans: PricingPlan[] = servicesData.services.flatMap(service => 
+    (service.packages || []).map(pkg => ({
+      ...pkg,
+      serviceCategory: service.title
+    }))
+  )
+
+  const sectionData = {
+    headline: pricingGlobal.headline || 'Engagement Models',
+    subheadline: pricingGlobal.subheadline || 'Pilih paket layanan yang sesuai dengan skala bisnis dan kebutuhan spesifik Anda. Tidak ada biaya tersembunyi.',
+    defaultCategory: servicesData.services[0]?.title
+  }
+
   return (
     <>
       <div className="pt-16"> {/* Spacer for fixed navbar */}
         <PricingSection 
-          data={pricingSectionData} 
+          data={sectionData} 
           plans={pricingPlans} 
         />
       </div>

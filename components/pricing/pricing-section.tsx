@@ -19,13 +19,13 @@ interface PricingSectionProps {
 
 export function PricingSection({ data, plans, hideTabs = false, viewMoreUrl, className }: PricingSectionProps) {
   const categories = useMemo(() => {
-    return Array.from(new Set(plans.map(p => p.serviceCategory)))
+    return Array.from(new Set(plans.map(p => p.serviceCategory).filter(Boolean))) as string[]
   }, [plans])
 
   const [activeCategory, setActiveCategory] = useState<string>(
     data.defaultCategory && categories.includes(data.defaultCategory) 
       ? data.defaultCategory 
-      : categories[0]
+      : (categories[0] || '')
   )
 
   const filteredPlans = useMemo(() => {
@@ -39,7 +39,7 @@ export function PricingSection({ data, plans, hideTabs = false, viewMoreUrl, cla
         <div className="flex flex-col md:flex-row justify-between items-start mb-20 gap-8">
           <div className="max-w-2xl">
             <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-foreground">
-              Engagement Models
+              {data.headline || 'Engagement Models'}
             </h2>
           </div>
           <div className="max-w-sm">

@@ -14,8 +14,8 @@ const navLinks = [
   { label: 'Portfolio', href: '/#portfolio' },
   { label: 'About Us', href: '/#tentang' },
   { label: 'Services', href: '/#layanan' },
+  { label: 'Pricing', href: '/#pricing' },
   // { label: 'Testimony', href: '/#testimoni' },
-  // { label: 'Pricing', href: '/#pricing' },
 ]
 
 export function Navbar() {

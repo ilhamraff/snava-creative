@@ -53,10 +53,15 @@ export interface StatItem {
 }
 
 export interface Service {
+  id: string
   title: string
+  slug: string
+  category?: string
   description: string
   icon: string
   order: number
+  isActive: boolean
+  packages?: PricingPlan[]
 }
 
 export interface PortfolioItem {
@@ -128,16 +133,16 @@ export interface PricingFeature {
 }
 
 export interface PricingPlan {
-  id: string
-  serviceCategory: string
+  id?: string
+  serviceCategory?: string
   name: string
   badge?: string
-  subheadline: string
-  price: string
-  billingPeriod?: string
-  description: string
+  subheadline?: string
+  price: number | string | null
+  billingPeriod?: string | null
+  description?: string | null
   features: PricingFeature[]
-  cta: CTA
+  cta?: CTA
   isPopular?: boolean
   isCustom?: boolean
 }

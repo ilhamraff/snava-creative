@@ -4,8 +4,8 @@ export const siteSettings: SiteSettings = {
   siteName: 'Snava Creative',
   tagline: 'Creative Digital Agency',
   contactEmail: 'hello@snavacreative.com',
-  contactPhone: '08123456789',
-  whatsappNumber: '628123456789',
+  contactPhone: '08211983889',
+  whatsappNumber: '628211983889',
   whatsappMessage: 'Halo Snava Creative, saya tertarik untuk konsultasi tentang project saya.',
   address: 'Jakarta, Indonesia',
   socialMedia: [

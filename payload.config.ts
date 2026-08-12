@@ -15,6 +15,8 @@ import { HeroSection } from "./globals/HeroSection";
 import { Categories } from "./collections/Categories";
 import { Portfolio } from "./collections/Portfolio";
 import { Testimonials } from "./collections/Testimonials";
+import { Services } from "./collections/Services";
+import { PricingSection } from './globals/PricingSection'
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -42,8 +44,8 @@ export default buildConfig({
       },
     },
   },
-  collections: [Users, Media, Categories, Portfolio, Testimonials],
-  globals: [SiteSettings, HeroSection, AboutPage, ServicesSection],
+  collections: [Users, Media, Categories, Portfolio, Testimonials, Services],
+  globals: [SiteSettings, HeroSection, AboutPage, ServicesSection, PricingSection],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {
