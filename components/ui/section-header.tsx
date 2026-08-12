@@ -6,6 +6,7 @@ interface SectionHeaderProps {
   subtitle?: string
   align?: 'left' | 'center'
   className?: string
+  titleClassName?: string
 }
 
 export function SectionHeader({
@@ -14,6 +15,7 @@ export function SectionHeader({
   subtitle,
   align = 'center',
   className,
+  titleClassName,
 }: SectionHeaderProps) {
   return (
     <div
@@ -23,12 +25,12 @@ export function SectionHeader({
         className
       )}
     >
-      {eyebrow && (
+      {/* {eyebrow && (
         <span className="mb-3 inline-block text-xs font-semibold tracking-[0.2em] text-accent uppercase">
           {eyebrow}
         </span>
-      )}
-      <h2 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem] lg:leading-tight">
+      )} */}
+      <h2 className={cn("font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem] lg:leading-tight", titleClassName)}>
         {title}
       </h2>
       {subtitle && (

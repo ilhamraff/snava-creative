@@ -34,9 +34,10 @@ export function PortfolioCarousel({
       <Container>
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
           <SectionHeader
-            eyebrow="Portfolio"
+            // eyebrow="Portfolio"
             title={title}
-            className="mb-0 text-background"
+            className="mb-0"
+            titleClassName="text-background"
           />
           
           {/* Navigation Buttons */}
