@@ -11,6 +11,8 @@ import { getPricingSectionData } from '@/lib/data/get-pricing-section'
 import { PricingPlan } from '@/lib/types'
 import { PricingSection } from '@/components/pricing/pricing-section'
 
+import { pricingPlans as fallbackPricingPlans } from '@/lib/data/pricing'
+
 // Revalidate cache every 60 seconds (Incremental Static Regeneration)
 // Ini yang akan memperbaiki bug cache di Vercel/Production
 export const revalidate = 60
@@ -21,20 +23,26 @@ export default async function HomePage() {
     getPricingSectionData()
   ])
   
-  const pricingPlans: PricingPlan[] = servicesData.services.flatMap(service => 
+  let pricingPlans: PricingPlan[] = servicesData.services.flatMap(service => 
     (service.packages || []).map(pkg => ({
       ...pkg,
       serviceCategory: service.title
     }))
   )
   
+  // Fallback to static pricing plans if DB has no packages
+  if (pricingPlans.length === 0) {
+    pricingPlans = fallbackPricingPlans
+  }
+
   // Show popular or teaser plans
   const teaserPlans = pricingPlans.filter(p => p.isPopular)
+  const displayPlans = teaserPlans.length > 0 ? teaserPlans : pricingPlans.slice(0, 3)
 
   const sectionData = {
     headline: pricingGlobal.headline || 'Engagement Models',
     subheadline: pricingGlobal.subheadline || 'Paket terlaris kami untuk membantu bisnis Anda tampil maksimal secara online.',
-    defaultCategory: teaserPlans[0]?.serviceCategory || servicesData.services[0]?.title
+    defaultCategory: displayPlans[0]?.serviceCategory || servicesData.services[0]?.title
   }
   
   return (
@@ -46,10 +54,10 @@ export default async function HomePage() {
       {/* <ClientLogosSection /> */}
       <TestimonialsSectionServer />
       
-      {teaserPlans.length > 0 && (
+      {displayPlans.length > 0 && (
         <PricingSection 
           data={sectionData} 
-          plans={teaserPlans} 
+          plans={displayPlans} 
           hideTabs={true}
           viewMoreUrl="/pricing"
         />

@@ -1,7 +1,11 @@
 import type { Service } from '@/lib/types'
 import { services as fallbackServices } from '@/lib/data/services'
 import { db } from '@/lib/db'
-import { services } from '@/lib/db/schema'
+import {
+  services,
+  servicesPackages,
+  servicesPackagesFeatures,
+} from '@/lib/db/schema'
 import { eq, asc, desc } from 'drizzle-orm'
 
 export interface ServicesDataResponse {
@@ -21,6 +25,14 @@ export async function getServicesData(): Promise<ServicesDataResponse> {
         where: eq(services.isActive, true),
         with: {
           heroImage: true,
+          packages: {
+            with: {
+              features: {
+                orderBy: [asc(servicesPackagesFeatures.order)],
+              },
+            },
+            orderBy: [asc(servicesPackages.order)],
+          },
         },
         orderBy: [asc(services.sortOrder), desc(services.createdAt)],
       }),
@@ -44,6 +56,7 @@ export async function getServicesData(): Promise<ServicesDataResponse> {
       id: s.id.toString(),
       slug: s.slug,
       title: s.title,
+      category: s.category || undefined,
       description: s.description || '',
       icon: s.icon || 'Layers',
       order: parseInt(s.sortOrder || '1', 10),
@@ -51,6 +64,21 @@ export async function getServicesData(): Promise<ServicesDataResponse> {
       heroHeadline: s.heroHeadline || undefined,
       heroDescription: s.heroDescription || undefined,
       heroImage: s.heroImage?.url || undefined,
+      packages: (s.packages || []).map((pkg) => ({
+        id: pkg.id,
+        name: pkg.name,
+        serviceCategory: s.title,
+        price: pkg.isCustom ? 'Custom' : (pkg.price ? Number(pkg.price) : null),
+        billingPeriod: pkg.billingPeriod || '',
+        description: pkg.description || '',
+        isPopular: pkg.isPopular || false,
+        isCustom: pkg.isCustom || false,
+        badge: pkg.isPopular ? 'Most Popular' : pkg.isCustom ? 'Custom' : undefined,
+        features: (pkg.features || []).map((f) => ({
+          name: f.name,
+          included: f.included ?? true,
+        })),
+      })),
     }))
 
     return {

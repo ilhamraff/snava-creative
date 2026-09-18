@@ -2,7 +2,7 @@ import { PricingSection } from '@/components/pricing/pricing-section'
 import { FinalCTASection } from '@/components/sections/final-cta'
 import { FAQSection } from '@/components/sections/faq'
 import { FooterSectionServer } from '@/components/sections/footer-server'
-import { pricingSectionData, pricingPlans } from '@/lib/data/pricing'
+import { pricingSectionData, pricingPlans as fallbackPricingPlans } from '@/lib/data/pricing'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -21,17 +21,21 @@ export default async function PricingPage() {
   ])
   
   // Transform packages into PricingPlan array
-  const pricingPlans: PricingPlan[] = servicesData.services.flatMap(service => 
+  let plans: PricingPlan[] = servicesData.services.flatMap(service => 
     (service.packages || []).map(pkg => ({
       ...pkg,
       serviceCategory: service.title
     }))
   )
 
+  if (plans.length === 0) {
+    plans = fallbackPricingPlans
+  }
+
   const sectionData = {
-    headline: pricingGlobal.headline || 'Engagement Models',
-    subheadline: pricingGlobal.subheadline || 'Pilih paket layanan yang sesuai dengan skala bisnis dan kebutuhan spesifik Anda. Tidak ada biaya tersembunyi.',
-    defaultCategory: servicesData.services[0]?.title
+    headline: pricingGlobal.headline || pricingSectionData.headline || 'Engagement Models',
+    subheadline: pricingGlobal.subheadline || pricingSectionData.subheadline || 'Pilih paket layanan yang sesuai dengan skala bisnis dan kebutuhan spesifik Anda. Tidak ada biaya tersembunyi.',
+    defaultCategory: plans[0]?.serviceCategory || servicesData.services[0]?.title
   }
 
   return (
@@ -39,7 +43,7 @@ export default async function PricingPage() {
       <div className="pt-16"> {/* Spacer for fixed navbar */}
         <PricingSection 
           data={sectionData} 
-          plans={pricingPlans} 
+          plans={plans} 
         />
       </div>
       <FAQSection />

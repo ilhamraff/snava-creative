@@ -12,6 +12,7 @@ import { FinalCTASection } from '@/components/sections/final-cta'
 import { RelatedServices } from '@/components/sections/related-services'
 import { getPricingSectionData } from '@/lib/data/get-pricing-section'
 import type { PricingPlan } from '@/lib/types'
+import { pricingPlans as fallbackPricingPlans } from '@/lib/data/pricing'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -43,12 +44,12 @@ export default async function ServiceDetailPage({ params }: Props) {
   const relatedServices = await getRelatedServices(service.slug)
 
   // Map packages to PricingPlan
-  const pricingPlans: PricingPlan[] = (service.packages || []).map((pkg: any, idx: number) => ({
+  let pricingPlans: PricingPlan[] = (service.packages || []).map((pkg: any, idx: number) => ({
     id: pkg.id || `pkg-${idx}-${pkg.name}`,
     name: pkg.name,
     serviceCategory: service.title, // Pass context to the pricing card
-    price: pkg.price || 0,
-    priceDisplay: pkg.price ? `Rp${(pkg.price / 1000).toLocaleString('id-ID')}k` : 'Custom',
+    price: pkg.isCustom ? 'Custom' : (pkg.price ? Number(pkg.price) : null),
+    priceDisplay: pkg.isCustom ? 'Custom' : (pkg.price ? `Rp ${(Number(pkg.price) / 1000).toLocaleString('id-ID')}k` : 'Custom'),
     billingPeriod: pkg.billingPeriod || '',
     description: pkg.description || '',
     features: (pkg.features || []).map((f: any) => ({
@@ -58,6 +59,28 @@ export default async function ServiceDetailPage({ params }: Props) {
     isPopular: pkg.isPopular || false,
     isCustom: pkg.isCustom || false,
   }))
+
+  // Fallback to static pricing plans if DB has no packages for this service yet
+  if (pricingPlans.length === 0) {
+    const slugNorm = service.slug.toLowerCase().replace(/[^a-z0-9]/g, '')
+    const titleNorm = service.title.toLowerCase().replace(/[^a-z0-9]/g, '')
+    const catNorm = (service.category || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+
+    const matched = fallbackPricingPlans.filter((p) => {
+      const pCat = (p.serviceCategory || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+      return (
+        pCat === slugNorm ||
+        pCat === titleNorm ||
+        (catNorm && pCat === catNorm) ||
+        pCat.includes(slugNorm) ||
+        slugNorm.includes(pCat)
+      )
+    })
+
+    if (matched.length > 0) {
+      pricingPlans = matched
+    }
+  }
 
   return (
     <div className="flex flex-col w-full">
