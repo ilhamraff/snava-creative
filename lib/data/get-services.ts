@@ -1,5 +1,8 @@
 import type { Service } from '@/lib/types'
 import { services as fallbackServices } from '@/lib/data/services'
+import { db } from '@/lib/db'
+import { services } from '@/lib/db/schema'
+import { eq, asc, desc } from 'drizzle-orm'
 
 export interface ServicesDataResponse {
   title: string
@@ -8,15 +11,54 @@ export interface ServicesDataResponse {
 }
 
 /**
- * Fetch Services data.
- *
- * TODO: Migrate to direct Supabase/Drizzle query.
- * Currently returns static fallback data.
+ * Fetch Services data from Supabase Postgres via Drizzle ORM.
+ * Falls back to static services if database is empty or connection fails.
  */
 export async function getServicesData(): Promise<ServicesDataResponse> {
-  return {
-    title: 'Our Services',
-    description: 'From brand identity to video content, we help businesses stand out with purposeful design.',
-    services: fallbackServices,
+  try {
+    const dbServices = await db.query.services.findMany({
+      where: eq(services.isActive, true),
+      with: {
+        heroImage: true,
+      },
+      orderBy: [asc(services.sortOrder), desc(services.createdAt)],
+    })
+
+    if (!dbServices || dbServices.length === 0) {
+      return {
+        title: 'Layanan Kami',
+        description:
+          'Mulai dari identitas merek hingga konten video, kami membantu bisnis Anda tampil beda melalui desain yang berkelas dan bermakna.',
+        services: fallbackServices,
+      }
+    }
+
+    const mapped: Service[] = dbServices.map((s) => ({
+      id: s.id.toString(),
+      slug: s.slug,
+      title: s.title,
+      description: s.description || '',
+      icon: s.icon || 'Layers',
+      order: parseInt(s.sortOrder || '1', 10),
+      isActive: s.isActive ?? true,
+      heroHeadline: s.heroHeadline || undefined,
+      heroDescription: s.heroDescription || undefined,
+      heroImage: s.heroImage?.url || undefined,
+    }))
+
+    return {
+      title: 'Layanan Kami',
+      description:
+        'Mulai dari identitas merek hingga konten video, kami membantu bisnis Anda tampil beda melalui desain yang berkelas dan bermakna.',
+      services: mapped,
+    }
+  } catch (error) {
+    console.error('Error in getServicesData, using fallback:', error)
+    return {
+      title: 'Layanan Kami',
+      description:
+        'Mulai dari identitas merek hingga konten video, kami membantu bisnis Anda tampil beda melalui desain yang berkelas dan bermakna.',
+      services: fallbackServices,
+    }
   }
 }

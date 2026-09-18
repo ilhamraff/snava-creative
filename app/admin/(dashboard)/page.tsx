@@ -9,23 +9,15 @@ import {
   ArrowUpRight,
 } from 'lucide-react'
 import Link from 'next/link'
-
-interface StatCardProps {
-  label: string
-  value: string
-  icon: React.ComponentType<{ className?: string }>
-  badge: string
-  href: string
-}
-
-const stats: StatCardProps[] = [
-  { label: 'Portfolio', value: '—', icon: Briefcase, badge: 'Segera', href: '/admin/portfolio' },
-  { label: 'Layanan', value: '—', icon: Layers, badge: 'Segera', href: '/admin/layanan' },
-  { label: 'Kategori', value: '—', icon: FolderOpen, badge: 'Segera', href: '/admin/kategori' },
-  { label: 'Testimoni', value: '—', icon: MessageSquareQuote, badge: 'Segera', href: '/admin/testimoni' },
-  { label: 'Media', value: '—', icon: ImageIcon, badge: 'Segera', href: '/admin/media' },
-  { label: 'Pengaturan', value: '—', icon: Settings, badge: 'Segera', href: '/admin/pengaturan' },
-]
+import { db } from '@/lib/db'
+import {
+  categories,
+  portfolio,
+  services,
+  testimonials,
+  media,
+} from '@/lib/db/schema'
+import { count } from 'drizzle-orm'
 
 function getGreeting(): string {
   const hour = new Date().getHours()
@@ -35,13 +27,73 @@ function getGreeting(): string {
   return 'Selamat Malam'
 }
 
-export default function AdminDashboardPage() {
+export default async function AdminDashboardPage() {
   const today = new Date().toLocaleDateString('id-ID', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   })
+
+  // Parallel fetching counts from Supabase via Drizzle (Vercel best practice)
+  const [
+    catResult,
+    portResult,
+    servResult,
+    testResult,
+    medResult,
+  ] = await Promise.all([
+    db.select({ val: count() }).from(categories),
+    db.select({ val: count() }).from(portfolio),
+    db.select({ val: count() }).from(services),
+    db.select({ val: count() }).from(testimonials),
+    db.select({ val: count() }).from(media),
+  ])
+
+  const stats = [
+    {
+      label: 'Kategori',
+      value: (catResult[0]?.val ?? 0).toString(),
+      icon: FolderOpen,
+      badge: 'Aktif',
+      href: '/admin/kategori',
+    },
+    {
+      label: 'Portfolio',
+      value: (portResult[0]?.val ?? 0).toString(),
+      icon: Briefcase,
+      badge: 'Data Ada',
+      href: '/admin/portfolio',
+    },
+    {
+      label: 'Layanan',
+      value: (servResult[0]?.val ?? 0).toString(),
+      icon: Layers,
+      badge: 'Data Ada',
+      href: '/admin/layanan',
+    },
+    {
+      label: 'Testimoni',
+      value: (testResult[0]?.val ?? 0).toString(),
+      icon: MessageSquareQuote,
+      badge: 'Segera',
+      href: '/admin/testimoni',
+    },
+    {
+      label: 'Media',
+      value: (medResult[0]?.val ?? 0).toString(),
+      icon: ImageIcon,
+      badge: 'Data Ada',
+      href: '/admin/media',
+    },
+    {
+      label: 'Pengaturan',
+      value: '1',
+      icon: Settings,
+      badge: 'Sistem',
+      href: '/admin/pengaturan',
+    },
+  ]
 
   return (
     <div className="space-y-8">
@@ -74,7 +126,11 @@ export default function AdminDashboardPage() {
                     <Icon className="h-5 w-5" />
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="inline-flex items-center rounded-full border border-zinc-800 bg-zinc-950/60 px-2 py-0.5 text-[11px] font-medium text-zinc-400">
+                    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium ${
+                      stat.badge === 'Aktif'
+                        ? 'border-indigo-500/30 bg-indigo-500/10 text-indigo-300'
+                        : 'border-zinc-800 bg-zinc-950/60 text-zinc-400'
+                    }`}>
                       {stat.badge}
                     </span>
                     <ArrowUpRight className="h-4 w-4 text-zinc-500 opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" />
@@ -96,16 +152,23 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Info Card */}
-      <div className="rounded-xl border border-indigo-500/20 bg-gradient-to-r from-indigo-950/30 via-zinc-900/30 to-zinc-900/20 p-5 backdrop-blur-sm">
+      <div className="rounded-xl border border-indigo-500/20 bg-linear-to-r from-indigo-950/30 via-zinc-900/30 to-zinc-900/20 p-5 backdrop-blur-sm">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h3 className="text-sm font-semibold text-zinc-200">
-              Fondasi Admin Panel Aktif
+              Modul Kategori Aktif
             </h3>
             <p className="mt-0.5 text-xs text-zinc-400">
-              Autentikasi Supabase & Tailwind CSS v4 siap digunakan. Langkah selanjutnya adalah migrasi schema Drizzle ORM untuk manajemen data.
+              Modul CRUD Kategori telah terhubung penuh ke Supabase Postgres via Drizzle ORM dengan validasi Zod dan proteksi relasi data.
             </p>
           </div>
+          <Link
+            href="/admin/kategori"
+            className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-400 hover:text-indigo-300 sm:mt-0"
+          >
+            <span>Buka Kategori</span>
+            <ArrowUpRight className="h-3.5 w-3.5" />
+          </Link>
         </div>
       </div>
     </div>

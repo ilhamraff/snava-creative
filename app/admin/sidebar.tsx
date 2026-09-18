@@ -98,7 +98,7 @@ export function AdminSidebar({ user }: { user: { email?: string; id?: string } |
             className="group flex items-center gap-3"
             onClick={closeSidebar}
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-700 to-indigo-500 font-bold text-white shadow-md shadow-indigo-600/30 transition group-hover:scale-105">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-tr from-indigo-700 to-indigo-500 font-bold text-white shadow-md shadow-indigo-600/30 transition group-hover:scale-105">
               <span className="text-sm">S</span>
             </div>
             <div>

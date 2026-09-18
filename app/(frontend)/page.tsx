@@ -3,7 +3,7 @@ import { PortfolioSectionServer } from '@/components/sections/portfolio-server'
 import { AboutSection } from '@/components/sections/about'
 import { ServicesSectionServer } from '@/components/sections/services-server'
 // import { ClientLogosSection } from '@/components/sections/client-logos'
-// import { TestimonialsSectionServer } from '@/components/sections/testimonials-server'
+import { TestimonialsSectionServer } from '@/components/sections/testimonials-server'
 import { FinalCTASection } from '@/components/sections/final-cta'
 import { FooterSectionServer } from '@/components/sections/footer-server'
 import { getServicesData } from '@/lib/data/get-services'
@@ -44,7 +44,7 @@ export default async function HomePage() {
       <AboutSection />
       <ServicesSectionServer />
       {/* <ClientLogosSection /> */}
-      {/* <TestimonialsSectionServer /> */}
+      <TestimonialsSectionServer />
       
       {teaserPlans.length > 0 && (
         <PricingSection 

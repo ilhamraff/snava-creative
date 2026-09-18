@@ -25,7 +25,7 @@ export default function LoginPage() {
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-zinc-950 px-4 py-12 selection:bg-indigo-500/30 selection:text-indigo-200">
       {/* Ambient background glow */}
       <div
-        className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 h-[500px] w-[700px] rounded-full bg-gradient-to-b from-indigo-500/15 via-indigo-600/5 to-transparent blur-3xl"
+        className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 h-125 w-175 rounded-full bg-linear-to-b from-indigo-500/15 via-indigo-600/5 to-transparent blur-3xl"
         aria-hidden="true"
       />
 
@@ -34,7 +34,7 @@ export default function LoginPage() {
         <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-8 shadow-2xl shadow-black/60 backdrop-blur-xl sm:p-10">
           {/* Brand Header */}
           <div className="mb-8 text-center">
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-indigo-700 to-indigo-500 text-white shadow-lg shadow-indigo-600/25">
+            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-tr from-indigo-700 to-indigo-500 text-white shadow-lg shadow-indigo-600/25">
               <span className="text-xl font-bold">S</span>
             </div>
             <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">

@@ -64,17 +64,21 @@ export default async function ServiceDetailPage({ params }: Props) {
       {/* 1. Hero */}
       <ServiceHero
         eyebrow={service.title}
-        headline={service.hero?.headline || service.title}
-        description={service.hero?.description || service.description}
+        headline={service.hero?.headline || service.heroHeadline || service.title}
+        description={service.hero?.description || service.heroDescription || service.description}
         ctaPrimary={{
           label: service.hero?.ctaPrimaryLabel || 'Konsultasi Sekarang',
-          url: service.hero?.ctaPrimaryUrl || '/#final-cta'
+          url: service.hero?.ctaPrimaryUrl || '/#final-cta',
         }}
-        ctaSecondary={service.hero?.ctaSecondaryLabel ? {
-          label: service.hero?.ctaSecondaryLabel,
-          url: service.hero?.ctaSecondaryUrl || '/portfolio'
-        } : undefined}
-        image={service.hero?.image}
+        ctaSecondary={
+          service.hero?.ctaSecondaryLabel
+            ? {
+                label: service.hero?.ctaSecondaryLabel,
+                url: service.hero?.ctaSecondaryUrl || '/portfolio',
+              }
+            : undefined
+        }
+        image={service.hero?.image || service.heroImage}
       />
 
       {/* 2. Problems */}

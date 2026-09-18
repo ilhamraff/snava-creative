@@ -1,14 +1,36 @@
 import type { SiteSettings, FooterData, FinalCTAData } from '@/lib/types'
 import { siteSettings as fallbackSettings } from '@/lib/data/site-settings'
+import { db } from '@/lib/db'
 
 /**
  * Fetch Site Settings.
- *
- * TODO: Migrate to direct Supabase/Drizzle query.
- * Currently returns static fallback data.
+ * Queries PostgreSQL site_settings table via Drizzle ORM with fallback.
  */
 export async function getSiteSettings(): Promise<SiteSettings> {
-  return fallbackSettings
+  try {
+    const row = await db.query.siteSettings.findFirst({
+      with: { logo: true },
+    })
+
+    if (!row) {
+      return fallbackSettings
+    }
+
+    return {
+      siteName: row.siteName || fallbackSettings.siteName,
+      tagline: row.tagline || fallbackSettings.tagline,
+      logo: row.logo?.url || fallbackSettings.logo,
+      contactEmail: row.email || fallbackSettings.contactEmail,
+      contactPhone: row.phone || fallbackSettings.contactPhone,
+      whatsappNumber: row.whatsappNumber || fallbackSettings.whatsappNumber,
+      whatsappMessage: row.whatsappMessage || fallbackSettings.whatsappMessage,
+      address: row.address || fallbackSettings.address,
+      socialMedia: fallbackSettings.socialMedia,
+    }
+  } catch (error) {
+    console.error('Error fetching site settings from DB:', error)
+    return fallbackSettings
+  }
 }
 
 // ---------------------------------------------------------------------------
