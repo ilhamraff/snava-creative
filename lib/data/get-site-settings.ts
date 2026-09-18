@@ -1,48 +1,14 @@
 import type { SiteSettings, FooterData, FinalCTAData } from '@/lib/types'
 import { siteSettings as fallbackSettings } from '@/lib/data/site-settings'
-import { getPayloadClient } from '@/lib/payload'
 
 /**
- * Fetch Site Settings from Payload CMS with fallback to static data.
+ * Fetch Site Settings.
  *
- * 1. Try fetching from Payload Global API
- * 2. Transform CMS response to SiteSettings type
- * 3. If Payload fails or data is empty, return static fallback
- *
- * This runs server-side only (RSC / Server Component).
+ * TODO: Migrate to direct Supabase/Drizzle query.
+ * Currently returns static fallback data.
  */
 export async function getSiteSettings(): Promise<SiteSettings> {
-  try {
-    const payload = await getPayloadClient()
-    // Global 'site-settings' is registered in payload.config.ts.
-    // Payload-generated types (payload-types.ts) are stale on Node v24 locally.
-    // They will auto-regenerate on Vercel deploy.
-    const data = await (payload as any).findGlobal({ slug: 'site-settings' }) as Record<string, any> | null
-
-    // If data is null or siteName is missing, CMS data hasn't been populated yet
-    if (!data || !data.siteName) {
-      return fallbackSettings
-    }
-
-    return {
-      siteName: data.siteName,
-      tagline: data.tagline ?? fallbackSettings.tagline,
-      contactEmail: data.email ?? fallbackSettings.contactEmail,
-      contactPhone: data.phone ?? fallbackSettings.contactPhone,
-      whatsappNumber: data.whatsappNumber ?? fallbackSettings.whatsappNumber,
-      whatsappMessage: data.whatsappMessage ?? fallbackSettings.whatsappMessage,
-      address: data.address ?? fallbackSettings.address,
-      socialMedia: Array.isArray(data.socialLinks) && data.socialLinks.length > 0
-        ? data.socialLinks.map((link: { platform: string; url: string }) => ({
-            platform: link.platform,
-            url: link.url,
-          }))
-        : fallbackSettings.socialMedia,
-    }
-  } catch {
-    // Payload unavailable — use static fallback silently
-    return fallbackSettings
-  }
+  return fallbackSettings
 }
 
 // ---------------------------------------------------------------------------
@@ -50,9 +16,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
 // ---------------------------------------------------------------------------
 
 /**
- * Build a WhatsApp URL from a SiteSettings object (dynamic, CMS-aware).
- * Unlike the static `getWhatsAppUrl()` in site-settings.ts, this accepts
- * settings as a parameter so it works with data fetched from Payload.
+ * Build a WhatsApp URL from a SiteSettings object.
  */
 export function getWhatsAppUrlFromSettings(
   settings: SiteSettings,
@@ -67,9 +31,7 @@ export function getWhatsAppUrlFromSettings(
 // ---------------------------------------------------------------------------
 
 /**
- * Fetch footer display data. Description, quickLinks and serviceLinks are
- * static (not managed in site-settings CMS), but copyright uses the dynamic
- * siteName from CMS.
+ * Fetch footer display data.
  */
 export async function getFooterData(): Promise<FooterData> {
   const settings = await getSiteSettings()
@@ -80,8 +42,6 @@ export async function getFooterData(): Promise<FooterData> {
       { label: 'About', href: '#tentang' },
       { label: 'Services', href: '#layanan' },
       { label: 'Portfolio', href: '#portfolio' },
-      // { label: 'Testimonials', href: '#testimoni' },
-      // { label: 'FAQ', href: '#faq' },
     ],
     serviceLinks: [
       { label: 'Branding', href: '#layanan' },
@@ -95,7 +55,7 @@ export async function getFooterData(): Promise<FooterData> {
 }
 
 /**
- * Fetch Final CTA display data. WhatsApp URL is built from CMS settings.
+ * Fetch Final CTA display data.
  */
 export async function getFinalCtaData(): Promise<FinalCTAData> {
   const settings = await getSiteSettings()

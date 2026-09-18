@@ -1,5 +1,15 @@
-<!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
+# Snava Creative — Agent Rules
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-<!-- END:nextjs-agent-rules -->
+## Stack
+- Next.js 16 (App Router)
+- Supabase (Auth + Postgres)
+- Drizzle ORM
+- Tailwind CSS v4
+- TypeScript
+
+## Conventions
+- Admin panel routes live under `app/admin/`
+- Frontend routes live under `app/(frontend)/`
+- Supabase clients in `lib/supabase/`
+- Database (Drizzle) in `lib/db/`
+- Data fetchers in `lib/data/`

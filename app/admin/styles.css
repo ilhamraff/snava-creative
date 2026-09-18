@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Admin Panel — Design System
+   Tailwind CSS v4 (CSS-first configuration)
+   ============================================================ */
+
+@theme {
+  --color-admin-bg: #09090b;
+  --color-admin-surface: #141417;
+  --color-admin-surface-hover: #1e1e24;
+  --color-admin-border: #27272a;
+  --color-admin-border-subtle: #1e1e24;
+  --color-admin-accent: #4F46E5;
+  --color-admin-accent-hover: #4338CA;
+  
+  --font-admin: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Base resets & utilities for admin */
+html,
+body {
+  min-height: 100%;
+  background-color: var(--color-admin-bg);
+  color: #fafafa;
+  font-family: var(--font-admin);
+  -webkit-font-smoothing: antialiased;
+}
