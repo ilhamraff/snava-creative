@@ -1,6 +1,13 @@
 import { db } from '@/lib/db'
-import { services } from '@/lib/db/schema'
-import { eq, ne, and } from 'drizzle-orm'
+import {
+  services,
+  servicesPackages,
+  servicesPackagesFeatures,
+  servicesProblems,
+  servicesCapabilities,
+  servicesFaqs,
+} from '@/lib/db/schema'
+import { eq, ne, and, asc } from 'drizzle-orm'
 import { services as fallbackServices } from '@/lib/data/services'
 
 /**
@@ -12,11 +19,58 @@ export async function getServiceBySlug(slug: string): Promise<Record<string, any
       where: and(eq(services.slug, slug), eq(services.isActive, true)),
       with: {
         heroImage: true,
+        packages: {
+          with: {
+            features: {
+              orderBy: [asc(servicesPackagesFeatures.order)],
+            },
+          },
+          orderBy: [asc(servicesPackages.order)],
+        },
+        problems: {
+          orderBy: [asc(servicesProblems.order)],
+        },
+        capabilities: {
+          orderBy: [asc(servicesCapabilities.order)],
+        },
+        faqs: {
+          orderBy: [asc(servicesFaqs.order)],
+        },
       },
     })
 
     if (service) {
       const heroImageUrl = service.heroImage?.url || undefined
+
+      const mappedPackages = (service.packages || []).map((pkg) => ({
+        id: pkg.id,
+        name: pkg.name,
+        price: pkg.price ? Number(pkg.price) : null,
+        billingPeriod: pkg.billingPeriod || '',
+        description: pkg.description || '',
+        isPopular: pkg.isPopular || false,
+        isCustom: pkg.isCustom || false,
+        features: (pkg.features || []).map((f) => ({
+          name: f.name,
+          included: f.included ?? true,
+        })),
+      }))
+
+      const mappedProblems = (service.problems || []).map((p) => ({
+        title: p.title,
+        description: p.description,
+      }))
+
+      const mappedCapabilities = (service.capabilities || []).map((c) => ({
+        title: c.title,
+        description: c.description,
+        icon: c.icon || undefined,
+      }))
+
+      const mappedFaqs = (service.faqs || []).map((faq) => ({
+        question: faq.question,
+        answer: faq.answer,
+      }))
 
       return {
         id: service.id.toString(),
@@ -37,10 +91,10 @@ export async function getServiceBySlug(slug: string): Promise<Record<string, any
           ctaSecondaryLabel: 'Lihat Portfolio',
           ctaSecondaryUrl: '/portfolio',
         },
-        packages: [],
-        capabilities: [],
-        problems: [],
-        faqs: [],
+        packages: mappedPackages,
+        capabilities: mappedCapabilities,
+        problems: mappedProblems,
+        faqs: mappedFaqs,
       }
     }
 

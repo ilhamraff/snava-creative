@@ -9,12 +9,23 @@ import { db } from '@/lib/db'
 export async function getSiteSettings(): Promise<SiteSettings> {
   try {
     const row = await db.query.siteSettings.findFirst({
-      with: { logo: true },
+      with: {
+        logo: true,
+        socialLinks: true,
+      },
     })
 
     if (!row) {
       return fallbackSettings
     }
+
+    const socialMedia =
+      row.socialLinks && row.socialLinks.length > 0
+        ? row.socialLinks.map((sl) => ({
+            platform: sl.platform,
+            url: sl.url,
+          }))
+        : fallbackSettings.socialMedia
 
     return {
       siteName: row.siteName || fallbackSettings.siteName,
@@ -25,7 +36,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       whatsappNumber: row.whatsappNumber || fallbackSettings.whatsappNumber,
       whatsappMessage: row.whatsappMessage || fallbackSettings.whatsappMessage,
       address: row.address || fallbackSettings.address,
-      socialMedia: fallbackSettings.socialMedia,
+      socialMedia,
     }
   } catch (error) {
     console.error('Error fetching site settings from DB:', error)

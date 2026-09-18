@@ -3,7 +3,18 @@
 import { revalidatePath } from 'next/cache'
 import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
-import { siteSettings, heroSection, media } from '@/lib/db/schema'
+import {
+  siteSettings,
+  siteSettingsSocialLinks,
+  heroSection,
+  media,
+  aboutPage,
+  aboutPageValues,
+  pricingSection,
+  servicesSection,
+  type enumSiteSettingsSocialLinksPlatform,
+  type enumAboutPageValuesIcon,
+} from '@/lib/db/schema'
 import { createClient } from '@/lib/supabase/server'
 
 async function checkAuth() {
@@ -236,6 +247,214 @@ export async function uploadLogoAction(formData: FormData) {
     return {
       success: false,
       error: error.message || 'Gagal mengunggah logo.',
+    }
+  }
+}
+
+/**
+ * Update Social Links for Site Settings
+ */
+export async function updateSocialLinksAction(
+  links: Array<{ platform: string; url: string }>
+) {
+  try {
+    await checkAuth()
+
+    const existing = await db.query.siteSettings.findFirst()
+    const parentId = existing ? existing.id : 1
+
+    if (!existing) {
+      await db.insert(siteSettings).values({
+        id: 1,
+        siteName: 'Snava Creative',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+    }
+
+    // Delete current social links for parent
+    await db
+      .delete(siteSettingsSocialLinks)
+      .where(eq(siteSettingsSocialLinks.parentId, parentId))
+
+    // Insert new valid links
+    const validLinks = links.filter((l) => l.platform && l.url?.trim())
+    if (validLinks.length > 0) {
+      await db.insert(siteSettingsSocialLinks).values(
+        validLinks.map((l, index) => ({
+          order: index + 1,
+          parentId,
+          id: crypto.randomUUID().replace(/-/g, '').slice(0, 24),
+          platform: l.platform as any,
+          url: l.url.trim(),
+        }))
+      )
+    }
+
+    revalidatePath('/admin/pengaturan')
+    revalidatePath('/', 'layout')
+
+    return { success: true }
+  } catch (error: any) {
+    console.error('Error updating social links:', error)
+    return {
+      success: false,
+      error: error.message || 'Gagal menyimpan link media sosial.',
+    }
+  }
+}
+
+/**
+ * Update About Page & Values
+ */
+export async function updateAboutPageAction(
+  formData: FormData,
+  values: Array<{ icon: string; title: string; description: string }>
+) {
+  try {
+    await checkAuth()
+
+    const title = (formData.get('title') as string)?.trim()
+    const description = (formData.get('description') as string)?.trim()
+    const vision = (formData.get('vision') as string)?.trim() || null
+
+    if (!title || !description) {
+      return { success: false, error: 'Judul dan Deskripsi Tentang Kami wajib diisi.' }
+    }
+
+    const existing = await db.query.aboutPage.findFirst()
+    const parentId = existing ? existing.id : 1
+
+    if (existing) {
+      await db
+        .update(aboutPage)
+        .set({
+          title,
+          description,
+          vision,
+          updatedAt: new Date(),
+        })
+        .where(eq(aboutPage.id, existing.id))
+    } else {
+      await db.insert(aboutPage).values({
+        id: 1,
+        title,
+        description,
+        vision,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+    }
+
+    // Replace values
+    await db.delete(aboutPageValues).where(eq(aboutPageValues.parentId, parentId))
+
+    const validValues = values.filter((v) => v.title?.trim() && v.description?.trim())
+    if (validValues.length > 0) {
+      await db.insert(aboutPageValues).values(
+        validValues.map((v, index) => ({
+          order: index + 1,
+          parentId,
+          id: crypto.randomUUID().replace(/-/g, '').slice(0, 24),
+          icon: (v.icon || 'Target') as any,
+          title: v.title.trim(),
+          description: v.description.trim(),
+        }))
+      )
+    }
+
+    revalidatePath('/admin/pengaturan')
+    revalidatePath('/', 'page')
+
+    return { success: true }
+  } catch (error: any) {
+    console.error('Error updating about page:', error)
+    return {
+      success: false,
+      error: error.message || 'Gagal menyimpan data Tentang Kami.',
+    }
+  }
+}
+
+/**
+ * Update Section Texts (Services Section & Pricing Section)
+ */
+export async function updateSectionTextsAction(formData: FormData) {
+  try {
+    await checkAuth()
+
+    const servicesTitle = (formData.get('servicesTitle') as string)?.trim()
+    const servicesDescription = (formData.get('servicesDescription') as string)?.trim()
+    const pricingHeadline = (formData.get('pricingHeadline') as string)?.trim()
+    const pricingSubheadline = (formData.get('pricingSubheadline') as string)?.trim()
+
+    if (!servicesTitle || !servicesDescription) {
+      return {
+        success: false,
+        error: 'Judul dan Deskripsi Seksi Layanan wajib diisi.',
+      }
+    }
+
+    if (!pricingHeadline || !pricingSubheadline) {
+      return {
+        success: false,
+        error: 'Headline dan Subheadline Seksi Harga wajib diisi.',
+      }
+    }
+
+    // Update Services Section
+    const existingServicesSection = await db.query.servicesSection.findFirst()
+    if (existingServicesSection) {
+      await db
+        .update(servicesSection)
+        .set({
+          title: servicesTitle,
+          description: servicesDescription,
+          updatedAt: new Date(),
+        })
+        .where(eq(servicesSection.id, existingServicesSection.id))
+    } else {
+      await db.insert(servicesSection).values({
+        id: 1,
+        title: servicesTitle,
+        description: servicesDescription,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+    }
+
+    // Update Pricing Section
+    const existingPricingSection = await db.query.pricingSection.findFirst()
+    if (existingPricingSection) {
+      await db
+        .update(pricingSection)
+        .set({
+          headline: pricingHeadline,
+          subheadline: pricingSubheadline,
+          updatedAt: new Date(),
+        })
+        .where(eq(pricingSection.id, existingPricingSection.id))
+    } else {
+      await db.insert(pricingSection).values({
+        id: 1,
+        headline: pricingHeadline,
+        subheadline: pricingSubheadline,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+    }
+
+    revalidatePath('/admin/pengaturan')
+    revalidatePath('/', 'page')
+    revalidatePath('/services', 'page')
+    revalidatePath('/pricing', 'page')
+
+    return { success: true }
+  } catch (error: any) {
+    console.error('Error updating section texts:', error)
+    return {
+      success: false,
+      error: error.message || 'Gagal menyimpan teks seksi beranda.',
     }
   }
 }

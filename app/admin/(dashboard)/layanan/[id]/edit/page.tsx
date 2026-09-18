@@ -2,7 +2,15 @@ import React from 'react'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { db } from '@/lib/db'
-import { services, categories } from '@/lib/db/schema'
+import {
+  services,
+  categories,
+  servicesPackages,
+  servicesPackagesFeatures,
+  servicesProblems,
+  servicesCapabilities,
+  servicesFaqs,
+} from '@/lib/db/schema'
 import { eq, asc } from 'drizzle-orm'
 import { ServiceForm } from '../../service-form'
 
@@ -34,6 +42,23 @@ export default async function EditServicePage({ params }: PageProps) {
       where: eq(services.id, serviceId),
       with: {
         heroImage: true,
+        packages: {
+          with: {
+            features: {
+              orderBy: [asc(servicesPackagesFeatures.order)],
+            },
+          },
+          orderBy: [asc(servicesPackages.order)],
+        },
+        problems: {
+          orderBy: [asc(servicesProblems.order)],
+        },
+        capabilities: {
+          orderBy: [asc(servicesCapabilities.order)],
+        },
+        faqs: {
+          orderBy: [asc(servicesFaqs.order)],
+        },
       },
     }),
     db.query.categories.findMany({

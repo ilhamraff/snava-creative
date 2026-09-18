@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
-import { portfolio, media } from '@/lib/db/schema'
+import { portfolio, media, portfolioRels } from '@/lib/db/schema'
 import { createClient } from '@/lib/supabase/server'
 
 const portfolioSchema = z.object({
@@ -129,6 +129,7 @@ export async function createPortfolio(formData: {
   client?: string
   year?: string
   isFeatured?: boolean
+  relatedServiceIds?: number[]
 }) {
   try {
     await checkAuth()
@@ -202,18 +203,32 @@ export async function createPortfolio(formData: {
       }
     }
 
-    await db.insert(portfolio).values({
-      title,
-      slug,
-      categoryId,
-      thumbnailId: targetThumbnailId,
-      description: description || null,
-      client: client || null,
-      year: year || new Date().getFullYear().toString(),
-      isFeatured: isFeatured ?? true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    })
+    const [inserted] = await db
+      .insert(portfolio)
+      .values({
+        title,
+        slug,
+        categoryId,
+        thumbnailId: targetThumbnailId,
+        description: description || null,
+        client: client || null,
+        year: year || new Date().getFullYear().toString(),
+        isFeatured: isFeatured ?? true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .returning({ id: portfolio.id })
+
+    if (inserted && formData.relatedServiceIds && formData.relatedServiceIds.length > 0) {
+      await db.insert(portfolioRels).values(
+        formData.relatedServiceIds.map((srvId, idx) => ({
+          order: idx + 1,
+          parentId: inserted.id,
+          path: 'relatedServices',
+          servicesId: srvId,
+        }))
+      )
+    }
 
     revalidatePath('/admin/portfolio')
     revalidatePath('/admin')
@@ -244,6 +259,7 @@ export async function updatePortfolio(
     client?: string
     year?: string
     isFeatured?: boolean
+    relatedServiceIds?: number[]
   }
 ) {
   try {
@@ -315,6 +331,20 @@ export async function updatePortfolio(
     }
 
     await db.update(portfolio).set(updateValues).where(eq(portfolio.id, id))
+
+    if (formData.relatedServiceIds !== undefined) {
+      await db.delete(portfolioRels).where(eq(portfolioRels.parentId, id))
+      if (formData.relatedServiceIds.length > 0) {
+        await db.insert(portfolioRels).values(
+          formData.relatedServiceIds.map((srvId, idx) => ({
+            order: idx + 1,
+            parentId: id,
+            path: 'relatedServices',
+            servicesId: srvId,
+          }))
+        )
+      }
+    }
 
     revalidatePath('/admin/portfolio')
     revalidatePath('/admin')

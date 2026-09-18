@@ -4,8 +4,8 @@ import {
   portfolioCategories as fallbackCategories,
 } from '@/lib/data/portfolio'
 import { db } from '@/lib/db'
-import { portfolio } from '@/lib/db/schema'
-import { eq, desc } from 'drizzle-orm'
+import { portfolio, portfolioRels } from '@/lib/db/schema'
+import { eq, and, desc } from 'drizzle-orm'
 
 export interface PortfolioDataResponse {
   categories: string[]
@@ -77,9 +77,53 @@ export async function getPortfolioData(
  * Fetch Portfolio data by Service relationship.
  */
 export async function getPortfolioByService(
-  _serviceId: string,
-  _limit: number = 6
+  serviceId: string,
+  limit: number = 6
 ): Promise<PortfolioItem[]> {
-  const { items } = await getPortfolioData(_limit)
-  return items.slice(0, _limit)
+  try {
+    const sId = Number(serviceId)
+    if (!isNaN(sId)) {
+      const rels = await db.query.portfolioRels.findMany({
+        where: and(
+          eq(portfolioRels.servicesId, sId),
+          eq(portfolioRels.path, 'relatedServices')
+        ),
+        with: {
+          portfolio: {
+            with: {
+              category: true,
+              thumbnail: true,
+            },
+          },
+        },
+        limit,
+      })
+
+      const relItems = rels
+        .map((r) => r.portfolio)
+        .filter((p): p is NonNullable<typeof p> => !!p)
+
+      if (relItems.length > 0) {
+        return relItems.map((item) => ({
+          title: item.title,
+          slug: item.slug,
+          category: item.category?.name || 'General',
+          thumbnail:
+            item.thumbnail?.url ||
+            'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=600&fit=crop&q=80',
+          description: item.description || '',
+          client: item.client || '',
+          year: item.year || '',
+        }))
+      }
+    }
+
+    // Fallback if no specific relation found
+    const { items } = await getPortfolioData(limit)
+    return items.slice(0, limit)
+  } catch (error) {
+    console.error('Error in getPortfolioByService:', error)
+    const { items } = await getPortfolioData(limit)
+    return items.slice(0, limit)
+  }
 }

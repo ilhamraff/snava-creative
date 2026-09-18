@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition, useRef } from 'react'
+import React, { useState, useTransition, useRef } from 'react'
 import Image from 'next/image'
 import {
   Globe,
@@ -11,19 +11,38 @@ import {
   MessageSquare,
   UploadCloud,
   ImageIcon,
-  Check,
-  ExternalLink,
   Save,
   Loader2,
   X,
   Search,
   CheckCircle2,
+  ExternalLink,
+  Plus,
+  Trash2,
+  Share2,
+  Info,
+  Layers,
+  Target,
+  Lightbulb,
+  Handshake,
+  Zap,
+  Heart,
+  Shield,
+  Star,
+  Rocket,
+  Users,
+  Trophy,
+  Palette,
+  Code,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   updateSiteSettingsAction,
   updateHeroSectionAction,
   uploadLogoAction,
+  updateSocialLinksAction,
+  updateAboutPageAction,
+  updateSectionTextsAction,
 } from './actions'
 
 interface MediaItem {
@@ -31,6 +50,12 @@ interface MediaItem {
   url: string | null
   alt: string | null
   filename: string | null
+}
+
+interface SocialLinkItem {
+  id?: string
+  platform: string
+  url: string
 }
 
 interface SiteSettingsData {
@@ -48,6 +73,7 @@ interface SiteSettingsData {
     url: string | null
     alt: string | null
   } | null
+  socialLinks?: SocialLinkItem[]
 }
 
 interface HeroSectionData {
@@ -60,20 +86,84 @@ interface HeroSectionData {
   ctaSecondaryUrl: string
 }
 
+interface AboutValueItem {
+  id?: string
+  icon: string
+  title: string
+  description: string
+}
+
+interface AboutPageData {
+  id: number
+  title: string
+  description: string
+  vision: string | null
+  values?: AboutValueItem[]
+}
+
+interface PricingSectionData {
+  id: number
+  headline: string
+  subheadline: string
+}
+
+interface ServicesSectionData {
+  id: number
+  title: string
+  description: string
+}
+
 interface SettingsClientProps {
   initialSiteSettings: SiteSettingsData | null
   initialHeroSection: HeroSectionData | null
+  initialAboutPage: AboutPageData | null
+  initialPricingSection: PricingSectionData | null
+  initialServicesSection: ServicesSectionData | null
   mediaList: MediaItem[]
+}
+
+const PLATFORM_OPTIONS = [
+  'Instagram',
+  'LinkedIn',
+  'Behance',
+  'Dribbble',
+  'YouTube',
+  'Twitter',
+  'Facebook',
+  'GitHub',
+  'TikTok',
+  'Pinterest',
+  'WhatsApp',
+  'Telegram',
+  'Threads',
+]
+
+const VALUE_ICONS: Record<string, React.ElementType> = {
+  Target,
+  Lightbulb,
+  Handshake,
+  Zap,
+  Heart,
+  Shield,
+  Star,
+  Rocket,
+  Users,
+  Trophy,
+  Palette,
+  Code,
 }
 
 export function SettingsClient({
   initialSiteSettings,
   initialHeroSection,
+  initialAboutPage,
+  initialPricingSection,
+  initialServicesSection,
   mediaList,
 }: SettingsClientProps) {
-  const [activeTab, setActiveTab] = useState<'general' | 'hero'>('general')
+  const [activeTab, setActiveTab] = useState<'general' | 'hero' | 'about' | 'sections'>('general')
 
-  // --- Site Settings Form State ---
+  // --- Tab 1: Site Settings Form State ---
   const [siteName, setSiteName] = useState(initialSiteSettings?.siteName || 'Snava Creative')
   const [tagline, setTagline] = useState(initialSiteSettings?.tagline || '')
   const [email, setEmail] = useState(initialSiteSettings?.email || '')
@@ -91,7 +181,17 @@ export function SettingsClient({
     initialSiteSettings?.logo?.url || null
   )
 
-  // --- Hero Section Form State ---
+  // Social Links State (Point 1)
+  const [socialLinks, setSocialLinks] = useState<SocialLinkItem[]>(
+    initialSiteSettings?.socialLinks && initialSiteSettings.socialLinks.length > 0
+      ? initialSiteSettings.socialLinks
+      : [
+          { platform: 'Instagram', url: 'https://instagram.com/snavacreative' },
+          { platform: 'TikTok', url: 'https://www.tiktok.com/@snavacreative' },
+        ]
+  )
+
+  // --- Tab 2: Hero Section Form State ---
   const [headline, setHeadline] = useState(
     initialHeroSection?.headline || 'Crafting Brands, Preserving Moments'
   )
@@ -112,16 +212,56 @@ export function SettingsClient({
     initialHeroSection?.ctaSecondaryUrl || '#portfolio'
   )
 
-  // Loading & Modals
+  // --- Tab 3: About Page Form State (Point 2) ---
+  const [aboutTitle, setAboutTitle] = useState(
+    initialAboutPage?.title || 'Tentang Snava Creative'
+  )
+  const [aboutDescription, setAboutDescription] = useState(
+    initialAboutPage?.description ||
+      'Berbasis di Bandung Barat, Snava Creative menghadirkan solusi kreatif dalam branding, desain, website, fotografi, videografi, dan dokumentasi.'
+  )
+  const [aboutVision, setAboutVision] = useState(
+    initialAboutPage?.vision || '"Your Complete Creative Partner"'
+  )
+  const [aboutValues, setAboutValues] = useState<AboutValueItem[]>(
+    initialAboutPage?.values && initialAboutPage.values.length > 0
+      ? initialAboutPage.values
+      : [
+          { icon: 'Target', title: 'Purposeful', description: 'Every creative decision starts with a clear purpose.' },
+          { icon: 'Lightbulb', title: 'Strategic', description: 'We turn creative ideas into solutions with a clear strategy.' },
+          { icon: 'Handshake', title: 'Collaborative', description: 'We work with you, not just for you, to bring ideas to life.' },
+          { icon: 'Zap', title: 'One-Stop Solution', description: 'Everything you need, all in one creative partner.' },
+        ]
+  )
+
+  // --- Tab 4: Section Texts Form State (Point 2) ---
+  const [servicesTitle, setServicesTitle] = useState(
+    initialServicesSection?.title || 'Layanan Kami'
+  )
+  const [servicesDescription, setServicesDescription] = useState(
+    initialServicesSection?.description ||
+      'Mulai dari identitas merek hingga konten video, kami membantu bisnis Anda tampil beda melalui desain yang berkelas dan bermakna.'
+  )
+  const [pricingHeadline, setPricingHeadline] = useState(
+    initialPricingSection?.headline || 'Layanan Populer'
+  )
+  const [pricingSubheadline, setPricingSubheadline] = useState(
+    initialPricingSection?.subheadline ||
+      'Pilih paket layanan yang sesuai dengan skala bisnis dan kebutuhan spesifik Anda.'
+  )
+
+  // Transitions & Modals
   const [isPendingSettings, startTransitionSettings] = useTransition()
   const [isPendingHero, startTransitionHero] = useTransition()
+  const [isPendingAbout, startTransitionAbout] = useTransition()
+  const [isPendingSections, startTransitionSections] = useTransition()
   const [isUploadingLogo, setIsUploadingLogo] = useState(false)
   const [isMediaModalOpen, setIsMediaModalOpen] = useState(false)
   const [mediaSearch, setMediaSearch] = useState('')
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Handlers for Logo
+  // --- Handlers for Logo ---
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -161,7 +301,52 @@ export function SettingsClient({
     toast.info('Logo dilepas (akan menggunakan teks atau fallback)')
   }
 
-  // Submit Site Settings
+  // --- Handlers for Social Links Repeater ---
+  const handleAddSocialLink = () => {
+    setSocialLinks((prev) => [...prev, { platform: 'Instagram', url: 'https://' }])
+  }
+
+  const handleRemoveSocialLink = (index: number) => {
+    setSocialLinks((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const handleSocialLinkChange = (index: number, field: 'platform' | 'url', value: string) => {
+    setSocialLinks((prev) => {
+      const next = [...prev]
+      next[index] = { ...next[index], [field]: value }
+      return next
+    })
+  }
+
+  // --- Handlers for Values Repeater (About Page) ---
+  const handleAddAboutValue = () => {
+    if (aboutValues.length >= 6) {
+      toast.warning('Maksimal 6 poin nilai dapat ditambahkan.')
+      return
+    }
+    setAboutValues((prev) => [
+      ...prev,
+      { icon: 'Target', title: 'Nilai Baru', description: 'Deskripsi nilai ini.' },
+    ])
+  }
+
+  const handleRemoveAboutValue = (index: number) => {
+    setAboutValues((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const handleAboutValueChange = (
+    index: number,
+    field: 'icon' | 'title' | 'description',
+    value: string
+  ) => {
+    setAboutValues((prev) => {
+      const next = [...prev]
+      next[index] = { ...next[index], [field]: value }
+      return next
+    })
+  }
+
+  // --- Submit Handlers ---
   const handleSaveSiteSettings = (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -177,15 +362,16 @@ export function SettingsClient({
       formData.append('address', address)
 
       const res = await updateSiteSettingsAction(formData)
-      if (res.success) {
-        toast.success('Pengaturan umum situs berhasil disimpan!')
+      const resSocial = await updateSocialLinksAction(socialLinks)
+
+      if (res.success && resSocial.success) {
+        toast.success('Pengaturan umum dan media sosial berhasil disimpan!')
       } else {
-        toast.error(res.error || 'Gagal menyimpan pengaturan situs')
+        toast.error(res.error || resSocial.error || 'Gagal menyimpan pengaturan situs')
       }
     })
   }
 
-  // Submit Hero Section
   const handleSaveHeroSection = (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -207,7 +393,43 @@ export function SettingsClient({
     })
   }
 
-  // WhatsApp helper link
+  const handleSaveAboutPage = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    startTransitionAbout(async () => {
+      const formData = new FormData()
+      formData.append('title', aboutTitle)
+      formData.append('description', aboutDescription)
+      formData.append('vision', aboutVision)
+
+      const res = await updateAboutPageAction(formData, aboutValues)
+      if (res.success) {
+        toast.success('Data Tentang Kami (About Page) berhasil disimpan!')
+      } else {
+        toast.error(res.error || 'Gagal menyimpan data Tentang Kami')
+      }
+    })
+  }
+
+  const handleSaveSectionTexts = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    startTransitionSections(async () => {
+      const formData = new FormData()
+      formData.append('servicesTitle', servicesTitle)
+      formData.append('servicesDescription', servicesDescription)
+      formData.append('pricingHeadline', pricingHeadline)
+      formData.append('pricingSubheadline', pricingSubheadline)
+
+      const res = await updateSectionTextsAction(formData)
+      if (res.success) {
+        toast.success('Teks Seksi Layanan & Seksi Harga berhasil disimpan!')
+      } else {
+        toast.error(res.error || 'Gagal menyimpan teks seksi beranda')
+      }
+    })
+  }
+
   const generatedWhatsAppLink = whatsappNumber
     ? `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
         whatsappMessage || ''
@@ -227,20 +449,20 @@ export function SettingsClient({
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-zinc-100">
-            Pengaturan Situs
+            Pengaturan Situs & Konten
           </h1>
           <p className="text-sm text-zinc-400">
-            Kelola identitas website, kontak bisnis, nomor WhatsApp, serta teks headline di halaman utama.
+            Kelola identitas website, kontak, media sosial, headline hero, tentang kami, serta teks pengantar seksi beranda.
           </p>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-zinc-800">
+      <div className="flex border-b border-zinc-800 overflow-x-auto">
         <button
           type="button"
           onClick={() => setActiveTab('general')}
-          className={`flex items-center gap-2 border-b-2 px-5 py-3 text-sm font-medium transition-colors ${
+          className={`flex shrink-0 items-center gap-2 border-b-2 px-5 py-3 text-sm font-medium transition-colors ${
             activeTab === 'general'
               ? 'border-indigo-500 text-indigo-400'
               : 'border-transparent text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
@@ -252,7 +474,7 @@ export function SettingsClient({
         <button
           type="button"
           onClick={() => setActiveTab('hero')}
-          className={`flex items-center gap-2 border-b-2 px-5 py-3 text-sm font-medium transition-colors ${
+          className={`flex shrink-0 items-center gap-2 border-b-2 px-5 py-3 text-sm font-medium transition-colors ${
             activeTab === 'hero'
               ? 'border-indigo-500 text-indigo-400'
               : 'border-transparent text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
@@ -261,13 +483,39 @@ export function SettingsClient({
           <Sparkles className="h-4 w-4" />
           Hero Section Homepage
         </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('about')}
+          className={`flex shrink-0 items-center gap-2 border-b-2 px-5 py-3 text-sm font-medium transition-colors ${
+            activeTab === 'about'
+              ? 'border-indigo-500 text-indigo-400'
+              : 'border-transparent text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+          }`}
+        >
+          <Info className="h-4 w-4" />
+          Tentang Kami (About)
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('sections')}
+          className={`flex shrink-0 items-center gap-2 border-b-2 px-5 py-3 text-sm font-medium transition-colors ${
+            activeTab === 'sections'
+              ? 'border-indigo-500 text-indigo-400'
+              : 'border-transparent text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+          }`}
+        >
+          <Layers className="h-4 w-4" />
+          Teks Seksi Beranda
+        </button>
       </div>
 
-      {/* Tab 1: Informasi Situs & Kontak */}
+      {/* ========================================================
+          Tab 1: Informasi Situs, Kontak & Media Sosial
+          ======================================================== */}
       {activeTab === 'general' && (
         <form onSubmit={handleSaveSiteSettings} className="space-y-8">
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            {/* Left 2 Cols: Form Fields */}
+            {/* Left 2 Cols */}
             <div className="space-y-6 lg:col-span-2">
               {/* Card 1: Identitas Brand */}
               <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
@@ -378,9 +626,6 @@ export function SettingsClient({
                       placeholder="Halo Snava Creative, saya tertarik untuk konsultasi tentang project saya."
                       className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-none"
                     />
-                    <p className="mt-1 text-xs text-zinc-500">
-                      Pesan ini akan otomatis terisi ketika pengunjung mengklik tombol WhatsApp di website.
-                    </p>
                   </div>
 
                   <div>
@@ -394,15 +639,87 @@ export function SettingsClient({
                       rows={2}
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
-                      placeholder="Bandung, Jawa Barat, Indonesia"
+                      placeholder="Bandung Barat, Jawa Barat, Indonesia"
                       className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-none"
                     />
                   </div>
                 </div>
               </div>
+
+              {/* Card 3: Media Sosial (Point 1) */}
+              <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h2 className="text-base font-semibold text-zinc-100 flex items-center gap-2">
+                      <Share2 className="h-4 w-4 text-sky-400" />
+                      Link Media Sosial
+                    </h2>
+                    <p className="text-xs text-zinc-400 mt-0.5">
+                      Daftar akun media sosial resmi yang akan ditampilkan pada footer situs.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleAddSocialLink}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-200 hover:bg-zinc-700 hover:text-white transition-colors"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    Tambah Akun
+                  </button>
+                </div>
+
+                <div className="space-y-3">
+                  {socialLinks.length === 0 ? (
+                    <div className="py-6 text-center text-xs text-zinc-500 border border-dashed border-zinc-800 rounded-lg">
+                      Belum ada link media sosial. Klik &quot;Tambah Akun&quot; untuk menambahkan.
+                    </div>
+                  ) : (
+                    socialLinks.map((link, idx) => (
+                      <div
+                        key={idx}
+                        className="flex flex-col gap-2 p-3 rounded-lg border border-zinc-800/80 bg-zinc-950/60 sm:flex-row sm:items-center"
+                      >
+                        <div className="w-full sm:w-44">
+                          <select
+                            value={link.platform}
+                            onChange={(e) => handleSocialLinkChange(idx, 'platform', e.target.value)}
+                            className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-2.5 py-1.5 text-xs text-zinc-100 focus:border-indigo-500 focus:outline-none"
+                          >
+                            {PLATFORM_OPTIONS.map((plat) => (
+                              <option key={plat} value={plat}>
+                                {plat}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div className="flex-1">
+                          <input
+                            type="url"
+                            value={link.url}
+                            onChange={(e) => handleSocialLinkChange(idx, 'url', e.target.value)}
+                            placeholder="https://..."
+                            className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-2.5 py-1.5 text-xs text-zinc-100 placeholder-zinc-600 focus:border-indigo-500 focus:outline-none font-mono"
+                          />
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveSocialLink(idx)}
+                          className="self-end sm:self-center p-1.5 text-zinc-500 hover:text-red-400 transition-colors"
+                          title="Hapus tautan ini"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
             </div>
 
-            {/* Right 1 Col: Logo & WhatsApp Preview */}
+            {/* Right 1 Col */}
             <div className="space-y-6">
               {/* Logo Card */}
               <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
@@ -411,7 +728,6 @@ export function SettingsClient({
                   Logo Website
                 </h3>
 
-                {/* Preview Box */}
                 <div className="relative mb-4 flex min-h-35 items-center justify-center rounded-lg border border-dashed border-zinc-800 bg-zinc-950/80 p-4">
                   {logoPreviewUrl ? (
                     <div className="relative flex flex-col items-center gap-2">
@@ -436,14 +752,11 @@ export function SettingsClient({
                     <div className="text-center">
                       <ImageIcon className="mx-auto h-8 w-8 text-zinc-600 mb-1.5" />
                       <p className="text-xs text-zinc-400">Belum ada logo terpilih</p>
-                      <p className="text-[11px] text-zinc-600">
-                        Default: logo file lokal atau teks
-                      </p>
+                      <p className="text-[11px] text-zinc-600">Default: logo file lokal atau teks</p>
                     </div>
                   )}
                 </div>
 
-                {/* Upload & Choose Buttons */}
                 <div className="space-y-2">
                   <input
                     ref={fileInputRef}
@@ -517,10 +830,9 @@ export function SettingsClient({
             </div>
           </div>
 
-          {/* Bottom Sticky Action Bar */}
           <div className="sticky bottom-4 z-20 flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/90 p-4 shadow-xl backdrop-blur-md">
             <span className="text-xs text-zinc-400">
-              Perubahan pada pengaturan ini akan langsung diterapkan ke footer dan kontak situs.
+              Perubahan pada identitas, kontak, dan link media sosial akan langsung diterapkan ke footer website.
             </span>
 
             <button
@@ -544,13 +856,13 @@ export function SettingsClient({
         </form>
       )}
 
-      {/* Tab 2: Hero Section */}
+      {/* ========================================================
+          Tab 2: Hero Section
+          ======================================================== */}
       {activeTab === 'hero' && (
         <form onSubmit={handleSaveHeroSection} className="space-y-8">
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            {/* Left 2 Cols: Hero Section Fields */}
             <div className="space-y-6 lg:col-span-2">
-              {/* Card 1: Teks Utama */}
               <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
                 <h2 className="text-base font-semibold text-zinc-100 mb-4 flex items-center gap-2">
                   <Sparkles className="h-4 w-4 text-indigo-400" />
@@ -570,9 +882,6 @@ export function SettingsClient({
                       placeholder="Crafting Brands, Preserving Moments"
                       className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     />
-                    <p className="mt-1 text-xs text-zinc-500">
-                      Teks besar yang pertama kali dilihat oleh pengunjung website.
-                    </p>
                   </div>
 
                   <div>
@@ -587,14 +896,10 @@ export function SettingsClient({
                       placeholder="Kami menyediakan layanan creative digital agency..."
                       className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-none"
                     />
-                    <p className="mt-1 text-xs text-zinc-500">
-                      Deskripsi singkat pelengkap nilai utama agensi.
-                    </p>
                   </div>
                 </div>
               </div>
 
-              {/* Card 2: Tombol CTA (Call to Action) */}
               <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
                 <h2 className="text-base font-semibold text-zinc-100 mb-4 flex items-center gap-2">
                   <ExternalLink className="h-4 w-4 text-indigo-400" />
@@ -602,13 +907,10 @@ export function SettingsClient({
                 </h2>
 
                 <div className="space-y-6">
-                  {/* CTA 1 */}
                   <div className="p-4 rounded-lg bg-zinc-950/60 border border-zinc-800/80 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold uppercase tracking-wider text-indigo-400">
-                        Tombol Utama (Primary CTA)
-                      </span>
-                    </div>
+                    <span className="text-xs font-semibold uppercase tracking-wider text-indigo-400">
+                      Tombol Utama (Primary CTA)
+                    </span>
 
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
@@ -639,18 +941,12 @@ export function SettingsClient({
                         />
                       </div>
                     </div>
-                    <p className="text-[11px] text-zinc-500">
-                      Gunakan <strong>#whatsapp</strong> agar tombol otomatis mengarahkan ke nomor WhatsApp dari pengaturan umum.
-                    </p>
                   </div>
 
-                  {/* CTA 2 */}
                   <div className="p-4 rounded-lg bg-zinc-950/60 border border-zinc-800/80 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                        Tombol Kedua (Secondary CTA)
-                      </span>
-                    </div>
+                    <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                      Tombol Kedua (Secondary CTA)
+                    </span>
 
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
@@ -686,7 +982,6 @@ export function SettingsClient({
               </div>
             </div>
 
-            {/* Right 1 Col: Live Preview on Homepage */}
             <div className="space-y-6">
               <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
                 <h3 className="text-sm font-semibold text-zinc-200 mb-2 flex items-center gap-2">
@@ -694,10 +989,9 @@ export function SettingsClient({
                   Pratinjau Tampilan Hero
                 </h3>
                 <p className="text-xs text-zinc-400 mb-4">
-                  Simulasi bagaimana hero section akan terlihat di homepage website:
+                  Simulasi tampilan hero section di halaman beranda:
                 </p>
 
-                {/* Simulated Hero Card */}
                 <div className="rounded-xl border border-zinc-800 bg-linear-to-b from-zinc-900 to-black p-5 text-center shadow-inner">
                   <div className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-0.5 text-[11px] font-medium text-indigo-400 mb-3">
                     <Sparkles className="h-3 w-3" /> Creative Digital Agency
@@ -724,7 +1018,6 @@ export function SettingsClient({
             </div>
           </div>
 
-          {/* Bottom Sticky Action Bar */}
           <div className="sticky bottom-4 z-20 flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/90 p-4 shadow-xl backdrop-blur-md">
             <span className="text-xs text-zinc-400">
               Perubahan pada hero section akan langsung tayang pada halaman beranda utama.
@@ -744,6 +1037,361 @@ export function SettingsClient({
                 <>
                   <Save className="h-4 w-4" />
                   Simpan Hero Section
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* ========================================================
+          Tab 3: Tentang Kami / About (Point 2)
+          ======================================================== */}
+      {activeTab === 'about' && (
+        <form onSubmit={handleSaveAboutPage} className="space-y-8">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div className="space-y-6 lg:col-span-2">
+              <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
+                <h2 className="text-base font-semibold text-zinc-100 mb-4 flex items-center gap-2">
+                  <Info className="h-4 w-4 text-indigo-400" />
+                  Teks Seksi Tentang Kami
+                </h2>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400 mb-1.5">
+                      Judul Section <span className="text-red-400">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={aboutTitle}
+                      onChange={(e) => setAboutTitle(e.target.value)}
+                      placeholder="Tentang Snava Creative"
+                      className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400 mb-1.5">
+                      Visi / Tagline Agensi
+                    </label>
+                    <input
+                      type="text"
+                      value={aboutVision}
+                      onChange={(e) => setAboutVision(e.target.value)}
+                      placeholder='"Your Complete Creative Partner"'
+                      className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400 mb-1.5">
+                      Deskripsi Profil Agensi <span className="text-red-400">*</span>
+                    </label>
+                    <textarea
+                      rows={4}
+                      required
+                      value={aboutDescription}
+                      onChange={(e) => setAboutDescription(e.target.value)}
+                      placeholder="Berbasis di Bandung Barat, Snava Creative menghadirkan solusi kreatif..."
+                      className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none resize-none leading-relaxed"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Values Repeater */}
+              <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h2 className="text-base font-semibold text-zinc-100 flex items-center gap-2">
+                      <Target className="h-4 w-4 text-emerald-400" />
+                      Poin Nilai Agensi (Values)
+                    </h2>
+                    <p className="text-xs text-zinc-400 mt-0.5">
+                      Maksimal 6 poin pilar nilai atau keunggulan yang ditampilkan pada section About.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleAddAboutValue}
+                    disabled={aboutValues.length >= 6}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-200 hover:bg-zinc-700 hover:text-white transition-colors disabled:opacity-50"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    Tambah Nilai
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  {aboutValues.map((val, idx) => {
+                    const IconComp = VALUE_ICONS[val.icon] || Target
+                    return (
+                      <div
+                        key={idx}
+                        className="rounded-xl border border-zinc-800/90 bg-zinc-950/70 p-4 space-y-3"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-500/20 text-indigo-400 text-xs font-bold">
+                              {idx + 1}
+                            </span>
+                            <span className="text-xs font-semibold text-zinc-300">
+                              Pilar Nilai #{idx + 1}
+                            </span>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveAboutValue(idx)}
+                            className="p-1 text-zinc-500 hover:text-red-400 transition-colors"
+                            title="Hapus pilar ini"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                          <div>
+                            <label className="block text-[11px] font-medium text-zinc-400 mb-1">
+                              Pilih Ikon
+                            </label>
+                            <div className="flex items-center gap-2">
+                              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 text-indigo-400">
+                                <IconComp className="h-4 w-4" />
+                              </div>
+                              <select
+                                value={val.icon}
+                                onChange={(e) => handleAboutValueChange(idx, 'icon', e.target.value)}
+                                className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-2.5 py-2 text-xs text-zinc-100 focus:border-indigo-500 focus:outline-none"
+                              >
+                                {Object.keys(VALUE_ICONS).map((iconKey) => (
+                                  <option key={iconKey} value={iconKey}>
+                                    {iconKey}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+
+                          <div className="sm:col-span-2">
+                            <label className="block text-[11px] font-medium text-zinc-400 mb-1">
+                              Judul Pilar Nilai
+                            </label>
+                            <input
+                              type="text"
+                              value={val.title}
+                              onChange={(e) => handleAboutValueChange(idx, 'title', e.target.value)}
+                              placeholder="e.g. Purposeful, Strategic"
+                              className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-zinc-100 focus:border-indigo-500 focus:outline-none"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-medium text-zinc-400 mb-1">
+                            Deskripsi Nilai
+                          </label>
+                          <input
+                            type="text"
+                            value={val.description}
+                            onChange={(e) => handleAboutValueChange(idx, 'description', e.target.value)}
+                            placeholder="Penjelasan singkat prinsip ini..."
+                            className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-zinc-100 focus:border-indigo-500 focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Right 1 Col Preview */}
+            <div className="space-y-6">
+              <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
+                <h3 className="text-sm font-semibold text-zinc-200 mb-2 flex items-center gap-2">
+                  <Info className="h-4 w-4 text-indigo-400" />
+                  Pratinjau Seksi Tentang Kami
+                </h3>
+                <p className="text-xs text-zinc-400 mb-4">
+                  Simulasi tampilan card dan pilar nilai di halaman beranda:
+                </p>
+
+                <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 space-y-4">
+                  {aboutVision && (
+                    <div className="inline-block rounded-full bg-indigo-500/10 border border-indigo-500/20 px-3 py-0.5 text-[11px] font-medium text-indigo-400">
+                      {aboutVision}
+                    </div>
+                  )}
+
+                  <div>
+                    <h4 className="text-sm font-bold text-white">{aboutTitle || 'Tentang Kami'}</h4>
+                    <p className="mt-1 text-xs text-zinc-400 leading-relaxed line-clamp-4">
+                      {aboutDescription || 'Deskripsi profil agensi akan tampil di sini.'}
+                    </p>
+                  </div>
+
+                  <div className="border-t border-zinc-800/80 pt-3">
+                    <p className="text-[11px] font-semibold text-zinc-400 mb-2">Nilai Inti:</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {aboutValues.slice(0, 4).map((val, i) => {
+                        const IconComp = VALUE_ICONS[val.icon] || Target
+                        return (
+                          <div
+                            key={i}
+                            className="flex items-center gap-2 rounded-lg bg-zinc-900 p-2 border border-zinc-800/60"
+                          >
+                            <IconComp className="h-3.5 w-3.5 text-indigo-400 shrink-0" />
+                            <span className="truncate text-[11px] font-medium text-zinc-200">
+                              {val.title || 'Nilai'}
+                            </span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="sticky bottom-4 z-20 flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/90 p-4 shadow-xl backdrop-blur-md">
+            <span className="text-xs text-zinc-400">
+              Perubahan pada profil agensi dan pilar nilai akan langsung tayang pada seksi About di beranda.
+            </span>
+
+            <button
+              type="submit"
+              disabled={isPendingAbout}
+              className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:bg-indigo-500 transition-colors disabled:opacity-50 cursor-pointer"
+            >
+              {isPendingAbout ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Menyimpan...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4" />
+                  Simpan Tentang Kami
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* ========================================================
+          Tab 4: Teks Seksi Beranda (Point 2)
+          ======================================================== */}
+      {activeTab === 'sections' && (
+        <form onSubmit={handleSaveSectionTexts} className="space-y-8">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            {/* Seksi Layanan */}
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6 space-y-4">
+              <div className="flex items-center gap-2 pb-2 border-b border-zinc-800">
+                <Layers className="h-4 w-4 text-indigo-400" />
+                <h2 className="text-base font-semibold text-zinc-100">
+                  Teks Seksi Layanan (Services Section)
+                </h2>
+              </div>
+              <p className="text-xs text-zinc-400">
+                Teks judul dan paragraf pengantar yang muncul di atas daftar kartu layanan pada halaman beranda dan halaman /services.
+              </p>
+
+              <div>
+                <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400 mb-1.5">
+                  Judul Seksi Layanan <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={servicesTitle}
+                  onChange={(e) => setServicesTitle(e.target.value)}
+                  placeholder="Layanan Kami"
+                  className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-sm text-zinc-100 focus:border-indigo-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400 mb-1.5">
+                  Deskripsi Pengantar <span className="text-red-400">*</span>
+                </label>
+                <textarea
+                  rows={4}
+                  required
+                  value={servicesDescription}
+                  onChange={(e) => setServicesDescription(e.target.value)}
+                  placeholder="Mulai dari identitas merek hingga konten video, kami membantu bisnis Anda..."
+                  className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-sm text-zinc-100 focus:border-indigo-500 focus:outline-none resize-none leading-relaxed"
+                />
+              </div>
+            </div>
+
+            {/* Seksi Harga */}
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6 space-y-4">
+              <div className="flex items-center gap-2 pb-2 border-b border-zinc-800">
+                <Sparkles className="h-4 w-4 text-emerald-400" />
+                <h2 className="text-base font-semibold text-zinc-100">
+                  Teks Seksi Harga (Pricing Section)
+                </h2>
+              </div>
+              <p className="text-xs text-zinc-400">
+                Teks judul dan subheadline yang muncul di atas tabel paket harga pada halaman beranda dan halaman /pricing.
+              </p>
+
+              <div>
+                <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400 mb-1.5">
+                  Headline Seksi Harga <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={pricingHeadline}
+                  onChange={(e) => setPricingHeadline(e.target.value)}
+                  placeholder="Layanan Populer"
+                  className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-sm text-zinc-100 focus:border-indigo-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400 mb-1.5">
+                  Subheadline Pengantar <span className="text-red-400">*</span>
+                </label>
+                <textarea
+                  rows={4}
+                  required
+                  value={pricingSubheadline}
+                  onChange={(e) => setPricingSubheadline(e.target.value)}
+                  placeholder="Pilih paket layanan yang sesuai dengan skala bisnis dan kebutuhan spesifik Anda..."
+                  className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-sm text-zinc-100 focus:border-indigo-500 focus:outline-none resize-none leading-relaxed"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="sticky bottom-4 z-20 flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/90 p-4 shadow-xl backdrop-blur-md">
+            <span className="text-xs text-zinc-400">
+              Perubahan pada teks pengantar ini akan langsung diperbarui di beranda, /services, dan /pricing.
+            </span>
+
+            <button
+              type="submit"
+              disabled={isPendingSections}
+              className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:bg-indigo-500 transition-colors disabled:opacity-50 cursor-pointer"
+            >
+              {isPendingSections ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Menyimpan...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4" />
+                  Simpan Teks Seksi
                 </>
               )}
             </button>
@@ -773,7 +1421,6 @@ export function SettingsClient({
               </button>
             </div>
 
-            {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
               <input
@@ -785,7 +1432,6 @@ export function SettingsClient({
               />
             </div>
 
-            {/* Grid */}
             <div className="max-h-72 overflow-y-auto pr-1">
               {filteredMedia.length === 0 ? (
                 <div className="py-12 text-center text-xs text-zinc-500">

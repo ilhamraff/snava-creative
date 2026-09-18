@@ -29,6 +29,16 @@ import {
   ImageIcon,
   Search,
   X,
+  Plus,
+  Trash2,
+  ChevronUp,
+  ChevronDown,
+  CreditCard,
+  AlertTriangle,
+  Zap,
+  HelpCircle,
+  CheckCircle2,
+  XCircle,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
@@ -59,7 +69,7 @@ export const ICON_OPTIONS = [
 ]
 
 export function renderServiceIcon(iconName?: string | null, className = 'h-5 w-5') {
-  const match = ICON_OPTIONS.find((i) => i.label.toLowerCase() === (iconName || '').toLowerCase())
+  const match = ICON_OPTIONS.find((i) => i.label.toLowerCase() === (iconName || '').toLowerCase() || i.name.toLowerCase() === (iconName || '').toLowerCase())
   const Comp = match ? match.icon : Layers
   return <Comp className={className} />
 }
@@ -74,14 +84,66 @@ interface ServiceFormProps {
   categories: CategoryOption[]
 }
 
+interface PackageFeatureState {
+  id: string
+  name: string
+  included: boolean
+}
+
+interface PackageState {
+  id: string
+  name: string
+  price: string
+  billingPeriod: string
+  description: string
+  isPopular: boolean
+  isCustom: boolean
+  features: PackageFeatureState[]
+}
+
+interface ProblemState {
+  id: string
+  title: string
+  description: string
+}
+
+interface CapabilityState {
+  id: string
+  title: string
+  description: string
+  icon: string
+}
+
+interface FaqState {
+  id: string
+  question: string
+  answer: string
+}
+
+function genId(prefix = 'item') {
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`
+}
+
+function moveItem<T>(list: T[], index: number, direction: 'up' | 'down'): T[] {
+  const targetIndex = direction === 'up' ? index - 1 : index + 1
+  if (targetIndex < 0 || targetIndex >= list.length) return list
+  const copy = [...list]
+  const [removed] = copy.splice(index, 1)
+  copy.splice(targetIndex, 0, removed)
+  return copy
+}
+
 export function ServiceForm({ initialData, categories }: ServiceFormProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [isUploading, setIsUploading] = useState(false)
+  const [activeTab, setActiveTab] = useState<
+    'main' | 'packages' | 'problems' | 'capabilities' | 'faqs'
+  >('main')
 
   const isEdit = !!initialData
 
-  // Form states
+  // 1. Form states - Main & Hero
   const [title, setTitle] = useState(initialData?.title || '')
   const [slug, setSlug] = useState(initialData?.slug || '')
   const [category, setCategory] = useState(
@@ -119,6 +181,53 @@ export function ServiceForm({ initialData, categories }: ServiceFormProps) {
   )
 
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+  // 2. Form states - Repeaters
+  const [packages, setPackages] = useState<PackageState[]>(() => {
+    if (!initialData?.packages) return []
+    return initialData.packages.map((p) => ({
+      id: p.id || genId('pkg'),
+      name: p.name || '',
+      price: p.price ? String(p.price) : '',
+      billingPeriod: p.billingPeriod || '',
+      description: p.description || '',
+      isPopular: !!p.isPopular,
+      isCustom: !!p.isCustom,
+      features: (p.features || []).map((f) => ({
+        id: f.id || genId('feat'),
+        name: f.name || '',
+        included: f.included ?? true,
+      })),
+    }))
+  })
+
+  const [problems, setProblems] = useState<ProblemState[]>(() => {
+    if (!initialData?.problems) return []
+    return initialData.problems.map((p) => ({
+      id: p.id || genId('prob'),
+      title: p.title || '',
+      description: p.description || '',
+    }))
+  })
+
+  const [capabilities, setCapabilities] = useState<CapabilityState[]>(() => {
+    if (!initialData?.capabilities) return []
+    return initialData.capabilities.map((c) => ({
+      id: c.id || genId('cap'),
+      title: c.title || '',
+      description: c.description || '',
+      icon: c.icon || '',
+    }))
+  })
+
+  const [faqs, setFaqs] = useState<FaqState[]>(() => {
+    if (!initialData?.faqs) return []
+    return initialData.faqs.map((f) => ({
+      id: f.id || genId('faq'),
+      question: f.question || '',
+      answer: f.answer || '',
+    }))
+  })
 
   const handleTitleChange = (val: string) => {
     setTitle(val)
@@ -164,7 +273,10 @@ export function ServiceForm({ initialData, categories }: ServiceFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!title.trim() || !slug.trim()) return
+    if (!title.trim() || !slug.trim()) {
+      toast.error('Nama layanan dan Slug URL wajib diisi')
+      return
+    }
 
     if (isUploading) {
       toast.info('Mohon tunggu hingga proses unggah gambar selesai')
@@ -187,6 +299,46 @@ export function ServiceForm({ initialData, categories }: ServiceFormProps) {
           imageMode === 'url' && imageUrl && !imageUrl.startsWith('blob:')
             ? imageUrl.trim()
             : undefined,
+        packages: packages
+          .filter((p) => p.name.trim().length > 0)
+          .map((p) => ({
+            id: p.id,
+            name: p.name.trim(),
+            price: p.isCustom ? null : p.price ? Number(p.price) : null,
+            billingPeriod: p.billingPeriod.trim() || null,
+            description: p.description.trim() || null,
+            isPopular: p.isPopular,
+            isCustom: p.isCustom,
+            features: p.features
+              .filter((f) => f.name.trim().length > 0)
+              .map((f) => ({
+                id: f.id,
+                name: f.name.trim(),
+                included: f.included,
+              })),
+          })),
+        problems: problems
+          .filter((p) => p.title.trim().length > 0)
+          .map((p) => ({
+            id: p.id,
+            title: p.title.trim(),
+            description: p.description.trim(),
+          })),
+        capabilities: capabilities
+          .filter((c) => c.title.trim().length > 0)
+          .map((c) => ({
+            id: c.id,
+            title: c.title.trim(),
+            description: c.description.trim(),
+            icon: c.icon.trim() || undefined,
+          })),
+        faqs: faqs
+          .filter((f) => f.question.trim().length > 0)
+          .map((f) => ({
+            id: f.id,
+            question: f.question.trim(),
+            answer: f.answer.trim(),
+          })),
       }
 
       const res = isEdit
@@ -196,7 +348,7 @@ export function ServiceForm({ initialData, categories }: ServiceFormProps) {
       if (res.success) {
         toast.success(
           isEdit
-            ? 'Layanan berhasil diperbarui'
+            ? 'Layanan dan relasi berhasil diperbarui'
             : 'Layanan baru berhasil dibuat'
         )
         router.push('/admin/layanan')
@@ -205,6 +357,164 @@ export function ServiceForm({ initialData, categories }: ServiceFormProps) {
       }
     })
   }
+
+  // Repeater helpers - Packages
+  const addPackage = () => {
+    setPackages((prev) => [
+      ...prev,
+      {
+        id: genId('pkg'),
+        name: '',
+        price: '',
+        billingPeriod: '/bulan',
+        description: '',
+        isPopular: false,
+        isCustom: false,
+        features: [
+          { id: genId('feat'), name: '', included: true },
+          { id: genId('feat'), name: '', included: true },
+        ],
+      },
+    ])
+  }
+
+  const updatePackage = (id: string, partial: Partial<PackageState>) => {
+    setPackages((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, ...partial } : item))
+    )
+  }
+
+  const removePackage = (id: string) => {
+    setPackages((prev) => prev.filter((item) => item.id !== id))
+  }
+
+  const addPackageFeature = (pkgId: string) => {
+    setPackages((prev) =>
+      prev.map((p) =>
+        p.id === pkgId
+          ? {
+              ...p,
+              features: [
+                ...p.features,
+                { id: genId('feat'), name: '', included: true },
+              ],
+            }
+          : p
+      )
+    )
+  }
+
+  const updatePackageFeature = (
+    pkgId: string,
+    featId: string,
+    partial: Partial<PackageFeatureState>
+  ) => {
+    setPackages((prev) =>
+      prev.map((p) => {
+        if (p.id !== pkgId) return p
+        return {
+          ...p,
+          features: p.features.map((f) =>
+            f.id === featId ? { ...f, ...partial } : f
+          ),
+        }
+      })
+    )
+  }
+
+  const removePackageFeature = (pkgId: string, featId: string) => {
+    setPackages((prev) =>
+      prev.map((p) => {
+        if (p.id !== pkgId) return p
+        return {
+          ...p,
+          features: p.features.filter((f) => f.id !== featId),
+        }
+      })
+    )
+  }
+
+  // Repeater helpers - Problems
+  const addProblem = () => {
+    setProblems((prev) => [
+      ...prev,
+      { id: genId('prob'), title: '', description: '' },
+    ])
+  }
+
+  const updateProblem = (id: string, partial: Partial<ProblemState>) => {
+    setProblems((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, ...partial } : item))
+    )
+  }
+
+  const removeProblem = (id: string) => {
+    setProblems((prev) => prev.filter((item) => item.id !== id))
+  }
+
+  // Repeater helpers - Capabilities
+  const addCapability = () => {
+    setCapabilities((prev) => [
+      ...prev,
+      { id: genId('cap'), title: '', description: '', icon: '' },
+    ])
+  }
+
+  const updateCapability = (id: string, partial: Partial<CapabilityState>) => {
+    setCapabilities((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, ...partial } : item))
+    )
+  }
+
+  const removeCapability = (id: string) => {
+    setCapabilities((prev) => prev.filter((item) => item.id !== id))
+  }
+
+  // Repeater helpers - FAQs
+  const addFaq = () => {
+    setFaqs((prev) => [
+      ...prev,
+      { id: genId('faq'), question: '', answer: '' },
+    ])
+  }
+
+  const updateFaq = (id: string, partial: Partial<FaqState>) => {
+    setFaqs((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, ...partial } : item))
+    )
+  }
+
+  const removeFaq = (id: string) => {
+    setFaqs((prev) => prev.filter((item) => item.id !== id))
+  }
+
+  const tabsConfig = [
+    { id: 'main' as const, label: 'Informasi Utama & Hero', icon: Layout },
+    {
+      id: 'packages' as const,
+      label: 'Paket Harga',
+      icon: CreditCard,
+      count: packages.length,
+    },
+    {
+      id: 'problems' as const,
+      label: 'Tantangan Klien',
+      icon: AlertTriangle,
+      count: problems.length,
+    },
+    {
+      id: 'capabilities' as const,
+      label: 'Solusi & Kapabilitas',
+      icon: Zap,
+      count: capabilities.length,
+    },
+    {
+      id: 'faqs' as const,
+      label: 'FAQ Layanan',
+      icon: HelpCircle,
+      count: faqs.length,
+    },
+  ]
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -224,8 +534,8 @@ export function ServiceForm({ initialData, categories }: ServiceFormProps) {
             </h1>
             <p className="text-xs text-zinc-400">
               {isEdit
-                ? 'Perbarui konfigurasi, deskripsi, dan konten halaman layanan.'
-                : 'Buat layanan baru untuk ditampilkan di website Snava Creative.'}
+                ? 'Perbarui konfigurasi, paket harga, tantangan, kapabilitas, dan FAQ layanan.'
+                : 'Buat layanan baru lengkap dengan paket harga dan detail untuk website.'}
             </p>
           </div>
         </div>
@@ -250,365 +560,1163 @@ export function ServiceForm({ initialData, categories }: ServiceFormProps) {
         </div>
       </div>
 
-      {/* 2-Column Responsive Layout */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Left Column (Main Content - 2 cols on lg) */}
-        <div className="space-y-6 lg:col-span-2">
-          {/* Card: Informasi Dasar */}
-          <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/50 p-5 backdrop-blur-sm space-y-4">
-            <h2 className="text-sm font-semibold text-zinc-100 border-b border-zinc-800/60 pb-3">
-              Informasi Utama Layanan
-            </h2>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1.5">
-                  Nama Layanan *
-                </label>
-                <input
-                  type="text"
-                  required
-                  autoFocus
-                  placeholder="Contoh: Social Media Management"
-                  value={title || ''}
-                  onChange={(e) => handleTitleChange(e.target.value)}
-                  className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1.5">
-                  Slug URL *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="social-media-management"
-                  value={slug || ''}
-                  onChange={(e) => setSlug(e.target.value)}
-                  className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
-                />
-                <p className="mt-1 text-[11px] text-zinc-500">
-                  Akan diakses melalui <code className="text-zinc-400">/services/{slug || 'nama-layanan'}</code>
-                </p>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1.5">
-                Deskripsi Singkat Layanan
-              </label>
-              <textarea
-                rows={3}
-                placeholder="Deskripsi singkat yang tampil pada kartu layanan di homepage website..."
-                value={description || ''}
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+      {/* Tabs Navigation Bar */}
+      <div className="flex flex-wrap items-center gap-1.5 border-b border-zinc-800/80 pb-3">
+        {tabsConfig.map((tab) => {
+          const IconComp = tab.icon
+          const isCurrent = activeTab === tab.id
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-medium transition cursor-pointer ${
+                isCurrent
+                  ? 'bg-zinc-800 text-white shadow-sm ring-1 ring-zinc-700/80'
+                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60'
+              }`}
+            >
+              <IconComp
+                className={`h-3.5 w-3.5 ${
+                  isCurrent ? 'text-indigo-400' : 'text-zinc-500'
+                }`}
               />
-            </div>
-          </div>
+              <span>{tab.label}</span>
+              {tab.count !== undefined && (
+                <span
+                  className={`rounded-full px-1.5 py-0.5 text-[10px] font-mono leading-none ${
+                    tab.count > 0
+                      ? 'bg-indigo-500/20 text-indigo-300 font-semibold'
+                      : 'bg-zinc-800/80 text-zinc-500'
+                  }`}
+                >
+                  {tab.count}
+                </span>
+              )}
+            </button>
+          )
+        })}
+      </div>
 
-          {/* Card: Halaman Publik Layanan */}
-          <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/50 p-5 backdrop-blur-sm space-y-4">
-            <div>
-              <h2 className="text-sm font-semibold text-zinc-100">
-                Konten Halaman Detail Layanan
+      {/* TAB 1: INFORMASI UTAMA & HERO */}
+      {activeTab === 'main' && (
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          {/* Left Column (Main Content - 2 cols on lg) */}
+          <div className="space-y-6 lg:col-span-2">
+            {/* Card: Informasi Dasar */}
+            <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/50 p-5 backdrop-blur-sm space-y-4">
+              <h2 className="text-sm font-semibold text-zinc-100 border-b border-zinc-800/60 pb-3">
+                Informasi Utama Layanan
               </h2>
-              <p className="mt-0.5 text-xs text-zinc-400">
-                Informasi ini akan ditampilkan di bagian banner atas halaman detail layanan publik.
-              </p>
-            </div>
 
-            <div className="space-y-4 pt-2 border-t border-zinc-800/60">
-              <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1.5">
-                  Hero Headline
-                </label>
-                <input
-                  type="text"
-                  placeholder="Contoh: Build a Stronger Presence on Social Media"
-                  value={heroHeadline || ''}
-                  onChange={(e) => setHeroHeadline(e.target.value)}
-                  className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
-                />
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                    Nama Layanan *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Contoh: Social Media Management"
+                    value={title || ''}
+                    onChange={(e) => handleTitleChange(e.target.value)}
+                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                    Slug URL *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="social-media-management"
+                    value={slug || ''}
+                    onChange={(e) => setSlug(e.target.value)}
+                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                  />
+                  <p className="mt-1 text-[11px] text-zinc-500">
+                    Akan diakses melalui{' '}
+                    <code className="text-zinc-400">
+                      /services/{slug || 'nama-layanan'}
+                    </code>
+                  </p>
+                </div>
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-zinc-300 mb-1.5">
-                  Hero Description
+                  Deskripsi Singkat Layanan
                 </label>
                 <textarea
-                  rows={4}
-                  placeholder="Uraian mendalam mengenai value proposition, solusi, dan pendekatan layanan Anda..."
-                  value={heroDescription || ''}
-                  onChange={(e) => setHeroDescription(e.target.value)}
+                  rows={3}
+                  placeholder="Deskripsi singkat yang tampil pada kartu layanan di homepage website..."
+                  value={description || ''}
+                  onChange={(e) => setDescription(e.target.value)}
                   className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                 />
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Right Column (Sidebar Settings & Media - 1 col on lg) */}
-        <div className="space-y-6">
-          {/* Card: Status & Metadata */}
-          <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/50 p-5 backdrop-blur-sm space-y-4">
-            <h2 className="text-sm font-semibold text-zinc-100 border-b border-zinc-800/60 pb-3">
-              Pengaturan & Status
-            </h2>
-
-            <div className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950/60 p-3">
-              <div>
-                <div className="text-xs font-medium text-zinc-200">
-                  Status Publikasi
-                </div>
-                <div className="text-[11px] text-zinc-500">
-                  Tampilkan di website publik
-                </div>
-              </div>
-              <input
-                id="service-active-toggle"
-                type="checkbox"
-                checked={isActive}
-                onChange={(e) => setIsActive(e.target.checked)}
-                className="h-4 w-4 rounded border-zinc-800 bg-zinc-950 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1.5">
-                Kategori Layanan
-              </label>
-              <select
-                value={category || ''}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
-              >
-                {categories.map((c) => (
-                  <option key={c.id} value={c.name}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1.5">
-                Nomor Urut Tampil
-              </label>
-              <input
-                type="text"
-                placeholder="1"
-                value={sortOrder || ''}
-                onChange={(e) => setSortOrder(e.target.value)}
-                className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
-              />
-              <p className="mt-1 text-[10px] text-zinc-500">
-                Angka lebih kecil tampil lebih awal pada daftar.
-              </p>
-            </div>
-          </div>
-
-          {/* Card: Ikon Layanan */}
-          <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/50 p-5 backdrop-blur-sm space-y-3.5">
-            <div className="flex items-center justify-between border-b border-zinc-800/60 pb-3 gap-2">
+            {/* Card: Halaman Publik Layanan */}
+            <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/50 p-5 backdrop-blur-sm space-y-4">
               <div>
                 <h2 className="text-sm font-semibold text-zinc-100">
-                  Ikon Layanan
+                  Konten Halaman Detail Layanan
                 </h2>
-                <p className="text-[11px] text-zinc-400 mt-0.5">
-                  Visual sesuai label jenis layanan
+                <p className="mt-0.5 text-xs text-zinc-400">
+                  Informasi ini akan ditampilkan di bagian banner atas halaman detail layanan publik.
                 </p>
               </div>
-              <div className="flex items-center gap-1.5 rounded-lg bg-indigo-500/15 px-2.5 py-1 text-xs font-medium text-indigo-300 border border-indigo-500/20 shrink-0">
-                {selectedIconOption ? (
-                  <>
-                    <selectedIconOption.icon className="h-3.5 w-3.5 text-indigo-400" />
-                    <span className="truncate max-w-32.5">
-                      {selectedIconOption.label}
-                    </span>
-                  </>
+
+              <div className="space-y-4 pt-2 border-t border-zinc-800/60">
+                <div>
+                  <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                    Hero Headline
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: Build a Stronger Presence on Social Media"
+                    value={heroHeadline || ''}
+                    onChange={(e) => setHeroHeadline(e.target.value)}
+                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                    Hero Description
+                  </label>
+                  <textarea
+                    rows={4}
+                    placeholder="Uraian mendalam mengenai value proposition, solusi, dan pendekatan layanan Anda..."
+                    value={heroDescription || ''}
+                    onChange={(e) => setHeroDescription(e.target.value)}
+                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column (Sidebar Settings & Media - 1 col on lg) */}
+          <div className="space-y-6">
+            {/* Card: Status & Metadata */}
+            <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/50 p-5 backdrop-blur-sm space-y-4">
+              <h2 className="text-sm font-semibold text-zinc-100 border-b border-zinc-800/60 pb-3">
+                Pengaturan & Status
+              </h2>
+
+              <div className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950/60 p-3">
+                <div>
+                  <div className="text-xs font-medium text-zinc-200">
+                    Status Publikasi
+                  </div>
+                  <div className="text-[11px] text-zinc-500">
+                    Tampilkan di website publik
+                  </div>
+                </div>
+                <input
+                  id="service-active-toggle"
+                  type="checkbox"
+                  checked={isActive}
+                  onChange={(e) => setIsActive(e.target.checked)}
+                  className="h-4 w-4 rounded border-zinc-800 bg-zinc-950 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                  Kategori Layanan
+                </label>
+                <select
+                  value={category || ''}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                >
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.name}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                  Nomor Urut Tampil
+                </label>
+                <input
+                  type="text"
+                  placeholder="1"
+                  value={sortOrder || ''}
+                  onChange={(e) => setSortOrder(e.target.value)}
+                  className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                />
+                <p className="mt-1 text-[10px] text-zinc-500">
+                  Angka lebih kecil tampil lebih awal pada daftar.
+                </p>
+              </div>
+            </div>
+
+            {/* Card: Ikon Layanan */}
+            <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/50 p-5 backdrop-blur-sm space-y-3.5">
+              <div className="flex items-center justify-between border-b border-zinc-800/60 pb-3 gap-2">
+                <div>
+                  <h2 className="text-sm font-semibold text-zinc-100">
+                    Ikon Layanan
+                  </h2>
+                  <p className="text-[11px] text-zinc-400 mt-0.5">
+                    Visual sesuai jenis layanan
+                  </p>
+                </div>
+                <div className="flex items-center gap-1.5 rounded-lg bg-indigo-500/15 px-2.5 py-1 text-xs font-medium text-indigo-300 border border-indigo-500/20 shrink-0">
+                  {selectedIconOption ? (
+                    <>
+                      <selectedIconOption.icon className="h-3.5 w-3.5 text-indigo-400" />
+                      <span className="truncate max-w-32.5">
+                        {selectedIconOption.label}
+                      </span>
+                    </>
+                  ) : (
+                    <span>{icon}</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Quick Search */}
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Cari label ikon..."
+                  value={iconSearch}
+                  onChange={(e) => setIconSearch(e.target.value)}
+                  className="w-full rounded-lg border border-zinc-800 bg-zinc-950 pl-8 pr-7 py-1.5 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500/30"
+                />
+                {iconSearch && (
+                  <button
+                    type="button"
+                    onClick={() => setIconSearch('')}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 p-0.5"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                )}
+              </div>
+
+              {/* Icon Options Grid */}
+              <div className="grid grid-cols-2 gap-2 max-h-56 overflow-y-auto p-1 scrollbar-thin [scrollbar-color:#3f3f46_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-700 [&::-webkit-scrollbar-track]:bg-transparent">
+                {filteredIcons.length > 0 ? (
+                  filteredIcons.map((item) => {
+                    const IconComp = item.icon
+                    const isSelected = icon === item.name
+                    return (
+                      <button
+                        key={item.name}
+                        type="button"
+                        onClick={() => setIcon(item.name)}
+                        className={`flex items-center gap-2 p-2 rounded-lg border text-left transition ${
+                          isSelected
+                            ? 'border-indigo-500 bg-indigo-950/50 text-indigo-300 ring-1 ring-indigo-500/30 shadow-sm'
+                            : 'border-zinc-800/80 bg-zinc-950/80 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-900/60 hover:text-zinc-200'
+                        }`}
+                        title={`${item.label} (${item.name})`}
+                      >
+                        <div
+                          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition ${
+                            isSelected
+                              ? 'bg-indigo-600/30 text-indigo-300'
+                              : 'bg-zinc-900 text-zinc-400'
+                          }`}
+                        >
+                          <IconComp className="h-3.5 w-3.5" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p
+                            className={`text-[11px] font-medium leading-tight truncate ${
+                              isSelected
+                                ? 'text-indigo-200 font-semibold'
+                                : 'text-zinc-200'
+                            }`}
+                          >
+                            {item.label}
+                          </p>
+                          <p className="text-[9px] text-zinc-500 truncate font-mono">
+                            {item.name}
+                          </p>
+                        </div>
+                      </button>
+                    )
+                  })
                 ) : (
-                  <span>{icon}</span>
+                  <div className="col-span-2 py-6 text-center text-xs text-zinc-500">
+                    Tidak ada ikon untuk &ldquo;{iconSearch}&rdquo;
+                  </div>
                 )}
               </div>
             </div>
 
-            {/* Quick Search */}
-            <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 pointer-events-none" />
-              <input
-                type="text"
-                placeholder="Cari label ikon (cth: Desain, Video)..."
-                value={iconSearch}
-                onChange={(e) => setIconSearch(e.target.value)}
-                className="w-full rounded-lg border border-zinc-800 bg-zinc-950 pl-8 pr-7 py-1.5 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500/30"
-              />
-              {iconSearch && (
-                <button
-                  type="button"
-                  onClick={() => setIconSearch('')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 p-0.5"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              )}
-            </div>
-
-            {/* Icon Options Grid */}
-            <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto p-1 scrollbar-thin [scrollbar-color:#3f3f46_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-700 [&::-webkit-scrollbar-track]:bg-transparent">
-              {filteredIcons.length > 0 ? (
-                filteredIcons.map((item) => {
-                  const IconComp = item.icon
-                  const isSelected = icon === item.name
-                  return (
-                    <button
-                      key={item.name}
-                      type="button"
-                      onClick={() => setIcon(item.name)}
-                      className={`flex items-center gap-2 p-2 rounded-lg border text-left transition ${
-                        isSelected
-                          ? 'border-indigo-500 bg-indigo-950/50 text-indigo-300 ring-1 ring-indigo-500/30 shadow-sm'
-                          : 'border-zinc-800/80 bg-zinc-950/80 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-900/60 hover:text-zinc-200'
-                      }`}
-                      title={`${item.label} (${item.name})`}
-                    >
-                      <div
-                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition ${
-                          isSelected
-                            ? 'bg-indigo-600/30 text-indigo-300'
-                            : 'bg-zinc-900 text-zinc-400'
-                        }`}
-                      >
-                        <IconComp className="h-3.5 w-3.5" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p
-                          className={`text-[11px] font-medium leading-tight truncate ${
-                            isSelected
-                              ? 'text-indigo-200 font-semibold'
-                              : 'text-zinc-200'
-                          }`}
-                        >
-                          {item.label}
-                        </p>
-                        <p className="text-[9px] text-zinc-500 truncate font-mono">
-                          {item.name}
-                        </p>
-                      </div>
-                    </button>
-                  )
-                })
-              ) : (
-                <div className="col-span-2 py-6 text-center text-xs text-zinc-500">
-                  Tidak ada ikon untuk &ldquo;{iconSearch}&rdquo;
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Card: Hero Banner Image */}
-          <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/50 p-5 backdrop-blur-sm space-y-3">
-            <div className="flex items-center justify-between border-b border-zinc-800/60 pb-3">
-              <h2 className="text-sm font-semibold text-zinc-100">
-                Banner Hero
-              </h2>
-              <div className="flex items-center gap-1 rounded-lg border border-zinc-800 bg-zinc-950 p-0.5 text-[10px]">
-                <button
-                  type="button"
-                  onClick={() => setImageMode('upload')}
-                  className={`flex items-center gap-1 px-2 py-0.5 rounded ${
-                    imageMode === 'upload'
-                      ? 'bg-indigo-600 text-white font-medium'
-                      : 'text-zinc-400 hover:text-zinc-200'
-                  }`}
-                >
-                  <UploadCloud className="h-3 w-3" />
-                  <span>Upload</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setImageMode('url')}
-                  className={`flex items-center gap-1 px-2 py-0.5 rounded ${
-                    imageMode === 'url'
-                      ? 'bg-indigo-600 text-white font-medium'
-                      : 'text-zinc-400 hover:text-zinc-200'
-                  }`}
-                >
-                  <LinkIcon className="h-3 w-3" />
-                  <span>URL</span>
-                </button>
-              </div>
-            </div>
-
-            {imageMode === 'upload' ? (
-              <div key="service-form-upload-box">
-                <input
-                  key="service-form-file-input"
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/png,image/jpeg,image/webp,image/svg+xml"
-                  onChange={handleFileUpload}
-                  className="block w-full text-xs text-zinc-400 file:mr-3 file:rounded-md file:border-0 file:bg-zinc-800 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-zinc-200 hover:file:bg-zinc-700 cursor-pointer"
-                />
-                <p className="mt-1 text-[10px] text-zinc-500">
-                  Mendukung PNG, JPG, WebP. Tersimpan di Supabase Storage.
-                </p>
-              </div>
-            ) : (
-              <div key="service-form-url-box">
-                <input
-                  key="service-form-url-input"
-                  type="url"
-                  placeholder="https://... URL gambar"
-                  value={imageUrl || ''}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
-                />
-              </div>
-            )}
-
-            {/* Live Image Preview */}
-            {uploadPreview || imageUrl ? (
-              <div className="relative mt-2 rounded-lg border border-zinc-800 bg-zinc-950 overflow-hidden">
-                <div className="h-32 w-full flex items-center justify-center">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={uploadPreview || imageUrl}
-                    alt="Hero Preview"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="p-2 border-t border-zinc-800/80 bg-zinc-900/80 flex items-center justify-between">
-                  <span className="text-[10px] text-zinc-400 truncate max-w-45">
-                    {isUploading
-                      ? 'Sedang mengunggah ke Storage...'
-                      : imageUrl || 'Gambar siap'}
-                  </span>
+            {/* Card: Hero Banner Image */}
+            <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/50 p-5 backdrop-blur-sm space-y-3">
+              <div className="flex items-center justify-between border-b border-zinc-800/60 pb-3">
+                <h2 className="text-sm font-semibold text-zinc-100">
+                  Banner Hero
+                </h2>
+                <div className="flex items-center gap-1 rounded-lg border border-zinc-800 bg-zinc-950 p-0.5 text-[10px]">
                   <button
                     type="button"
-                    disabled={isUploading}
-                    onClick={() => {
-                      setImageUrl('')
-                      setUploadPreview(null)
-                      setHeroImageId(undefined)
-                      if (fileInputRef.current) {
-                        fileInputRef.current.value = ''
-                      }
-                    }}
-                    className="text-[10px] text-red-400 hover:text-red-300 disabled:opacity-50"
+                    onClick={() => setImageMode('upload')}
+                    className={`flex items-center gap-1 px-2 py-0.5 rounded cursor-pointer ${
+                      imageMode === 'upload'
+                        ? 'bg-indigo-600 text-white font-medium'
+                        : 'text-zinc-400 hover:text-zinc-200'
+                    }`}
                   >
-                    Hapus
+                    <UploadCloud className="h-3 w-3" />
+                    <span>Upload</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setImageMode('url')}
+                    className={`flex items-center gap-1 px-2 py-0.5 rounded cursor-pointer ${
+                      imageMode === 'url'
+                        ? 'bg-indigo-600 text-white font-medium'
+                        : 'text-zinc-400 hover:text-zinc-200'
+                    }`}
+                  >
+                    <LinkIcon className="h-3 w-3" />
+                    <span>URL</span>
                   </button>
                 </div>
               </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-zinc-800 py-6 text-center text-zinc-500">
-                <ImageIcon className="h-6 w-6 stroke-1 text-zinc-600 mb-1" />
-                <span className="text-[11px]">Belum ada banner hero</span>
-              </div>
-            )}
+
+              {imageMode === 'upload' ? (
+                <div key="service-form-upload-box">
+                  <input
+                    key="service-form-file-input"
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                    onChange={handleFileUpload}
+                    className="block w-full text-xs text-zinc-400 file:mr-3 file:rounded-md file:border-0 file:bg-zinc-800 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-zinc-200 hover:file:bg-zinc-700 cursor-pointer"
+                  />
+                  <p className="mt-1 text-[10px] text-zinc-500">
+                    Mendukung PNG, JPG, WebP. Tersimpan di Supabase Storage.
+                  </p>
+                </div>
+              ) : (
+                <div key="service-form-url-box">
+                  <input
+                    key="service-form-url-input"
+                    type="url"
+                    placeholder="https://... URL gambar"
+                    value={imageUrl || ''}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                  />
+                </div>
+              )}
+
+              {/* Live Image Preview */}
+              {uploadPreview || imageUrl ? (
+                <div className="relative mt-2 rounded-lg border border-zinc-800 bg-zinc-950 overflow-hidden">
+                  <div className="h-32 w-full flex items-center justify-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={uploadPreview || imageUrl}
+                      alt="Hero Preview"
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  <div className="p-2 border-t border-zinc-800/80 bg-zinc-900/80 flex items-center justify-between">
+                    <span className="text-[10px] text-zinc-400 truncate max-w-45">
+                      {isUploading
+                        ? 'Sedang mengunggah ke Storage...'
+                        : imageUrl || 'Gambar siap'}
+                    </span>
+                    <button
+                      type="button"
+                      disabled={isUploading}
+                      onClick={() => {
+                        setImageUrl('')
+                        setUploadPreview(null)
+                        setHeroImageId(undefined)
+                        if (fileInputRef.current) {
+                          fileInputRef.current.value = ''
+                        }
+                      }}
+                      className="text-[10px] text-red-400 hover:text-red-300 disabled:opacity-50 cursor-pointer"
+                    >
+                      Hapus
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-zinc-800 py-6 text-center text-zinc-500">
+                  <ImageIcon className="h-6 w-6 stroke-1 text-zinc-600 mb-1" />
+                  <span className="text-[11px]">Belum ada banner hero</span>
+                </div>
+              )}
+            </div>
           </div>
+        </div>
+      )}
+
+      {/* TAB 2: PAKET HARGA (PACKAGES & FEATURES REPEATER) */}
+      {activeTab === 'packages' && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-semibold text-white">
+                Paket Harga & Layanan ({packages.length})
+              </h2>
+              <p className="text-xs text-zinc-400">
+                Konfigurasikan paket harga, fitur checklist, dan status rekomendasi untuk layanan ini.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={addPackage}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600/90 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-indigo-600 transition cursor-pointer"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span>Tambah Paket</span>
+            </button>
+          </div>
+
+          {packages.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-zinc-800 bg-zinc-900/30 p-12 text-center">
+              <CreditCard className="mx-auto h-8 w-8 text-zinc-600 mb-2" />
+              <h3 className="text-sm font-medium text-zinc-300">
+                Belum ada paket harga
+              </h3>
+              <p className="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">
+                Layanan ini belum memiliki paket harga. Klik tombol di bawah untuk menambahkan opsi paket.
+              </p>
+              <button
+                type="button"
+                onClick={addPackage}
+                className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-800 px-3.5 py-1.5 text-xs font-medium text-zinc-200 hover:bg-zinc-700 transition cursor-pointer"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Buat Paket Pertama</span>
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {packages.map((pkg, idx) => (
+                <div
+                  key={pkg.id}
+                  className={`rounded-xl border transition-all p-5 ${
+                    pkg.isPopular
+                      ? 'border-indigo-500/60 bg-gradient-to-b from-indigo-950/20 to-zinc-900/60 ring-1 ring-indigo-500/20'
+                      : 'border-zinc-800 bg-zinc-900/50'
+                  }`}
+                >
+                  {/* Card Header */}
+                  <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3 mb-4">
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-md bg-zinc-800 text-[11px] font-mono text-zinc-300 font-semibold">
+                        {idx + 1}
+                      </span>
+                      <span className="text-sm font-semibold text-white">
+                        {pkg.name.trim() || `Paket #${idx + 1}`}
+                      </span>
+                      {pkg.isPopular && (
+                        <span className="rounded-full bg-indigo-500/20 px-2 py-0.5 text-[10px] font-semibold text-indigo-300 border border-indigo-500/30">
+                          Populer / Rekomendasi
+                        </span>
+                      )}
+                      {pkg.isCustom && (
+                        <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-semibold text-amber-300 border border-amber-500/30">
+                          Harga Kustom
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        title="Geser Naik"
+                        disabled={idx === 0}
+                        onClick={() =>
+                          setPackages((prev) => moveItem(prev, idx, 'up'))
+                        }
+                        className="p-1 rounded text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 disabled:opacity-30 cursor-pointer"
+                      >
+                        <ChevronUp className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        title="Geser Turun"
+                        disabled={idx === packages.length - 1}
+                        onClick={() =>
+                          setPackages((prev) => moveItem(prev, idx, 'down'))
+                        }
+                        className="p-1 rounded text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 disabled:opacity-30 cursor-pointer"
+                      >
+                        <ChevronDown className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        title="Hapus Paket"
+                        onClick={() => removePackage(pkg.id)}
+                        className="p-1 rounded text-red-400 hover:text-red-300 hover:bg-red-500/10 ml-2 cursor-pointer"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Main Fields Grid */}
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-4">
+                    <div>
+                      <label className="block text-xs font-medium text-zinc-300 mb-1">
+                        Nama Paket *
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Contoh: Basic, Starter, Pro"
+                        value={pkg.name}
+                        onChange={(e) =>
+                          updatePackage(pkg.id, { name: e.target.value })
+                        }
+                        className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-medium text-zinc-300 mb-1">
+                        Harga (Rp) {pkg.isCustom && '(Nonaktif)'}
+                      </label>
+                      <input
+                        type="number"
+                        disabled={pkg.isCustom}
+                        placeholder="Contoh: 1500000"
+                        value={pkg.price}
+                        onChange={(e) =>
+                          updatePackage(pkg.id, { price: e.target.value })
+                        }
+                        className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none disabled:opacity-40"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-medium text-zinc-300 mb-1">
+                        Periode / Skema Tagihan
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Contoh: /bulan, per project"
+                        value={pkg.billingPeriod}
+                        onChange={(e) =>
+                          updatePackage(pkg.id, {
+                            billingPeriod: e.target.value,
+                          })
+                        }
+                        className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Description & Flags */}
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-4">
+                    <div className="sm:col-span-2">
+                      <label className="block text-xs font-medium text-zinc-300 mb-1">
+                        Deskripsi Paket
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Cocok untuk startup dan bisnis baru yang butuh identitas dasar..."
+                        value={pkg.description}
+                        onChange={(e) =>
+                          updatePackage(pkg.id, {
+                            description: e.target.value,
+                          })
+                        }
+                        className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-4 sm:pt-6">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={pkg.isPopular}
+                          onChange={(e) =>
+                            updatePackage(pkg.id, {
+                              isPopular: e.target.checked,
+                            })
+                          }
+                          className="h-4 w-4 rounded border-zinc-800 bg-zinc-950 text-indigo-600 focus:ring-indigo-500"
+                        />
+                        <span className="text-xs text-zinc-300">
+                          Rekomendasi / Populer
+                        </span>
+                      </label>
+
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={pkg.isCustom}
+                          onChange={(e) =>
+                            updatePackage(pkg.id, {
+                              isCustom: e.target.checked,
+                            })
+                          }
+                          className="h-4 w-4 rounded border-zinc-800 bg-zinc-950 text-indigo-600 focus:ring-indigo-500"
+                        />
+                        <span className="text-xs text-zinc-300">
+                          Harga Kustom
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Features Checklist Section */}
+                  <div className="rounded-lg border border-zinc-800/80 bg-zinc-950/60 p-3.5 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-zinc-300">
+                        Fitur & Cakupan ({pkg.features.length})
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => addPackageFeature(pkg.id)}
+                        className="inline-flex items-center gap-1 text-[11px] font-medium text-indigo-400 hover:text-indigo-300 cursor-pointer"
+                      >
+                        <Plus className="h-3 w-3" />
+                        <span>Tambah Fitur</span>
+                      </button>
+                    </div>
+
+                    <div className="space-y-2">
+                      {pkg.features.map((feat) => (
+                        <div
+                          key={feat.id}
+                          className="flex items-center gap-2"
+                        >
+                          <button
+                            type="button"
+                            title={
+                              feat.included
+                                ? 'Termasuk dalam paket (klik untuk ubah)'
+                                : 'Tidak termasuk (klik untuk ubah)'
+                            }
+                            onClick={() =>
+                              updatePackageFeature(pkg.id, feat.id, {
+                                included: !feat.included,
+                              })
+                            }
+                            className={`flex h-6 w-6 shrink-0 items-center justify-center rounded transition cursor-pointer ${
+                              feat.included
+                                ? 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30'
+                                : 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
+                            }`}
+                          >
+                            {feat.included ? (
+                              <CheckCircle2 className="h-3.5 w-3.5" />
+                            ) : (
+                              <XCircle className="h-3.5 w-3.5" />
+                            )}
+                          </button>
+
+                          <input
+                            type="text"
+                            placeholder="Contoh: Revisi Desain 3x, Format Vector AI & EPS"
+                            value={feat.name}
+                            onChange={(e) =>
+                              updatePackageFeature(pkg.id, feat.id, {
+                                name: e.target.value,
+                              })
+                            }
+                            className="flex-1 rounded-md border border-zinc-800 bg-zinc-900 px-2.5 py-1.5 text-xs text-zinc-200 placeholder-zinc-600 focus:border-indigo-500 focus:outline-none"
+                          />
+
+                          <button
+                            type="button"
+                            title="Hapus Fitur"
+                            onClick={() =>
+                              removePackageFeature(pkg.id, feat.id)
+                            }
+                            className="p-1 text-zinc-500 hover:text-red-400 cursor-pointer"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={addPackage}
+                  className="w-full flex items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-800 py-3 text-xs font-medium text-zinc-400 hover:border-zinc-700 hover:text-zinc-200 hover:bg-zinc-900/40 transition cursor-pointer"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>Tambah Paket Harga Baru</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB 3: TANTANGAN KLIEN (PROBLEMS REPEATER) */}
+      {activeTab === 'problems' && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-semibold text-white">
+                Tantangan Klien / Problem Section ({problems.length})
+              </h2>
+              <p className="text-xs text-zinc-400">
+                Tampilkan pain point utama calon klien sebelum menawarkan solusi dari layanan Anda.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={addProblem}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600/90 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-indigo-600 transition cursor-pointer"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span>Tambah Masalah</span>
+            </button>
+          </div>
+
+          {problems.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-zinc-800 bg-zinc-900/30 p-12 text-center">
+              <AlertTriangle className="mx-auto h-8 w-8 text-zinc-600 mb-2" />
+              <h3 className="text-sm font-medium text-zinc-300">
+                Belum ada poin tantangan klien
+              </h3>
+              <p className="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">
+                Tambahkan pain point atau masalah yang sering dialami calon klien di industri ini.
+              </p>
+              <button
+                type="button"
+                onClick={addProblem}
+                className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-800 px-3.5 py-1.5 text-xs font-medium text-zinc-200 hover:bg-zinc-700 transition cursor-pointer"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Tambah Masalah Pertama</span>
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {problems.map((prob, idx) => (
+                <div
+                  key={prob.id}
+                  className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 space-y-3"
+                >
+                  <div className="flex items-center justify-between border-b border-zinc-800/80 pb-2.5">
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-5 w-5 items-center justify-center rounded bg-zinc-800 text-[10px] font-mono text-zinc-300 font-semibold">
+                        {idx + 1}
+                      </span>
+                      <span className="text-xs font-semibold text-zinc-200">
+                        {prob.title.trim() || `Tantangan #${idx + 1}`}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        title="Geser Naik"
+                        disabled={idx === 0}
+                        onClick={() =>
+                          setProblems((prev) => moveItem(prev, idx, 'up'))
+                        }
+                        className="p-1 rounded text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 disabled:opacity-30 cursor-pointer"
+                      >
+                        <ChevronUp className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        title="Geser Turun"
+                        disabled={idx === problems.length - 1}
+                        onClick={() =>
+                          setProblems((prev) => moveItem(prev, idx, 'down'))
+                        }
+                        className="p-1 rounded text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 disabled:opacity-30 cursor-pointer"
+                      >
+                        <ChevronDown className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        title="Hapus Tantangan"
+                        onClick={() => removeProblem(prob.id)}
+                        className="p-1 rounded text-red-400 hover:text-red-300 hover:bg-red-500/10 ml-2 cursor-pointer"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-medium text-zinc-300 mb-1">
+                      Judul Tantangan / Masalah *
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Contoh: Identitas Visual yang Tidak Konsisten"
+                      value={prob.title}
+                      onChange={(e) =>
+                        updateProblem(prob.id, { title: e.target.value })
+                      }
+                      className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-medium text-zinc-300 mb-1">
+                      Uraian Masalah / Dampak
+                    </label>
+                    <textarea
+                      rows={2}
+                      placeholder="Jelaskan bagaimana masalah ini merugikan bisnis calon klien..."
+                      value={prob.description}
+                      onChange={(e) =>
+                        updateProblem(prob.id, {
+                          description: e.target.value,
+                        })
+                      }
+                      className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              ))}
+
+              <button
+                type="button"
+                onClick={addProblem}
+                className="w-full flex items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-800 py-3 text-xs font-medium text-zinc-400 hover:border-zinc-700 hover:text-zinc-200 hover:bg-zinc-900/40 transition cursor-pointer"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Tambah Tantangan Baru</span>
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB 4: SOLUSI & KAPABILITAS (CAPABILITIES REPEATER) */}
+      {activeTab === 'capabilities' && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-semibold text-white">
+                Solusi & Kapabilitas / What We Do ({capabilities.length})
+              </h2>
+              <p className="text-xs text-zinc-400">
+                Poin solusi dan apa yang tim Snava Creative eksekusi untuk menjawab tantangan klien.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={addCapability}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600/90 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-indigo-600 transition cursor-pointer"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span>Tambah Kapabilitas</span>
+            </button>
+          </div>
+
+          {capabilities.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-zinc-800 bg-zinc-900/30 p-12 text-center">
+              <Zap className="mx-auto h-8 w-8 text-zinc-600 mb-2" />
+              <h3 className="text-sm font-medium text-zinc-300">
+                Belum ada kapabilitas
+              </h3>
+              <p className="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">
+                Tambahkan poin kemampuan dan cakupan pengerjaan yang ditawarkan pada layanan ini.
+              </p>
+              <button
+                type="button"
+                onClick={addCapability}
+                className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-800 px-3.5 py-1.5 text-xs font-medium text-zinc-200 hover:bg-zinc-700 transition cursor-pointer"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Tambah Kapabilitas Pertama</span>
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {capabilities.map((cap, idx) => (
+                <div
+                  key={cap.id}
+                  className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 space-y-3"
+                >
+                  <div className="flex items-center justify-between border-b border-zinc-800/80 pb-2.5">
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-5 w-5 items-center justify-center rounded bg-zinc-800 text-[10px] font-mono text-zinc-300 font-semibold">
+                        {idx + 1}
+                      </span>
+                      <span className="text-xs font-semibold text-zinc-200">
+                        {cap.title.trim() || `Kapabilitas #${idx + 1}`}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        title="Geser Naik"
+                        disabled={idx === 0}
+                        onClick={() =>
+                          setCapabilities((prev) => moveItem(prev, idx, 'up'))
+                        }
+                        className="p-1 rounded text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 disabled:opacity-30 cursor-pointer"
+                      >
+                        <ChevronUp className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        title="Geser Turun"
+                        disabled={idx === capabilities.length - 1}
+                        onClick={() =>
+                          setCapabilities((prev) => moveItem(prev, idx, 'down'))
+                        }
+                        className="p-1 rounded text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 disabled:opacity-30 cursor-pointer"
+                      >
+                        <ChevronDown className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        title="Hapus Kapabilitas"
+                        onClick={() => removeCapability(cap.id)}
+                        className="p-1 rounded text-red-400 hover:text-red-300 hover:bg-red-500/10 ml-2 cursor-pointer"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                    <div className="sm:col-span-2">
+                      <label className="block text-[11px] font-medium text-zinc-300 mb-1">
+                        Nama Kapabilitas / Solusi *
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Contoh: Brand Guidelines & Visual Assets"
+                        value={cap.title}
+                        onChange={(e) =>
+                          updateCapability(cap.id, { title: e.target.value })
+                        }
+                        className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-medium text-zinc-300 mb-1">
+                        Ikon Opsional
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Contoh: Palette, Layout, Shield"
+                        value={cap.icon}
+                        onChange={(e) =>
+                          updateCapability(cap.id, { icon: e.target.value })
+                        }
+                        className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-medium text-zinc-300 mb-1">
+                      Deskripsi Solusi
+                    </label>
+                    <textarea
+                      rows={2}
+                      placeholder="Penjelasan detail apa yang dikerjakan tim..."
+                      value={cap.description}
+                      onChange={(e) =>
+                        updateCapability(cap.id, {
+                          description: e.target.value,
+                        })
+                      }
+                      className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              ))}
+
+              <button
+                type="button"
+                onClick={addCapability}
+                className="w-full flex items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-800 py-3 text-xs font-medium text-zinc-400 hover:border-zinc-700 hover:text-zinc-200 hover:bg-zinc-900/40 transition cursor-pointer"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Tambah Kapabilitas Baru</span>
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB 5: FAQ LAYANAN (FAQS REPEATER) */}
+      {activeTab === 'faqs' && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-semibold text-white">
+                FAQ Layanan ({faqs.length})
+              </h2>
+              <p className="text-xs text-zinc-400">
+                Daftar tanya-jawab spesifik untuk layanan ini guna menjawab keraguan calon klien.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={addFaq}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600/90 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-indigo-600 transition cursor-pointer"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span>Tambah FAQ</span>
+            </button>
+          </div>
+
+          {faqs.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-zinc-800 bg-zinc-900/30 p-12 text-center">
+              <HelpCircle className="mx-auto h-8 w-8 text-zinc-600 mb-2" />
+              <h3 className="text-sm font-medium text-zinc-300">
+                Belum ada FAQ untuk layanan ini
+              </h3>
+              <p className="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">
+                Tambahkan pertanyaan yang sering diajukan klien mengenai alur kerja, revisi, atau durasi.
+              </p>
+              <button
+                type="button"
+                onClick={addFaq}
+                className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-800 px-3.5 py-1.5 text-xs font-medium text-zinc-200 hover:bg-zinc-700 transition cursor-pointer"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Tambah Pertanyaan Pertama</span>
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {faqs.map((faq, idx) => (
+                <div
+                  key={faq.id}
+                  className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 space-y-3"
+                >
+                  <div className="flex items-center justify-between border-b border-zinc-800/80 pb-2.5">
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-5 w-5 items-center justify-center rounded bg-zinc-800 text-[10px] font-mono text-zinc-300 font-semibold">
+                        {idx + 1}
+                      </span>
+                      <span className="text-xs font-semibold text-zinc-200">
+                        {faq.question.trim() || `Pertanyaan #${idx + 1}`}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        title="Geser Naik"
+                        disabled={idx === 0}
+                        onClick={() =>
+                          setFaqs((prev) => moveItem(prev, idx, 'up'))
+                        }
+                        className="p-1 rounded text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 disabled:opacity-30 cursor-pointer"
+                      >
+                        <ChevronUp className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        title="Geser Turun"
+                        disabled={idx === faqs.length - 1}
+                        onClick={() =>
+                          setFaqs((prev) => moveItem(prev, idx, 'down'))
+                        }
+                        className="p-1 rounded text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 disabled:opacity-30 cursor-pointer"
+                      >
+                        <ChevronDown className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        title="Hapus FAQ"
+                        onClick={() => removeFaq(faq.id)}
+                        className="p-1 rounded text-red-400 hover:text-red-300 hover:bg-red-500/10 ml-2 cursor-pointer"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-medium text-zinc-300 mb-1">
+                      Pertanyaan *
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Contoh: Berapa lama waktu pengerjaan proyek?"
+                      value={faq.question}
+                      onChange={(e) =>
+                        updateFaq(faq.id, { question: e.target.value })
+                      }
+                      className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-medium text-zinc-300 mb-1">
+                      Jawaban *
+                    </label>
+                    <textarea
+                      rows={3}
+                      placeholder="Uraikan jawaban yang jelas dan informatif..."
+                      value={faq.answer}
+                      onChange={(e) =>
+                        updateFaq(faq.id, { answer: e.target.value })
+                      }
+                      className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              ))}
+
+              <button
+                type="button"
+                onClick={addFaq}
+                className="w-full flex items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-800 py-3 text-xs font-medium text-zinc-400 hover:border-zinc-700 hover:text-zinc-200 hover:bg-zinc-900/40 transition cursor-pointer"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Tambah Pertanyaan FAQ Baru</span>
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Floating or Bottom Save Bar */}
+      <div className="flex items-center justify-between border-t border-zinc-800/80 pt-4">
+        <span className="text-xs text-zinc-500">
+          Semua tab akan tersimpan bersamaan saat Anda menekan tombol simpan.
+        </span>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/admin/layanan"
+            className="rounded-lg border border-zinc-800 px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-zinc-800 transition"
+          >
+            Batal
+          </Link>
+          <button
+            type="submit"
+            disabled={isPending || isUploading || !title.trim() || !slug.trim()}
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2 text-xs font-semibold text-white shadow-md shadow-indigo-600/25 transition hover:bg-indigo-500 disabled:opacity-50 cursor-pointer"
+          >
+            {isPending || isUploading ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : null}
+            <span>{isEdit ? 'Simpan Perubahan' : 'Buat Layanan'}</span>
+          </button>
         </div>
       </div>
     </form>

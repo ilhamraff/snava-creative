@@ -16,19 +16,26 @@ export interface ServicesDataResponse {
  */
 export async function getServicesData(): Promise<ServicesDataResponse> {
   try {
-    const dbServices = await db.query.services.findMany({
-      where: eq(services.isActive, true),
-      with: {
-        heroImage: true,
-      },
-      orderBy: [asc(services.sortOrder), desc(services.createdAt)],
-    })
+    const [dbServices, sectionRow] = await Promise.all([
+      db.query.services.findMany({
+        where: eq(services.isActive, true),
+        with: {
+          heroImage: true,
+        },
+        orderBy: [asc(services.sortOrder), desc(services.createdAt)],
+      }),
+      db.query.servicesSection.findFirst(),
+    ])
+
+    const title = sectionRow?.title || 'Layanan Kami'
+    const description =
+      sectionRow?.description ||
+      'Mulai dari identitas merek hingga konten video, kami membantu bisnis Anda tampil beda melalui desain yang berkelas dan bermakna.'
 
     if (!dbServices || dbServices.length === 0) {
       return {
-        title: 'Layanan Kami',
-        description:
-          'Mulai dari identitas merek hingga konten video, kami membantu bisnis Anda tampil beda melalui desain yang berkelas dan bermakna.',
+        title,
+        description,
         services: fallbackServices,
       }
     }
@@ -47,9 +54,8 @@ export async function getServicesData(): Promise<ServicesDataResponse> {
     }))
 
     return {
-      title: 'Layanan Kami',
-      description:
-        'Mulai dari identitas merek hingga konten video, kami membantu bisnis Anda tampil beda melalui desain yang berkelas dan bermakna.',
+      title,
+      description,
       services: mapped,
     }
   } catch (error) {
