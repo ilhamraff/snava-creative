@@ -1,36 +1,15 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { z } from 'zod'
+import { categorySchema } from '@/lib/schemas/category'
 import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { categories, portfolio } from '@/lib/db/schema'
-import { createClient } from '@/lib/supabase/server'
-
-const categorySchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(2, 'Nama kategori minimal 2 karakter')
-    .max(100, 'Nama kategori maksimal 100 karakter'),
-})
-
-async function checkAuth() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    throw new Error('Sesi tidak valid atau tidak diizinkan.')
-  }
-
-  return user
-}
+import { requireAdminSession } from '@/lib/admin/auth'
 
 export async function createCategory(name: string) {
   try {
-    await checkAuth()
+    await requireAdminSession()
 
     const parse = categorySchema.safeParse({ name })
     if (!parse.success) {
@@ -63,7 +42,7 @@ export async function createCategory(name: string) {
 
 export async function updateCategory(id: number, name: string) {
   try {
-    await checkAuth()
+    await requireAdminSession()
 
     if (!id || typeof id !== 'number') {
       return { success: false, error: 'ID kategori tidak valid' }
@@ -102,7 +81,7 @@ export async function updateCategory(id: number, name: string) {
 
 export async function deleteCategory(id: number) {
   try {
-    await checkAuth()
+    await requireAdminSession()
 
     if (!id || typeof id !== 'number') {
       return { success: false, error: 'ID kategori tidak valid' }

@@ -1,41 +1,28 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
-import { eq } from 'drizzle-orm'
+import { getErrorMessage } from '@/lib/utils/error'
+
+import { requireAdminSession } from '@/lib/admin/auth'
 import { db } from '@/lib/db'
 import {
-  siteSettings,
-  siteSettingsSocialLinks,
-  heroSection,
-  media,
   aboutPage,
   aboutPageValues,
+  heroSection,
+  media,
   pricingSection,
   servicesSection,
-  type enumSiteSettingsSocialLinksPlatform,
-  type enumAboutPageValuesIcon,
+  siteSettings,
+  siteSettingsSocialLinks,
 } from '@/lib/db/schema'
-import { createClient } from '@/lib/supabase/server'
-
-async function checkAuth() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    throw new Error('Sesi tidak valid atau tidak diizinkan.')
-  }
-
-  return { user, supabase }
-}
+import { eq } from 'drizzle-orm'
+import { revalidatePath } from 'next/cache'
 
 /**
  * Update General Site Settings (Row 1)
  */
 export async function updateSiteSettingsAction(formData: FormData) {
   try {
-    await checkAuth()
+    await requireAdminSession()
 
     const siteName = (formData.get('siteName') as string)?.trim()
     const tagline = (formData.get('tagline') as string)?.trim() || null
@@ -91,11 +78,11 @@ export async function updateSiteSettingsAction(formData: FormData) {
     revalidatePath('/', 'layout')
 
     return { success: true }
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error updating site settings:', error)
     return {
       success: false,
-      error: error.message || 'Gagal menyimpan pengaturan situs.',
+      error: getErrorMessage(error, 'Gagal menyimpan pengaturan situs.'),
     }
   }
 }
@@ -105,7 +92,7 @@ export async function updateSiteSettingsAction(formData: FormData) {
  */
 export async function updateHeroSectionAction(formData: FormData) {
   try {
-    await checkAuth()
+    await requireAdminSession()
 
     const headline = (formData.get('headline') as string)?.trim()
     const subheadline = (formData.get('subheadline') as string)?.trim()
@@ -157,11 +144,11 @@ export async function updateHeroSectionAction(formData: FormData) {
     revalidatePath('/', 'page')
 
     return { success: true }
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error updating hero section:', error)
     return {
       success: false,
-      error: error.message || 'Gagal menyimpan pengaturan hero section.',
+      error: getErrorMessage(error, 'Gagal menyimpan pengaturan hero section.'),
     }
   }
 }
@@ -171,7 +158,7 @@ export async function updateHeroSectionAction(formData: FormData) {
  */
 export async function uploadLogoAction(formData: FormData) {
   try {
-    const { supabase } = await checkAuth()
+    const { supabase } = await requireAdminSession()
     const file = formData.get('file') as File | null
 
     if (!file || file.size === 0) {
@@ -242,11 +229,11 @@ export async function uploadLogoAction(formData: FormData) {
       mediaId: createdMedia.id,
       url: createdMedia.url,
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error uploading logo:', error)
     return {
       success: false,
-      error: error.message || 'Gagal mengunggah logo.',
+      error: getErrorMessage(error, 'Gagal mengunggah logo.'),
     }
   }
 }
@@ -258,7 +245,7 @@ export async function updateSocialLinksAction(
   links: Array<{ platform: string; url: string }>
 ) {
   try {
-    await checkAuth()
+    await requireAdminSession()
 
     const existing = await db.query.siteSettings.findFirst()
     const parentId = existing ? existing.id : 1
@@ -285,7 +272,7 @@ export async function updateSocialLinksAction(
           order: index + 1,
           parentId,
           id: crypto.randomUUID().replace(/-/g, '').slice(0, 24),
-          platform: l.platform as any,
+          platform: l.platform as typeof siteSettingsSocialLinks.$inferInsert.platform,
           url: l.url.trim(),
         }))
       )
@@ -295,11 +282,11 @@ export async function updateSocialLinksAction(
     revalidatePath('/', 'layout')
 
     return { success: true }
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error updating social links:', error)
     return {
       success: false,
-      error: error.message || 'Gagal menyimpan link media sosial.',
+      error: getErrorMessage(error, 'Gagal menyimpan link media sosial.'),
     }
   }
 }
@@ -312,7 +299,7 @@ export async function updateAboutPageAction(
   values: Array<{ icon: string; title: string; description: string }>
 ) {
   try {
-    await checkAuth()
+    await requireAdminSession()
 
     const title = (formData.get('title') as string)?.trim()
     const description = (formData.get('description') as string)?.trim()
@@ -356,7 +343,7 @@ export async function updateAboutPageAction(
           order: index + 1,
           parentId,
           id: crypto.randomUUID().replace(/-/g, '').slice(0, 24),
-          icon: (v.icon || 'Target') as any,
+          icon: (v.icon || 'Target') as typeof aboutPageValues.$inferInsert.icon,
           title: v.title.trim(),
           description: v.description.trim(),
         }))
@@ -367,11 +354,11 @@ export async function updateAboutPageAction(
     revalidatePath('/', 'page')
 
     return { success: true }
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error updating about page:', error)
     return {
       success: false,
-      error: error.message || 'Gagal menyimpan data Tentang Kami.',
+      error: getErrorMessage(error, 'Gagal menyimpan data Tentang Kami.'),
     }
   }
 }
@@ -381,7 +368,7 @@ export async function updateAboutPageAction(
  */
 export async function updateSectionTextsAction(formData: FormData) {
   try {
-    await checkAuth()
+    await requireAdminSession()
 
     const servicesTitle = (formData.get('servicesTitle') as string)?.trim()
     const servicesDescription = (formData.get('servicesDescription') as string)?.trim()
@@ -450,11 +437,11 @@ export async function updateSectionTextsAction(formData: FormData) {
     revalidatePath('/pricing', 'page')
 
     return { success: true }
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error updating section texts:', error)
     return {
       success: false,
-      error: error.message || 'Gagal menyimpan teks seksi beranda.',
+      error: getErrorMessage(error, 'Gagal menyimpan teks seksi beranda.'),
     }
   }
 }

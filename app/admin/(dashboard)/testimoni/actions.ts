@@ -1,64 +1,19 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { z } from 'zod'
+import { testimonialSchema, type TestimonialInput } from '@/lib/schemas/testimonial'
 import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { testimonials } from '@/lib/db/schema'
-import { createClient } from '@/lib/supabase/server'
+import { requireAdminSession } from '@/lib/admin/auth'
 import { testimonials as fallbackTestimonials } from '@/lib/data/testimonials'
-
-const testimonialSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(2, 'Nama klien minimal 2 karakter')
-    .max(255, 'Nama maksimal 255 karakter'),
-  company: z
-    .string()
-    .trim()
-    .min(2, 'Nama perusahaan minimal 2 karakter')
-    .max(255, 'Nama perusahaan maksimal 255 karakter'),
-  role: z
-    .string()
-    .trim()
-    .min(2, 'Jabatan minimal 2 karakter')
-    .max(255, 'Jabatan maksimal 255 karakter'),
-  content: z
-    .string()
-    .trim()
-    .min(10, 'Isi ulasan minimal 10 karakter')
-    .max(2000, 'Isi ulasan maksimal 2000 karakter'),
-  rating: z.string().trim().default('5'),
-  isFeatured: z.boolean().default(true),
-})
-
-async function checkAuth() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    throw new Error('Sesi tidak valid atau tidak diizinkan.')
-  }
-
-  return { user, supabase }
-}
 
 /**
  * Buat testimoni baru
  */
-export async function createTestimonial(formData: {
-  name: string
-  company: string
-  role: string
-  content: string
-  rating?: string
-  isFeatured?: boolean
-}) {
+export async function createTestimonial(formData: TestimonialInput) {
   try {
-    await checkAuth()
+    await requireAdminSession()
 
     const parse = testimonialSchema.safeParse(formData)
     if (!parse.success) {
@@ -102,17 +57,10 @@ export async function createTestimonial(formData: {
  */
 export async function updateTestimonial(
   id: number,
-  formData: {
-    name: string
-    company: string
-    role: string
-    content: string
-    rating?: string
-    isFeatured?: boolean
-  }
+  formData: TestimonialInput
 ) {
   try {
-    await checkAuth()
+    await requireAdminSession()
 
     if (!id || typeof id !== 'number') {
       return { success: false, error: 'ID testimoni tidak valid' }
@@ -162,7 +110,7 @@ export async function updateTestimonial(
  */
 export async function toggleFeaturedTestimonial(id: number, currentStatus: boolean) {
   try {
-    await checkAuth()
+    await requireAdminSession()
 
     await db
       .update(testimonials)
@@ -190,7 +138,7 @@ export async function toggleFeaturedTestimonial(id: number, currentStatus: boole
  */
 export async function deleteTestimonial(id: number) {
   try {
-    await checkAuth()
+    await requireAdminSession()
 
     if (!id || typeof id !== 'number') {
       return { success: false, error: 'ID testimoni tidak valid' }
@@ -219,7 +167,7 @@ export async function deleteTestimonial(id: number) {
  */
 export async function seedTestimonialsAction() {
   try {
-    await checkAuth()
+    await requireAdminSession()
 
     const existing = await db.query.testimonials.findMany({ limit: 1 })
     if (existing.length > 0) {

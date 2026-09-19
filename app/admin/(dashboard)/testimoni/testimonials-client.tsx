@@ -11,10 +11,7 @@ import {
   Loader2,
   X,
   Sparkles,
-  CheckCircle2,
   AlertTriangle,
-  Building2,
-  User,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import type { Testimonial } from '@/lib/db/schema'
@@ -70,10 +67,12 @@ export function TestimonialsClient({ initialItems }: TestimonialsClientProps) {
   // Transitions
   const [isPending, startTransition] = useTransition()
 
-  // Sync state if initialItems changes
-  React.useEffect(() => {
+  // Keep successful local mutations until the server supplies a new snapshot.
+  const [previousItems, setPreviousItems] = useState(initialItems)
+  if (initialItems !== previousItems) {
+    setPreviousItems(initialItems)
     setItems(initialItems)
-  }, [initialItems])
+  }
 
   const openCreateModal = () => {
     setEditingItem(null)

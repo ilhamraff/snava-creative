@@ -1,8 +1,6 @@
-import { redirect } from 'next/navigation'
-import { desc } from 'drizzle-orm'
+import { getAdminSettings } from '@/lib/data/admin/settings'
 import { createClient } from '@/lib/supabase/server'
-import { db } from '@/lib/db'
-import { media } from '@/lib/db/schema'
+import { redirect } from 'next/navigation'
 import { SettingsClient } from './settings-client'
 
 export const dynamic = 'force-dynamic'
@@ -17,35 +15,14 @@ export default async function PengaturanPage() {
     redirect('/admin/login')
   }
 
-  // Fetch current site settings with logo & social links
-  const siteSettingsData = await db.query.siteSettings.findFirst({
-    with: {
-      logo: true,
-      socialLinks: true,
-    },
-  })
-
-  // Fetch hero section
-  const heroSectionData = await db.query.heroSection.findFirst()
-
-  // Fetch about page with values
-  const aboutPageData = await db.query.aboutPage.findFirst({
-    with: {
-      values: true,
-    },
-  })
-
-  // Fetch pricing section
-  const pricingSectionData = await db.query.pricingSection.findFirst()
-
-  // Fetch services section
-  const servicesSectionData = await db.query.servicesSection.findFirst()
-
-  // Fetch media library items for logo picker
-  const mediaList = await db.query.media.findMany({
-    orderBy: [desc(media.createdAt)],
-    limit: 100,
-  })
+  const {
+    siteSettingsData,
+    heroSectionData,
+    aboutPageData,
+    pricingSectionData,
+    servicesSectionData,
+    mediaList,
+  } = await getAdminSettings()
 
   return (
     <SettingsClient

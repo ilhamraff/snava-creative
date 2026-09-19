@@ -4,7 +4,6 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { logout } from './login/actions'
-import type { User } from '@supabase/supabase-js'
 import {
   LayoutDashboard,
   Briefcase,
@@ -43,7 +42,7 @@ function getInitials(email?: string): string {
   return parts.slice(0, 2).toUpperCase()
 }
 
-export function AdminSidebar({ user }: { user: { email?: string; id?: string } | User }) {
+export function AdminSidebar({ user }: { user: { email?: string } }) {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
 

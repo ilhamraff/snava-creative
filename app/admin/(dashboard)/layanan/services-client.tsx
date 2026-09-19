@@ -1,75 +1,21 @@
 'use client'
 
-import React, { useState, useTransition } from 'react'
-import Link from 'next/link'
 import {
-  Plus,
-  Search,
   Edit2,
-  Trash2,
-  Loader2,
   ExternalLink,
   Layers,
+  Loader2,
+  Plus,
+  Search,
+  Trash2,
 } from 'lucide-react'
+import Link from 'next/link'
+import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import { deleteService, toggleServiceStatus } from './actions'
-import { renderServiceIcon } from './service-form'
+import { renderServiceIcon } from './service-icons'
 
-export interface ServiceWithRelations {
-  id: number
-  title: string
-  slug: string
-  category: string | null
-  description: string | null
-  icon: string | null
-  isActive: boolean | null
-  sortOrder: string | null
-  heroHeadline: string | null
-  heroDescription: string | null
-  heroImageId: number | null
-  createdAt: Date | null
-  updatedAt: Date | null
-  heroImage?: {
-    id: number
-    url: string | null
-    alt: string
-  } | null
-  packages?: {
-    id: string
-    name: string
-    price: string | null
-    billingPeriod: string | null
-    description: string | null
-    isPopular: boolean | null
-    isCustom: boolean | null
-    order?: number | null
-    features?: {
-      id: string
-      name: string
-      included: boolean | null
-      order?: number | null
-    }[]
-  }[]
-  problems?: {
-    id: string
-    title: string
-    description: string
-    order?: number | null
-  }[]
-  capabilities?: {
-    id: string
-    title: string
-    description: string
-    icon: string | null
-    order?: number | null
-  }[]
-  faqs?: {
-    id: string
-    question: string
-    answer: string
-    order?: number | null
-  }[]
-}
+import type { ServiceWithRelations } from './types'
 
 interface CategoryOption {
   id: number

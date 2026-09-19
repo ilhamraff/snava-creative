@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useTransition, useRef } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import {
   UploadCloud,
@@ -17,7 +16,6 @@ import {
   Briefcase,
   AlertTriangle,
   X,
-  RefreshCw,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
@@ -26,23 +24,9 @@ import {
   deleteMediaAction,
 } from './actions'
 
-export interface MediaWithUsages {
-  id: number
-  alt: string
-  url: string | null
-  thumbnailUrl: string | null
-  filename: string | null
-  mimeType: string | null
-  filesize: string | null
-  width: string | null
-  height: string | null
-  createdAt: Date | string | null
-  updatedAt: Date | string | null
-  usedIn: {
-    portfolios: { id: number; title: string }[]
-    services: { id: number; title: string }[]
-  }
-}
+import type { MediaWithUsages } from './types'
+
+type MediaSort = 'newest' | 'oldest' | 'size' | 'name'
 
 interface MediaClientProps {
   initialItems: MediaWithUsages[]
@@ -87,7 +71,7 @@ export function MediaClient({ initialItems }: MediaClientProps) {
   const [search, setSearch] = useState('')
   const [formatFilter, setFormatFilter] = useState<string>('all')
   const [usageFilter, setUsageFilter] = useState<string>('all')
-  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'size' | 'name'>('newest')
+  const [sortBy, setSortBy] = useState<MediaSort>('newest')
 
   // Modals & Drawers
   const [uploadOpen, setUploadOpen] = useState(false)
@@ -104,10 +88,12 @@ export function MediaClient({ initialItems }: MediaClientProps) {
 
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
-  // Sync state if initialItems change
-  React.useEffect(() => {
+  // Keep successful local mutations until the server supplies a new snapshot.
+  const [previousItems, setPreviousItems] = useState(initialItems)
+  if (initialItems !== previousItems) {
+    setPreviousItems(initialItems)
     setItems(initialItems)
-  }, [initialItems])
+  }
 
   const copyToClipboard = (url: string | null, id: number) => {
     if (!url) return
@@ -314,7 +300,7 @@ export function MediaClient({ initialItems }: MediaClientProps) {
             {/* Sort Filter */}
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={(e) => setSortBy(e.target.value as MediaSort)}
               className="rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-300 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
             >
               <option value="newest">Terbaru</option>

@@ -1,97 +1,26 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
-import { z } from 'zod'
-import { eq } from 'drizzle-orm'
+import { requireAdminSession } from '@/lib/admin/auth'
 import { db } from '@/lib/db'
 import {
-  services,
   media,
+  services,
+  servicesCapabilities,
+  servicesFaqs,
   servicesPackages,
   servicesPackagesFeatures,
   servicesProblems,
-  servicesCapabilities,
-  servicesFaqs,
 } from '@/lib/db/schema'
-import { createClient } from '@/lib/supabase/server'
-
-export interface ServicePackageFeatureInput {
-  id?: string
-  name: string
-  included?: boolean
-}
-
-export interface ServicePackageInput {
-  id?: string
-  name: string
-  price?: number | string | null
-  billingPeriod?: string | null
-  description?: string | null
-  isPopular?: boolean
-  isCustom?: boolean
-  features?: ServicePackageFeatureInput[]
-}
-
-export interface ServiceProblemInput {
-  id?: string
-  title: string
-  description: string
-}
-
-export interface ServiceCapabilityInput {
-  id?: string
-  title: string
-  description: string
-  icon?: string
-}
-
-export interface ServiceFaqInput {
-  id?: string
-  question: string
-  answer: string
-}
-
-const serviceSchema = z.object({
-  title: z
-    .string()
-    .trim()
-    .min(2, 'Judul minimal 2 karakter')
-    .max(255, 'Judul maksimal 255 karakter'),
-  slug: z
-    .string()
-    .trim()
-    .min(2, 'Slug minimal 2 karakter')
-    .max(255, 'Slug maksimal 255 karakter'),
-  category: z.string().trim().optional(),
-  description: z.string().trim().optional(),
-  icon: z.string().trim().default('Layers'),
-  isActive: z.boolean().default(true),
-  sortOrder: z.string().trim().default('1'),
-  heroHeadline: z.string().trim().optional(),
-  heroDescription: z.string().trim().optional(),
-  heroImageId: z.coerce.number().int().positive().optional(),
-  imageUrl: z.string().trim().optional(),
-})
-
-async function checkAuth() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    throw new Error('Sesi tidak valid atau tidak diizinkan.')
-  }
-
-  return { user, supabase }
-}
+import { serviceSchema, type ServiceInput } from '@/lib/schemas/service'
+import { eq } from 'drizzle-orm'
+import { revalidatePath } from 'next/cache'
 
 /**
  * Server Action untuk mengunggah file hero image ke Supabase Storage (bucket 'media')
  */
 export async function uploadServiceMediaAction(formData: FormData) {
   try {
-    const { supabase } = await checkAuth()
+    const { supabase } = await requireAdminSession()
     const file = formData.get('file') as File | null
 
     if (!file || file.size === 0) {
@@ -162,25 +91,9 @@ export async function uploadServiceMediaAction(formData: FormData) {
   }
 }
 
-export async function createService(formData: {
-  title: string
-  slug: string
-  category?: string
-  description?: string
-  icon?: string
-  isActive?: boolean
-  sortOrder?: string
-  heroHeadline?: string
-  heroDescription?: string
-  heroImageId?: number
-  imageUrl?: string
-  packages?: ServicePackageInput[]
-  problems?: ServiceProblemInput[]
-  capabilities?: ServiceCapabilityInput[]
-  faqs?: ServiceFaqInput[]
-}) {
+export async function createService(formData: ServiceInput) {
   try {
-    await checkAuth()
+    await requireAdminSession()
 
     const parse = serviceSchema.safeParse(formData)
     if (!parse.success) {
@@ -356,26 +269,10 @@ export async function createService(formData: {
 
 export async function updateService(
   id: number,
-  formData: {
-    title: string
-    slug: string
-    category?: string
-    description?: string
-    icon?: string
-    isActive?: boolean
-    sortOrder?: string
-    heroHeadline?: string
-    heroDescription?: string
-    heroImageId?: number
-    imageUrl?: string
-    packages?: ServicePackageInput[]
-    problems?: ServiceProblemInput[]
-    capabilities?: ServiceCapabilityInput[]
-    faqs?: ServiceFaqInput[]
-  }
+  formData: ServiceInput
 ) {
   try {
-    await checkAuth()
+    await requireAdminSession()
 
     if (!id || typeof id !== 'number') {
       return { success: false, error: 'ID layanan tidak valid' }
@@ -429,7 +326,7 @@ export async function updateService(
       }
     }
 
-    const updateValues: Record<string, any> = {
+    const updateValues: Partial<typeof services.$inferInsert> = {
       title,
       slug,
       category: category || null,
@@ -568,7 +465,7 @@ export async function updateService(
 
 export async function toggleServiceStatus(id: number, currentStatus: boolean) {
   try {
-    await checkAuth()
+    await requireAdminSession()
 
     if (!id || typeof id !== 'number') {
       return { success: false, error: 'ID layanan tidak valid' }
@@ -601,7 +498,7 @@ export async function toggleServiceStatus(id: number, currentStatus: boolean) {
 
 export async function deleteService(id: number) {
   try {
-    await checkAuth()
+    await requireAdminSession()
 
     if (!id || typeof id !== 'number') {
       return { success: false, error: 'ID layanan tidak valid' }

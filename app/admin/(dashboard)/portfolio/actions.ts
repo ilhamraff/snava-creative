@@ -1,44 +1,11 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { z } from 'zod'
+import { portfolioSchema, type PortfolioInput } from '@/lib/schemas/portfolio'
 import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { portfolio, media, portfolioRels } from '@/lib/db/schema'
-import { createClient } from '@/lib/supabase/server'
-
-const portfolioSchema = z.object({
-  title: z
-    .string()
-    .trim()
-    .min(2, 'Judul minimal 2 karakter')
-    .max(255, 'Judul maksimal 255 karakter'),
-  slug: z
-    .string()
-    .trim()
-    .min(2, 'Slug minimal 2 karakter')
-    .max(255, 'Slug maksimal 255 karakter'),
-  categoryId: z.coerce.number().int().positive('Kategori wajib dipilih'),
-  thumbnailId: z.coerce.number().int().positive().optional(),
-  imageUrl: z.string().trim().optional(),
-  description: z.string().trim().optional(),
-  client: z.string().trim().optional(),
-  year: z.string().trim().optional(),
-  isFeatured: z.boolean().default(true),
-})
-
-async function checkAuth() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    throw new Error('Sesi tidak valid atau tidak diizinkan.')
-  }
-
-  return { user, supabase }
-}
+import { requireAdminSession } from '@/lib/admin/auth'
 
 /**
  * Server Action untuk mengunggah file gambar ke Supabase Storage (bucket 'media')
@@ -46,7 +13,7 @@ async function checkAuth() {
  */
 export async function uploadMediaAction(formData: FormData) {
   try {
-    const { supabase } = await checkAuth()
+    const { supabase } = await requireAdminSession()
     const file = formData.get('file') as File | null
 
     if (!file || file.size === 0) {
@@ -119,20 +86,9 @@ export async function uploadMediaAction(formData: FormData) {
   }
 }
 
-export async function createPortfolio(formData: {
-  title: string
-  slug: string
-  categoryId: number
-  thumbnailId?: number
-  imageUrl?: string
-  description?: string
-  client?: string
-  year?: string
-  isFeatured?: boolean
-  relatedServiceIds?: number[]
-}) {
+export async function createPortfolio(formData: PortfolioInput) {
   try {
-    await checkAuth()
+    await requireAdminSession()
 
     const parse = portfolioSchema.safeParse(formData)
     if (!parse.success) {
@@ -249,21 +205,10 @@ export async function createPortfolio(formData: {
 
 export async function updatePortfolio(
   id: number,
-  formData: {
-    title: string
-    slug: string
-    categoryId: number
-    thumbnailId?: number
-    imageUrl?: string
-    description?: string
-    client?: string
-    year?: string
-    isFeatured?: boolean
-    relatedServiceIds?: number[]
-  }
+  formData: PortfolioInput
 ) {
   try {
-    await checkAuth()
+    await requireAdminSession()
 
     if (!id || typeof id !== 'number') {
       return { success: false, error: 'ID portfolio tidak valid' }
@@ -315,7 +260,7 @@ export async function updatePortfolio(
       }
     }
 
-    const updateValues: Record<string, any> = {
+    const updateValues: Partial<typeof portfolio.$inferInsert> = {
       title,
       slug,
       categoryId,
@@ -365,7 +310,7 @@ export async function updatePortfolio(
 
 export async function toggleFeatured(id: number, currentStatus: boolean) {
   try {
-    await checkAuth()
+    await requireAdminSession()
 
     if (!id || typeof id !== 'number') {
       return { success: false, error: 'ID portfolio tidak valid' }
@@ -398,7 +343,7 @@ export async function toggleFeatured(id: number, currentStatus: boolean) {
 
 export async function deletePortfolio(id: number) {
   try {
-    await checkAuth()
+    await requireAdminSession()
 
     if (!id || typeof id !== 'number') {
       return { success: false, error: 'ID portfolio tidak valid' }

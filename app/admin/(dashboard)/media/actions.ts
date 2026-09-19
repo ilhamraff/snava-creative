@@ -4,20 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { media, portfolio, services, siteSettings } from '@/lib/db/schema'
-import { createClient } from '@/lib/supabase/server'
-
-async function checkAuth() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    throw new Error('Sesi tidak valid atau tidak diizinkan.')
-  }
-
-  return { user, supabase }
-}
+import { requireAdminSession } from '@/lib/admin/auth'
 
 /**
  * Upload single or multiple files to Supabase Storage (bucket 'media')
@@ -25,7 +12,7 @@ async function checkAuth() {
  */
 export async function uploadMediaAction(formData: FormData) {
   try {
-    const { supabase } = await checkAuth()
+    const { supabase } = await requireAdminSession()
     const files = formData.getAll('files') as File[]
 
     if (!files || files.length === 0) {
@@ -133,7 +120,7 @@ export async function uploadMediaAction(formData: FormData) {
  */
 export async function updateMediaAltAction(id: number, alt: string) {
   try {
-    await checkAuth()
+    await requireAdminSession()
 
     const trimmedAlt = alt.trim()
     if (!trimmedAlt) {
@@ -164,7 +151,7 @@ export async function updateMediaAltAction(id: number, alt: string) {
  */
 export async function deleteMediaAction(id: number) {
   try {
-    const { supabase } = await checkAuth()
+    const { supabase } = await requireAdminSession()
 
     // 1. Check if used by Portfolio
     const usedInPortfolio = await db
