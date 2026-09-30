@@ -21,9 +21,9 @@ import {
 } from 'lucide-react'
 import React, { useState, useTransition } from 'react'
 import { toast } from 'sonner'
-import { updateAboutPageAction } from './actions'
+import { updateAboutPageAction } from '../actions'
 
-import type { AboutPageData, AboutValueItem } from './types'
+import type { AboutPageData, AboutValueItem } from '../types'
 
 const VALUE_ICONS: Record<string, React.ElementType> = {
   Target,

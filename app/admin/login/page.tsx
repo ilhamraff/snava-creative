@@ -3,6 +3,8 @@
 import React, { useState } from 'react'
 import { login } from './actions'
 import { AlertCircle, Loader2 } from 'lucide-react'
+import { AdminLogo } from '../_components/admin-logo'
+import { AdminThemeToggle } from '../_components/admin-theme-toggle'
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
@@ -23,6 +25,8 @@ export default function LoginPage() {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-zinc-950 px-4 py-12 selection:bg-indigo-500/30 selection:text-indigo-200">
+      <AdminThemeToggle className="absolute right-4 top-4 z-10 sm:right-6 sm:top-6" />
+
       {/* Ambient background glow */}
       <div
         className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 h-125 w-175 rounded-full bg-linear-to-b from-indigo-500/15 via-indigo-600/5 to-transparent blur-3xl"
@@ -34,11 +38,9 @@ export default function LoginPage() {
         <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-8 shadow-2xl shadow-black/60 backdrop-blur-xl sm:p-10">
           {/* Brand Header */}
           <div className="mb-8 text-center">
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-tr from-indigo-700 to-indigo-500 text-white shadow-lg shadow-indigo-600/25">
-              <span className="text-xl font-bold">S</span>
-            </div>
-            <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
-              Snava Creative
+            <AdminLogo className="mx-auto mb-4 w-44" priority />
+            <h1 className="text-lg font-bold tracking-tight text-zinc-100 sm:text-xl">
+              Admin Panel
             </h1>
             <p className="mt-1.5 text-xs text-zinc-400">
               Masuk ke panel manajemen admin

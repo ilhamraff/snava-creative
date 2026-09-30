@@ -8,9 +8,9 @@ import {
 } from 'lucide-react'
 import React, { useState, useTransition } from 'react'
 import { toast } from 'sonner'
-import { updateSectionTextsAction } from './actions'
+import { updateSectionTextsAction } from '../actions'
 
-import type { PricingSectionData, ServicesSectionData } from './types'
+import type { PricingSectionData, ServicesSectionData } from '../types'
 
 interface Props {
   active: boolean

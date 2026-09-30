@@ -3,7 +3,7 @@ import { desc } from 'drizzle-orm'
 import { createClient } from '@/lib/supabase/server'
 import { db } from '@/lib/db'
 import { testimonials } from '@/lib/db/schema'
-import { TestimonialsClient } from './testimonials-client'
+import { TestimonialsClient } from './_components/testimonials-client'
 
 export const dynamic = 'force-dynamic'
 

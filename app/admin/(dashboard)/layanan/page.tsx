@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import { db } from '@/lib/db'
 import { services, categories } from '@/lib/db/schema'
 import { desc, asc } from 'drizzle-orm'
-import { ServicesClient } from './services-client'
+import { ServicesClient } from './_components/services-client'
 
 export const metadata: Metadata = {
   title: 'Layanan',

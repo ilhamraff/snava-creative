@@ -1,46 +1,46 @@
-import React from 'react'
-import type { Metadata } from 'next'
-import Script from 'next/script'
-import { Hind, JetBrains_Mono, Space_Grotesk } from 'next/font/google'
-import { ThemeProvider } from '@/components/theme-provider'
-import { Navbar } from '@/components/layout/navbar'
-import './styles.css'
+import React from "react";
+import type { Metadata } from "next";
+import Script from "next/script";
+import { Hind, JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Navbar } from "@/components/layout/navbar";
+import "./styles.css";
 
 const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  variable: '--font-space-grotesk',
-  display: 'swap',
-  weight: ['500'],
-})
+  subsets: ["latin"],
+  variable: "--font-space-grotesk",
+  display: "swap",
+  weight: ["500"],
+});
 
 const hind = Hind({
-  subsets: ['latin'],
-  variable: '--font-hind',
-  display: 'swap',
-  weight: ['500'],
-})
+  subsets: ["latin"],
+  variable: "--font-hind",
+  display: "swap",
+  weight: ["500"],
+});
 
 const jetbrains = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-jetbrains',
-  display: 'swap',
-  weight: ['400'],
-})
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
+  display: "swap",
+  weight: ["400"],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.snavacreative.id"),
   alternates: {
-    canonical: 'https://www.snavacreative.id',
+    canonical: "https://www.snavacreative.id",
   },
 
   title: {
-    default: 'Creative Digital Agency | Snava Creative',
-    template: '%s | Snava Creative',
+    default: "Creative Digital Agency",
+    template: "%s | Snava Creative",
   },
 
   description:
-    'Your complete creative partner for building standout brands through strategic design, compelling visuals, and creative solutions',
-  
+    "Your complete creative partner for building standout brands through strategic design, compelling visuals, and creative solutions",
+
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -51,57 +51,57 @@ export const metadata: Metadata = {
   },
   manifest: "/site.webmanifest",
 
-  keywords: [ 
-    'creative agency',
-    'snava creative',
-    'snava',
-    'digital agency',
-    'branding',
-    'desain grafis',
-    'video production',
-    'social media',
-    'landing page',
-    'logo design',
-    'Indonesia',
-    'Bandung',
+  keywords: [
+    "creative agency",
+    "snava creative",
+    "snava",
+    "digital agency",
+    "branding",
+    "desain grafis",
+    "video production",
+    "social media",
+    "landing page",
+    "logo design",
+    "Indonesia",
+    "Bandung",
   ],
 
   openGraph: {
-    title: 'Snava Creative — Creative Digital Agency',
+    title: "Snava Creative — Creative Digital Agency",
     description:
-      'Your complete creative partner for standout brands and visuals.',
-    url: 'https://www.snavacreative.id',
-    type: 'website',
-    locale: 'id_ID',
-    siteName: 'Snava Creative',
+      "Your complete creative partner for standout brands and visuals.",
+    url: "https://www.snavacreative.id",
+    type: "website",
+    locale: "id_ID",
+    siteName: "Snava Creative",
     images: [
       {
-        url: '/assets/og-image.png',
+        url: "/assets/og-image.png",
         width: 1200,
         height: 630,
-        alt: 'Snava Creative Open Graph Image',
+        alt: "Snava Creative Open Graph Image",
       },
     ],
   },
 
   twitter: {
-    card: 'summary_large_image',
-    title: 'Snava Creative — Creative Digital Agency',
+    card: "summary_large_image",
+    title: "Snava Creative — Creative Digital Agency",
     description:
-      'Your complete creative partner for standout brands and visuals.',
-    images: ['/assets/og-image.png'],
+      "Your complete creative partner for standout brands and visuals.",
+    images: ["/assets/og-image.png"],
   },
-  
+
   robots: {
     index: true,
     follow: true,
   },
-}
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html
@@ -123,21 +123,19 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'Organization',
-              name: 'Snava Creative',
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "Snava Creative",
               description:
-                'Your complete creative partner for standout brands and visuals.',
-              url: 'https://www.snavacreative.id',
+                "Your complete creative partner for standout brands and visuals.",
+              url: "https://www.snavacreative.id",
               contactPoint: {
-                '@type': 'ContactPoint',
-                telephone: '+62-821-1983-889',
-                contactType: 'customer service',
-                availableLanguage: 'Indonesian',
+                "@type": "ContactPoint",
+                telephone: "+62-821-1983-889",
+                contactType: "customer service",
+                availableLanguage: "Indonesian",
               },
-              sameAs: [
-                'https://instagram.com/snavacreative',
-              ],
+              sameAs: ["https://instagram.com/snavacreative"],
             }),
           }}
         />
@@ -149,5 +147,5 @@ export default function RootLayout({
         </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }

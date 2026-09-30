@@ -22,9 +22,9 @@ import {
   uploadMediaAction,
   updateMediaAltAction,
   deleteMediaAction,
-} from './actions'
+} from '../actions'
 
-import type { MediaWithUsages } from './types'
+import type { MediaWithUsages } from '../types'
 
 type MediaSort = 'newest' | 'oldest' | 'size' | 'name'
 

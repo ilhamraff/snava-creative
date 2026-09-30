@@ -1,7 +1,7 @@
 import { getAdminSettings } from '@/lib/data/admin/settings'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { SettingsClient } from './settings-client'
+import { SettingsClient } from './_components/settings-client'
 
 export const dynamic = 'force-dynamic'
 

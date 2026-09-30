@@ -1,7 +1,7 @@
 import React from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { AdminSidebar } from '../sidebar'
+import { AdminSidebar } from './_components/admin-sidebar'
 
 export default async function AdminDashboardLayout({
   children,

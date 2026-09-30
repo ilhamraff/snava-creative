@@ -8,9 +8,9 @@ import {
 } from 'lucide-react'
 import React, { useState, useTransition } from 'react'
 import { toast } from 'sonner'
-import { updateHeroSectionAction } from './actions'
+import { updateHeroSectionAction } from '../actions'
 
-import type { HeroSectionData } from './types'
+import type { HeroSectionData } from '../types'
 
 interface Props {
   active: boolean
@@ -198,7 +198,7 @@ export function HeroSettingsForm({ active, initialHeroSection }: Props) {
               Simulasi tampilan hero section di halaman beranda:
             </p>
 
-            <div className="rounded-xl border border-zinc-800 bg-linear-to-b from-zinc-900 to-black p-5 text-center shadow-inner">
+            <div className="admin-dark-preview rounded-xl border border-zinc-800 bg-linear-to-b from-zinc-900 to-black p-5 text-center shadow-inner">
               <div className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-0.5 text-[11px] font-medium text-indigo-400 mb-3">
                 <Sparkles className="h-3 w-3" /> Creative Digital Agency
               </div>

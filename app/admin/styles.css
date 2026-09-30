@@ -17,12 +17,106 @@
   --font-admin: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
+html[data-admin-theme="light"] {
+  color-scheme: light;
+
+  /* Map the existing admin palette to accessible light-mode surfaces. */
+  --color-zinc-950: #f8fafc;
+  --color-zinc-900: #ffffff;
+  --color-zinc-800: #e4e4e7;
+  --color-zinc-700: #d4d4d8;
+  --color-zinc-600: #a1a1aa;
+  --color-zinc-500: #71717a;
+  --color-zinc-400: #52525b;
+  --color-zinc-300: #3f3f46;
+  --color-zinc-200: #27272a;
+  --color-zinc-100: #18181b;
+
+  --color-indigo-950: #eef2ff;
+  --color-indigo-900: #e0e7ff;
+  --color-indigo-400: #4f46e5;
+  --color-indigo-300: #4338ca;
+  --color-indigo-200: #3730a3;
+
+  --color-red-950: #fef2f2;
+  --color-red-900: #fee2e2;
+  --color-red-400: #dc2626;
+  --color-red-300: #b91c1c;
+
+  --color-emerald-950: #ecfdf5;
+  --color-emerald-400: #059669;
+  --color-emerald-300: #047857;
+
+  --color-amber-950: #fffbeb;
+  --color-amber-400: #d97706;
+  --color-amber-300: #b45309;
+  --color-amber-200: #92400e;
+
+  --color-admin-bg: #f8fafc;
+  --color-admin-surface: #ffffff;
+  --color-admin-surface-hover: #f4f4f5;
+  --color-admin-border: #e4e4e7;
+  --color-admin-border-subtle: #f4f4f5;
+}
+
+html[data-admin-theme="dark"] {
+  color-scheme: dark;
+}
+
 /* Base resets & utilities for admin */
 html,
 body {
   min-height: 100%;
   background-color: var(--color-admin-bg);
-  color: #fafafa;
+  color: var(--color-zinc-100);
   font-family: var(--font-admin);
   -webkit-font-smoothing: antialiased;
+}
+
+.admin-logo-dark {
+  display: none;
+}
+
+html[data-admin-theme="dark"] .admin-logo-light {
+  display: none;
+}
+
+html[data-admin-theme="dark"] .admin-logo-dark {
+  display: block;
+}
+
+/* Content previews that represent the public dark theme stay visually accurate. */
+.admin-dark-preview {
+  color-scheme: dark;
+  --color-zinc-950: #09090b;
+  --color-zinc-900: #18181b;
+  --color-zinc-800: #27272a;
+  --color-zinc-700: #3f3f46;
+  --color-zinc-400: #a1a1aa;
+  --color-zinc-300: #d4d4d8;
+  --color-zinc-200: #e4e4e7;
+  --color-zinc-100: #f4f4f5;
+}
+
+/* text-white is retained for solid action buttons, while content text follows the theme. */
+html[data-admin-theme="light"] .text-white {
+  color: var(--color-zinc-100);
+}
+
+html[data-admin-theme="light"] :is(.bg-indigo-600, .bg-indigo-600\/90, .bg-red-600).text-white,
+html[data-admin-theme="light"] :is(.bg-indigo-600, .bg-indigo-600\/90, .bg-red-600) .text-white,
+html[data-admin-theme="light"] .admin-dark-preview .text-white,
+html[data-admin-theme="light"] .admin-preserve-white {
+  color: #ffffff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

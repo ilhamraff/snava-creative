@@ -12,10 +12,10 @@ import {
 import Link from 'next/link'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
-import { deleteService, toggleServiceStatus } from './actions'
+import { deleteService, toggleServiceStatus } from '../actions'
 import { renderServiceIcon } from './service-icons'
 
-import type { ServiceWithRelations } from './types'
+import type { ServiceWithRelations } from '../types'
 
 interface CategoryOption {
   id: number

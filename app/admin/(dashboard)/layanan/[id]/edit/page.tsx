@@ -12,7 +12,7 @@ import {
   servicesFaqs,
 } from '@/lib/db/schema'
 import { eq, asc } from 'drizzle-orm'
-import { ServiceForm } from '../../service-form'
+import { ServiceForm } from '../../_components/service-form'
 
 interface PageProps {
   params: Promise<{ id: string }>

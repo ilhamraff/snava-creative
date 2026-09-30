@@ -30,12 +30,12 @@ import {
   updateSiteSettingsAction,
   updateSocialLinksAction,
   uploadLogoAction,
-} from './actions'
+} from '../actions'
 
 import { AboutSettingsForm } from './about-settings-form'
 import { HeroSettingsForm } from './hero-settings-form'
 import { SectionsSettingsForm } from './sections-settings-form'
-import type { MediaItem, SettingsClientProps, SocialLinkItem } from './types'
+import type { MediaItem, SettingsClientProps, SocialLinkItem } from '../types'
 
 const PLATFORM_OPTIONS = [
   'Instagram',

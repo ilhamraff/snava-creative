@@ -3,7 +3,7 @@
 import React, { useState, useTransition } from 'react'
 import { Plus, Search, Edit2, Trash2, X, Loader2, AlertTriangle, Layers } from 'lucide-react'
 import { toast } from 'sonner'
-import { createCategory, updateCategory, deleteCategory } from './actions'
+import { createCategory, updateCategory, deleteCategory } from '../actions'
 
 export interface CategoryWithCount {
   id: number

@@ -16,16 +16,12 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import React, { useRef, useState, useTransition } from 'react'
+import React, { useEffect, useRef, useState, useTransition } from 'react'
 import { toast } from 'sonner'
-import {
-  createService,
-  updateService,
-  uploadServiceMediaAction,
-} from './actions'
+import { createService, updateService } from '../actions'
 import { ServiceCapabilitiesFields } from './service-capabilities-fields'
 import { ServiceFaqsFields } from './service-faqs-fields'
-import { genId } from './service-form-utils'
+import { genId } from '../_lib/service-form-utils'
 import { ICON_OPTIONS } from './service-icons'
 import { ServicePackagesFields } from './service-packages-fields'
 import { ServiceProblemsFields } from './service-problems-fields'
@@ -35,7 +31,7 @@ import type {
   PackageState,
   ProblemState,
   ServiceWithRelations,
-} from './types'
+} from '../types'
 
 interface CategoryOption {
   id: number
@@ -50,7 +46,6 @@ interface ServiceFormProps {
 export function ServiceForm({ initialData, categories }: ServiceFormProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
-  const [isUploading, setIsUploading] = useState(false)
   const [activeTab, setActiveTab] = useState<
     'main' | 'packages' | 'problems' | 'capabilities' | 'faqs'
   >('main')
@@ -90,11 +85,18 @@ export function ServiceForm({ initialData, categories }: ServiceFormProps) {
   )
   const [imageUrl, setImageUrl] = useState(initialData?.heroImage?.url || '')
   const [uploadPreview, setUploadPreview] = useState<string | null>(null)
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null)
   const [imageMode, setImageMode] = useState<'upload' | 'url'>(
     initialData?.heroImage?.url ? 'url' : 'upload'
   )
 
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (uploadPreview) URL.revokeObjectURL(uploadPreview)
+    }
+  }, [uploadPreview])
 
   // 2. Form states - Repeaters
   const [packages, setPackages] = useState<PackageState[]>(() => {
@@ -155,45 +157,33 @@ export function ServiceForm({ initialData, categories }: ServiceFormProps) {
     }
   }
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    const localPreview = URL.createObjectURL(file)
-    setUploadPreview(localPreview)
-
-    setIsUploading(true)
-    try {
-      const formData = new FormData()
-      formData.append('file', file)
-
-      const res = await uploadServiceMediaAction(formData)
-      if (res.success && res.url && res.mediaId) {
-        setHeroImageId(res.mediaId)
-        setImageUrl(res.url)
-        setUploadPreview(null)
-        toast.success('Gambar hero berhasil diunggah ke Supabase Storage')
-      } else {
-        setUploadPreview(null)
-        toast.error(res.error || 'Gagal mengunggah gambar')
-      }
-    } catch {
-      setUploadPreview(null)
-      toast.error('Terjadi kesalahan saat mengunggah gambar')
-    } finally {
-      setIsUploading(false)
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml']
+    if (!validTypes.includes(file.type)) {
+      toast.error('Format file harus berupa gambar (JPG, PNG, WebP, SVG)')
+      e.target.value = ''
+      return
     }
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Ukuran file maksimal 10MB')
+      e.target.value = ''
+      return
+    }
+
+    setSelectedImageFile(file)
+    setUploadPreview(URL.createObjectURL(file))
+    setHeroImageId(undefined)
+    setImageUrl('')
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim() || !slug.trim()) {
       toast.error('Nama layanan dan Slug URL wajib diisi')
-      return
-    }
-
-    if (isUploading) {
-      toast.info('Mohon tunggu hingga proses unggah gambar selesai')
       return
     }
 
@@ -255,9 +245,18 @@ export function ServiceForm({ initialData, categories }: ServiceFormProps) {
           })),
       }
 
+      const mediaFormData =
+        imageMode === 'upload' && selectedImageFile
+          ? new FormData()
+          : undefined
+
+      if (mediaFormData && selectedImageFile) {
+        mediaFormData.append('file', selectedImageFile)
+      }
+
       const res = isEdit
-        ? await updateService(initialData.id, payload)
-        : await createService(payload)
+        ? await updateService(initialData.id, payload, mediaFormData)
+        : await createService(payload, mediaFormData)
 
       if (res.success) {
         toast.success(
@@ -333,10 +332,10 @@ export function ServiceForm({ initialData, categories }: ServiceFormProps) {
           </Link>
           <button
             type="submit"
-            disabled={isPending || isUploading || !title.trim() || !slug.trim()}
+            disabled={isPending || !title.trim() || !slug.trim()}
             className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2 text-xs font-semibold text-white shadow-md shadow-indigo-600/25 transition hover:bg-indigo-500 disabled:opacity-50"
           >
-            {isPending || isUploading ? (
+            {isPending ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
             ) : null}
             <span>{isEdit ? 'Simpan Perubahan' : 'Buat Layanan'}</span>
@@ -663,7 +662,14 @@ export function ServiceForm({ initialData, categories }: ServiceFormProps) {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setImageMode('url')}
+                    onClick={() => {
+                      setImageMode('url')
+                      setSelectedImageFile(null)
+                      setUploadPreview(null)
+                      if (fileInputRef.current) {
+                        fileInputRef.current.value = ''
+                      }
+                    }}
                     className={`flex items-center gap-1 px-2 py-0.5 rounded cursor-pointer ${
                       imageMode === 'url'
                         ? 'bg-indigo-600 text-white font-medium'
@@ -687,7 +693,7 @@ export function ServiceForm({ initialData, categories }: ServiceFormProps) {
                     className="block w-full text-xs text-zinc-400 file:mr-3 file:rounded-md file:border-0 file:bg-zinc-800 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-zinc-200 hover:file:bg-zinc-700 cursor-pointer"
                   />
                   <p className="mt-1 text-[10px] text-zinc-500">
-                    Mendukung PNG, JPG, WebP. Tersimpan di Supabase Storage.
+                    Mendukung PNG, JPG, WebP, SVG hingga 10MB. File baru diunggah saat layanan disimpan.
                   </p>
                 </div>
               ) : (
@@ -697,7 +703,10 @@ export function ServiceForm({ initialData, categories }: ServiceFormProps) {
                     type="url"
                     placeholder="https://... URL gambar"
                     value={imageUrl || ''}
-                    onChange={(e) => setImageUrl(e.target.value)}
+                    onChange={(e) => {
+                      setImageUrl(e.target.value)
+                      setHeroImageId(undefined)
+                    }}
                     className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
@@ -716,22 +725,22 @@ export function ServiceForm({ initialData, categories }: ServiceFormProps) {
                   </div>
                   <div className="p-2 border-t border-zinc-800/80 bg-zinc-900/80 flex items-center justify-between">
                     <span className="text-[10px] text-zinc-400 truncate max-w-45">
-                      {isUploading
-                        ? 'Sedang mengunggah ke Storage...'
+                      {selectedImageFile
+                        ? `${selectedImageFile.name} — siap diunggah saat disimpan`
                         : imageUrl || 'Gambar siap'}
                     </span>
                     <button
                       type="button"
-                      disabled={isUploading}
                       onClick={() => {
                         setImageUrl('')
                         setUploadPreview(null)
+                        setSelectedImageFile(null)
                         setHeroImageId(undefined)
                         if (fileInputRef.current) {
                           fileInputRef.current.value = ''
                         }
                       }}
-                      className="text-[10px] text-red-400 hover:text-red-300 disabled:opacity-50 cursor-pointer"
+                      className="text-[10px] text-red-400 hover:text-red-300 cursor-pointer"
                     >
                       Hapus
                     </button>
@@ -782,10 +791,10 @@ export function ServiceForm({ initialData, categories }: ServiceFormProps) {
           </Link>
           <button
             type="submit"
-            disabled={isPending || isUploading || !title.trim() || !slug.trim()}
+            disabled={isPending || !title.trim() || !slug.trim()}
             className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2 text-xs font-semibold text-white shadow-md shadow-indigo-600/25 transition hover:bg-indigo-500 disabled:opacity-50 cursor-pointer"
           >
-            {isPending || isUploading ? (
+            {isPending ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
             ) : null}
             <span>{isEdit ? 'Simpan Perubahan' : 'Buat Layanan'}</span>

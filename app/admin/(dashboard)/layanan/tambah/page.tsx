@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import { db } from '@/lib/db'
 import { categories } from '@/lib/db/schema'
 import { asc } from 'drizzle-orm'
-import { ServiceForm } from '../service-form'
+import { ServiceForm } from '../_components/service-form'
 
 export const metadata: Metadata = {
   title: 'Tambah Layanan Baru',

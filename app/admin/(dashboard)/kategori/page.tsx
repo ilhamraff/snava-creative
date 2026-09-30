@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import { db } from '@/lib/db'
 import { categories, portfolio } from '@/lib/db/schema'
 import { eq, sql, desc } from 'drizzle-orm'
-import { CategoryClient, type CategoryWithCount } from './category-client'
+import { CategoryClient, type CategoryWithCount } from './_components/category-client'
 
 export const metadata: Metadata = {
   title: 'Kategori',

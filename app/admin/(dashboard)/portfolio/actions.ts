@@ -8,10 +8,10 @@ import { portfolio, media, portfolioRels } from '@/lib/db/schema'
 import { requireAdminSession } from '@/lib/admin/auth'
 
 /**
- * Server Action untuk mengunggah file gambar ke Supabase Storage (bucket 'media')
- * dan mencatatnya ke tabel media.
+ * Upload dipanggil dari create/update action setelah data portfolio valid.
+ * Pemilihan file di form hanya membuat preview lokal.
  */
-export async function uploadMediaAction(formData: FormData) {
+async function uploadPortfolioMedia(formData: FormData) {
   try {
     const { supabase } = await requireAdminSession()
     const file = formData.get('file') as File | null
@@ -41,7 +41,7 @@ export async function uploadMediaAction(formData: FormData) {
       .from('media')
       .upload(storagePath, buffer, {
         contentType: file.type,
-        upsert: true,
+        upsert: false,
       })
 
     if (uploadError) {
@@ -69,16 +69,13 @@ export async function uploadMediaAction(formData: FormData) {
       })
       .returning({ id: media.id, url: media.url })
 
-    revalidatePath('/admin/portfolio')
-    revalidatePath('/admin/media')
-
     return {
       success: true,
       mediaId: createdMedia.id,
       url: createdMedia.url,
     }
   } catch (error) {
-    console.error('Error in uploadMediaAction:', error)
+    console.error('Error in uploadPortfolioMedia:', error)
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Gagal mengunggah file',
@@ -86,7 +83,10 @@ export async function uploadMediaAction(formData: FormData) {
   }
 }
 
-export async function createPortfolio(formData: PortfolioInput) {
+export async function createPortfolio(
+  formData: PortfolioInput,
+  mediaFormData?: FormData,
+) {
   try {
     await requireAdminSession()
 
@@ -109,6 +109,17 @@ export async function createPortfolio(formData: PortfolioInput) {
       imageUrl,
     } = parse.data
     let targetThumbnailId = parse.data.thumbnailId
+
+    if (mediaFormData) {
+      const uploadResult = await uploadPortfolioMedia(mediaFormData)
+      if (!uploadResult.success || !uploadResult.mediaId) {
+        return {
+          success: false,
+          error: uploadResult.error ?? 'Gagal mengunggah thumbnail portfolio',
+        }
+      }
+      targetThumbnailId = uploadResult.mediaId
+    }
 
     // Jika user memberikan URL gambar baru
     if (
@@ -187,6 +198,7 @@ export async function createPortfolio(formData: PortfolioInput) {
     }
 
     revalidatePath('/admin/portfolio')
+    revalidatePath('/admin/media')
     revalidatePath('/admin')
     revalidatePath('/portfolio')
     revalidatePath('/')
@@ -205,7 +217,8 @@ export async function createPortfolio(formData: PortfolioInput) {
 
 export async function updatePortfolio(
   id: number,
-  formData: PortfolioInput
+  formData: PortfolioInput,
+  mediaFormData?: FormData,
 ) {
   try {
     await requireAdminSession()
@@ -233,6 +246,17 @@ export async function updatePortfolio(
       imageUrl,
     } = parse.data
     let targetThumbnailId = parse.data.thumbnailId
+
+    if (mediaFormData) {
+      const uploadResult = await uploadPortfolioMedia(mediaFormData)
+      if (!uploadResult.success || !uploadResult.mediaId) {
+        return {
+          success: false,
+          error: uploadResult.error ?? 'Gagal mengunggah thumbnail portfolio',
+        }
+      }
+      targetThumbnailId = uploadResult.mediaId
+    }
 
     if (
       imageUrl &&
@@ -292,6 +316,7 @@ export async function updatePortfolio(
     }
 
     revalidatePath('/admin/portfolio')
+    revalidatePath('/admin/media')
     revalidatePath('/admin')
     revalidatePath('/portfolio')
     revalidatePath('/')

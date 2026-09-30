@@ -8,8 +8,8 @@ import {
   Zap,
 } from 'lucide-react'
 import type { Dispatch, SetStateAction } from 'react'
-import { genId, moveItem } from './service-form-utils'
-import type { CapabilityState } from './types'
+import { genId, moveItem } from '../_lib/service-form-utils'
+import type { CapabilityState } from '../types'
 
 interface Props {
   capabilities: CapabilityState[]

@@ -18,6 +18,7 @@ import {
   media,
 } from '@/lib/db/schema'
 import { count } from 'drizzle-orm'
+import { AdminLogo } from '../_components/admin-logo'
 
 function getGreeting(): string {
   const hour = new Date().getHours()
@@ -98,13 +99,16 @@ export default async function AdminDashboardPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col gap-1 border-b border-zinc-800/80 pb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
-          {getGreeting()} 👋
-        </h1>
-        <p className="text-sm font-medium text-zinc-400">
-          {today} &bull; Panel Manajemen Snava Creative
-        </p>
+      <div className="flex flex-col gap-5 border-b border-zinc-800/80 pb-6 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-100 sm:text-3xl">
+            {getGreeting()} 👋
+          </h1>
+          <p className="mt-1 text-sm font-medium text-zinc-400">
+            {today} &bull; Panel Manajemen Snava Creative
+          </p>
+        </div>
+        <AdminLogo className="w-36 shrink-0 sm:w-40" />
       </div>
 
       {/* Stats Grid */}

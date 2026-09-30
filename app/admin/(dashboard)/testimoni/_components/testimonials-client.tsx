@@ -21,7 +21,7 @@ import {
   deleteTestimonial,
   toggleFeaturedTestimonial,
   seedTestimonialsAction,
-} from './actions'
+} from '../actions'
 
 interface TestimonialsClientProps {
   initialItems: Testimonial[]

@@ -1,7 +1,7 @@
 import { getAdminMedia } from '@/lib/data/admin/media'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { MediaClient } from './media-client'
+import { MediaClient } from './_components/media-client'
 
 export const dynamic = 'force-dynamic'
 

@@ -8,8 +8,8 @@ import {
   Trash2,
 } from 'lucide-react'
 import type { Dispatch, SetStateAction } from 'react'
-import { genId, moveItem } from './service-form-utils'
-import type { FaqState } from './types'
+import { genId, moveItem } from '../_lib/service-form-utils'
+import type { FaqState } from '../types'
 
 interface Props {
   faqs: FaqState[]

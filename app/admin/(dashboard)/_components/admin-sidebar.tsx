@@ -3,7 +3,9 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { logout } from './login/actions'
+import { logout } from '../../login/actions'
+import { AdminLogo } from '../../_components/admin-logo'
+import { AdminThemeToggle } from '../../_components/admin-theme-toggle'
 import {
   LayoutDashboard,
   Briefcase,
@@ -57,22 +59,21 @@ export function AdminSidebar({ user }: { user: { email?: string } }) {
     <>
       {/* Mobile Header Bar */}
       <div className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-zinc-800/80 bg-zinc-950/80 px-4 backdrop-blur-md md:hidden">
-        <Link href="/admin" className="flex items-center gap-2.5">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 font-bold text-white shadow-sm shadow-indigo-500/30">
-            <span className="text-xs">S</span>
-          </div>
-          <span className="text-sm font-semibold tracking-tight text-white">
-            Snava Creative
-          </span>
+        <Link href="/admin" className="flex items-center" aria-label="Dashboard Snava Creative">
+          <AdminLogo className="w-28" priority />
         </Link>
-        <button
-          type="button"
-          onClick={() => setOpen((prev) => !prev)}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-300 transition hover:bg-zinc-800 hover:text-white"
-          aria-label={open ? 'Tutup navigasi' : 'Buka navigasi'}
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        <div className="flex items-center gap-2">
+          <AdminThemeToggle />
+          <button
+            type="button"
+            onClick={() => setOpen((prev) => !prev)}
+            className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-300 transition hover:bg-zinc-800 hover:text-zinc-100"
+            aria-label={open ? 'Tutup navigasi' : 'Buka navigasi'}
+            aria-expanded={open}
+          >
+            {open ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Backdrop Overlay */}
@@ -94,29 +95,26 @@ export function AdminSidebar({ user }: { user: { email?: string } }) {
         <div className="flex h-16 items-center justify-between border-b border-zinc-800/80 px-5">
           <Link
             href="/admin"
-            className="group flex items-center gap-3"
+            className="group flex min-w-0 flex-1 flex-col items-start gap-0.5"
             onClick={closeSidebar}
+            aria-label="Dashboard Snava Creative"
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-tr from-indigo-700 to-indigo-500 font-bold text-white shadow-md shadow-indigo-600/30 transition group-hover:scale-105">
-              <span className="text-sm">S</span>
-            </div>
-            <div>
-              <div className="text-sm font-semibold tracking-tight text-white group-hover:text-zinc-200">
-                Snava Creative
-              </div>
-              <div className="text-[11px] font-medium tracking-wide text-zinc-400">
-                Admin Panel
-              </div>
-            </div>
+            <AdminLogo className="w-32 transition-opacity group-hover:opacity-75" priority />
+            <span className="text-[10px] font-medium uppercase tracking-[0.18em] text-zinc-500">
+              Admin Panel
+            </span>
           </Link>
-          <button
-            type="button"
-            onClick={closeSidebar}
-            className="rounded-md p-1 text-zinc-400 hover:bg-zinc-900 hover:text-white md:hidden"
-            aria-label="Tutup menu"
-          >
-            <X className="h-5 w-5" />
-          </button>
+          <div className="flex items-center gap-1">
+            <AdminThemeToggle className="hidden md:inline-flex" />
+            <button
+              type="button"
+              onClick={closeSidebar}
+              className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100 md:hidden"
+              aria-label="Tutup menu"
+            >
+              <X className="h-5 w-5" aria-hidden="true" />
+            </button>
+          </div>
         </div>
 
         {/* Navigation Groups */}

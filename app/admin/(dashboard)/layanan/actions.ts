@@ -16,9 +16,10 @@ import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 
 /**
- * Server Action untuk mengunggah file hero image ke Supabase Storage (bucket 'media')
+ * Upload dijalankan dari create/update action setelah payload layanan valid.
+ * File yang baru dipilih di form tetap lokal sampai admin menyimpan layanan.
  */
-export async function uploadServiceMediaAction(formData: FormData) {
+async function uploadServiceMedia(formData: FormData) {
   try {
     const { supabase } = await requireAdminSession()
     const file = formData.get('file') as File | null
@@ -47,7 +48,7 @@ export async function uploadServiceMediaAction(formData: FormData) {
       .from('media')
       .upload(storagePath, buffer, {
         contentType: file.type,
-        upsert: true,
+        upsert: false,
       })
 
     if (uploadError) {
@@ -74,16 +75,13 @@ export async function uploadServiceMediaAction(formData: FormData) {
       })
       .returning({ id: media.id, url: media.url })
 
-    revalidatePath('/admin/layanan')
-    revalidatePath('/admin/media')
-
     return {
       success: true,
       mediaId: createdMedia.id,
       url: createdMedia.url,
     }
   } catch (error) {
-    console.error('Error in uploadServiceMediaAction:', error)
+    console.error('Error in uploadServiceMedia:', error)
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Gagal mengunggah file',
@@ -91,7 +89,10 @@ export async function uploadServiceMediaAction(formData: FormData) {
   }
 }
 
-export async function createService(formData: ServiceInput) {
+export async function createService(
+  formData: ServiceInput,
+  mediaFormData?: FormData,
+) {
   try {
     await requireAdminSession()
 
@@ -116,6 +117,17 @@ export async function createService(formData: ServiceInput) {
       imageUrl,
     } = parse.data
     let targetImageId = parse.data.heroImageId
+
+    if (mediaFormData) {
+      const uploadResult = await uploadServiceMedia(mediaFormData)
+      if (!uploadResult.success || !uploadResult.mediaId) {
+        return {
+          success: false,
+          error: uploadResult.error ?? 'Gagal mengunggah gambar layanan',
+        }
+      }
+      targetImageId = uploadResult.mediaId
+    }
 
     if (
       imageUrl &&
@@ -251,6 +263,7 @@ export async function createService(formData: ServiceInput) {
     }
 
     revalidatePath('/admin/layanan')
+    revalidatePath('/admin/media')
     revalidatePath('/admin')
     revalidatePath('/services')
     revalidatePath('/')
@@ -269,7 +282,8 @@ export async function createService(formData: ServiceInput) {
 
 export async function updateService(
   id: number,
-  formData: ServiceInput
+  formData: ServiceInput,
+  mediaFormData?: FormData,
 ) {
   try {
     await requireAdminSession()
@@ -299,6 +313,17 @@ export async function updateService(
       imageUrl,
     } = parse.data
     let targetImageId = parse.data.heroImageId
+
+    if (mediaFormData) {
+      const uploadResult = await uploadServiceMedia(mediaFormData)
+      if (!uploadResult.success || !uploadResult.mediaId) {
+        return {
+          success: false,
+          error: uploadResult.error ?? 'Gagal mengunggah gambar layanan',
+        }
+      }
+      targetImageId = uploadResult.mediaId
+    }
 
     if (
       imageUrl &&
@@ -446,6 +471,7 @@ export async function updateService(
     }
 
     revalidatePath('/admin/layanan')
+    revalidatePath('/admin/media')
     revalidatePath('/admin')
     revalidatePath('/services')
     revalidatePath('/')
