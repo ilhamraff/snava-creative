@@ -58,7 +58,7 @@ export function AdminSidebar({ user }: { user: { email?: string } }) {
   return (
     <>
       {/* Mobile Header Bar */}
-      <div className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-zinc-800/80 bg-zinc-950/80 px-4 backdrop-blur-md md:hidden">
+      <div className="sticky top-0 z-30 flex h-14 w-full items-center justify-between border-b border-zinc-800/80 bg-zinc-950/80 px-4 backdrop-blur-md md:hidden">
         <Link href="/admin" className="flex items-center" aria-label="Dashboard Snava Creative">
           <AdminLogo className="w-28" priority />
         </Link>
@@ -87,7 +87,7 @@ export function AdminSidebar({ user }: { user: { email?: string } }) {
 
       {/* Sidebar (Desktop Fixed + Mobile Slide-over) */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-zinc-800/80 bg-zinc-950/95 backdrop-blur-xl transition-transform duration-200 ease-in-out md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 max-w-[calc(100vw-2rem)] flex-col border-r border-zinc-800/80 bg-zinc-950/95 backdrop-blur-xl transition-transform duration-200 ease-in-out md:max-w-none md:translate-x-0 ${
           open ? 'translate-x-0' : '-translate-x-full'
         }`}
       >

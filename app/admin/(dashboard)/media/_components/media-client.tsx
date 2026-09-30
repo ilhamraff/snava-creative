@@ -221,7 +221,7 @@ export function MediaClient({ initialItems }: MediaClientProps) {
       {/* Header Bar */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <h1 className="text-2xl font-bold tracking-tight text-white">
               Media Library
             </h1>
@@ -272,12 +272,12 @@ export function MediaClient({ initialItems }: MediaClientProps) {
           </div>
 
           {/* Filters */}
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-3 md:flex md:w-auto md:flex-wrap md:items-center">
             {/* Format Filter */}
             <select
               value={formatFilter}
               onChange={(e) => setFormatFilter(e.target.value)}
-              className="rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-300 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-300 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 md:w-auto"
             >
               <option value="all">Semua Format</option>
               <option value="png">PNG</option>
@@ -290,7 +290,7 @@ export function MediaClient({ initialItems }: MediaClientProps) {
             <select
               value={usageFilter}
               onChange={(e) => setUsageFilter(e.target.value)}
-              className="rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-300 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-300 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 md:w-auto"
             >
               <option value="all">Semua Penggunaan</option>
               <option value="used">Sedang Digunakan</option>
@@ -301,7 +301,7 @@ export function MediaClient({ initialItems }: MediaClientProps) {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as MediaSort)}
-              className="rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-300 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-300 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 md:w-auto"
             >
               <option value="newest">Terbaru</option>
               <option value="oldest">Terlama</option>
@@ -500,7 +500,7 @@ export function MediaClient({ initialItems }: MediaClientProps) {
 
       {/* MODAL 1: Upload Media */}
       {uploadOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm animate-in fade-in duration-150">
+        <div className="admin-dialog-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm animate-in fade-in duration-150">
           <div className="w-full max-w-lg rounded-xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl">
             <div className="flex items-center justify-between border-b border-zinc-800/80 pb-4">
               <div>
@@ -585,7 +585,7 @@ export function MediaClient({ initialItems }: MediaClientProps) {
 
       {/* MODAL 2: Detail & Edit Alt Text */}
       {detailItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm animate-in fade-in duration-150">
+        <div className="admin-dialog-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm animate-in fade-in duration-150">
           <div className="w-full max-w-2xl rounded-xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-zinc-800/80 pb-4">
               <div>
@@ -766,7 +766,7 @@ export function MediaClient({ initialItems }: MediaClientProps) {
 
       {/* MODAL 3: Delete Confirmation */}
       {deleteItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm animate-in fade-in duration-150">
+        <div className="admin-dialog-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm animate-in fade-in duration-150">
           <div className="w-full max-w-md rounded-xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl">
             <div className="flex items-center gap-3 text-red-400">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-950/60 border border-red-900/50">

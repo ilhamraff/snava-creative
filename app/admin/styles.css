@@ -73,6 +73,17 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+.admin-dialog-overlay {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.admin-dialog-overlay > div {
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
 .admin-logo-dark {
   display: none;
 }

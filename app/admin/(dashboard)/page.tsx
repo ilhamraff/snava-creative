@@ -100,11 +100,11 @@ export default async function AdminDashboardPage() {
     <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col gap-5 border-b border-zinc-800/80 pb-6 sm:flex-row sm:items-center sm:justify-between">
-        <div>
+        <div className="min-w-0">
           <h1 className="text-2xl font-bold tracking-tight text-zinc-100 sm:text-3xl">
             {getGreeting()} 👋
           </h1>
-          <p className="mt-1 text-sm font-medium text-zinc-400">
+          <p className="mt-1 break-words text-sm font-medium text-zinc-400">
             {today} &bull; Panel Manajemen Snava Creative
           </p>
         </div>

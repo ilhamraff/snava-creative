@@ -183,7 +183,7 @@ export function PortfolioForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="flex flex-col gap-4 border-b border-zinc-800/80 pb-6 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-start gap-3">
+        <div className="flex min-w-0 items-start gap-3">
           <Link
             href="/admin/portfolio"
             className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/60 text-zinc-400 transition hover:bg-zinc-800 hover:text-zinc-100"
@@ -191,8 +191,8 @@ export function PortfolioForm({
           >
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           </Link>
-          <div>
-            <h1 className="text-xl font-bold tracking-tight text-zinc-100 sm:text-2xl">
+          <div className="min-w-0">
+            <h1 className="break-words text-xl font-bold tracking-tight text-zinc-100 sm:text-2xl">
               {isEdit ? `Edit Portfolio: ${initialData?.title}` : 'Tambah Portfolio Baru'}
             </h1>
             <p className="mt-1 text-xs text-zinc-400">
@@ -206,7 +206,7 @@ export function PortfolioForm({
         <button
           type="submit"
           disabled={isPending || !title.trim() || !slug.trim() || !categoryId}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-xs font-semibold text-white shadow-md shadow-indigo-600/25 transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-xs font-semibold text-white shadow-md shadow-indigo-600/25 transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
           {isPending ? (
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
@@ -372,17 +372,17 @@ export function PortfolioForm({
             ? 'Thumbnail akan diunggah setelah portfolio disimpan.'
             : 'Periksa kembali informasi portfolio sebelum menyimpan.'}
         </span>
-        <div className="flex items-center justify-end gap-2">
+        <div className="flex w-full items-center justify-end gap-2 sm:w-auto">
           <Link
             href="/admin/portfolio"
-            className="rounded-lg border border-zinc-800 px-4 py-2 text-xs font-medium text-zinc-300 transition hover:bg-zinc-800"
+            className="flex-1 rounded-lg border border-zinc-800 px-4 py-2 text-center text-xs font-medium text-zinc-300 transition hover:bg-zinc-800 sm:flex-none"
           >
             Batal
           </Link>
           <button
             type="submit"
             disabled={isPending || !title.trim() || !slug.trim() || !categoryId}
-            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2 text-xs font-semibold text-white shadow-md shadow-indigo-600/25 transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-indigo-600 px-5 py-2 text-xs font-semibold text-white shadow-md shadow-indigo-600/25 transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none"
           >
             {isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
             {isEdit ? 'Simpan Perubahan' : 'Buat Portfolio'}

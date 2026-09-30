@@ -209,7 +209,7 @@ export function TestimonialsClient({ initialItems }: TestimonialsClientProps) {
       {/* Header Bar */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <h1 className="text-2xl font-bold tracking-tight text-white">
               Testimoni
             </h1>
@@ -225,13 +225,13 @@ export function TestimonialsClient({ initialItems }: TestimonialsClientProps) {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
           {items.length === 0 && (
             <button
               type="button"
               disabled={isPending}
               onClick={handleSeed}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-500/30 bg-indigo-950/40 px-3.5 py-2 text-xs font-medium text-indigo-300 hover:bg-indigo-900/50 transition disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-indigo-500/30 bg-indigo-950/40 px-3.5 py-2 text-xs font-medium text-indigo-300 hover:bg-indigo-900/50 transition disabled:opacity-50"
             >
               <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
               <span>Muat Data Awal</span>
@@ -274,12 +274,12 @@ export function TestimonialsClient({ initialItems }: TestimonialsClientProps) {
           </div>
 
           {/* Filters */}
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2 md:flex md:w-auto md:flex-wrap md:items-center">
             {/* Rating Filter */}
             <select
               value={ratingFilter}
               onChange={(e) => setRatingFilter(e.target.value)}
-              className="rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-300 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-300 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 md:w-auto"
             >
               <option value="all">Semua Rating</option>
               <option value="5">⭐⭐⭐⭐⭐ (5 Bintang)</option>
@@ -291,7 +291,7 @@ export function TestimonialsClient({ initialItems }: TestimonialsClientProps) {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-300 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-300 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 md:w-auto"
             >
               <option value="all">Semua Status</option>
               <option value="featured">Hanya Unggulan (Featured)</option>
@@ -445,7 +445,7 @@ export function TestimonialsClient({ initialItems }: TestimonialsClientProps) {
 
       {/* MODAL: Tambah / Edit Testimoni */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm animate-in fade-in duration-150">
+        <div className="admin-dialog-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm animate-in fade-in duration-150">
           <div className="w-full max-w-lg rounded-xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl">
             <div className="flex items-center justify-between border-b border-zinc-800/80 pb-4">
               <div>
@@ -605,7 +605,7 @@ export function TestimonialsClient({ initialItems }: TestimonialsClientProps) {
 
       {/* MODAL: Konfirmasi Hapus */}
       {deleteItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm animate-in fade-in duration-150">
+        <div className="admin-dialog-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm animate-in fade-in duration-150">
           <div className="w-full max-w-md rounded-xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl">
             <div className="flex items-center gap-3 text-red-400">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-950/60 border border-red-900/50">

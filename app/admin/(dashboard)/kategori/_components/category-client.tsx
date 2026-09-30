@@ -103,7 +103,7 @@ export function CategoryClient({ initialCategories }: CategoryClientProps) {
 
       {/* Filter and Search Bar */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative max-w-sm flex-1">
+        <div className="relative w-full max-w-sm flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
           <input
             type="text"
@@ -204,7 +204,7 @@ export function CategoryClient({ initialCategories }: CategoryClientProps) {
 
       {/* Modal: Tambah Kategori */}
       {createOpen ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+        <div className="admin-dialog-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl">
             <div className="flex items-center justify-between pb-4 border-b border-zinc-800">
               <h3 className="text-base font-semibold text-white">Tambah Kategori Baru</h3>
@@ -258,7 +258,7 @@ export function CategoryClient({ initialCategories }: CategoryClientProps) {
 
       {/* Modal: Edit Kategori */}
       {editItem ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+        <div className="admin-dialog-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl">
             <div className="flex items-center justify-between pb-4 border-b border-zinc-800">
               <h3 className="text-base font-semibold text-white">Edit Kategori</h3>
@@ -311,7 +311,7 @@ export function CategoryClient({ initialCategories }: CategoryClientProps) {
 
       {/* Modal: Hapus Kategori */}
       {deleteItem ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+        <div className="admin-dialog-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl">
             <div className="flex items-center gap-3 text-red-400 mb-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-500/10 border border-red-500/20">

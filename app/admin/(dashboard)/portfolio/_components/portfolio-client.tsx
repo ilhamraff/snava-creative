@@ -88,8 +88,8 @@ export function PortfolioClient({ initialItems, categories }: PortfolioClientPro
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-1 flex-wrap items-center gap-2.5">
-          <div className="relative min-w-50 max-w-xs flex-1">
+        <div className="flex w-full min-w-0 flex-1 flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center">
+          <div className="relative w-full min-w-0 flex-1 sm:min-w-50 sm:max-w-xs">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
             <input
               type="search"
@@ -105,7 +105,7 @@ export function PortfolioClient({ initialItems, categories }: PortfolioClientPro
             value={selectedCategory}
             onChange={(event) => setSelectedCategory(event.target.value)}
             aria-label="Filter kategori"
-            className="rounded-lg border border-zinc-800 bg-zinc-900/60 px-3 py-2 text-xs text-zinc-200 backdrop-blur-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            className="w-full rounded-lg border border-zinc-800 bg-zinc-900/60 px-3 py-2 text-xs text-zinc-200 backdrop-blur-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 sm:w-auto"
           >
             <option value="all">Semua Kategori</option>
             {categories.map((category) => (
@@ -119,7 +119,7 @@ export function PortfolioClient({ initialItems, categories }: PortfolioClientPro
             type="button"
             onClick={() => setOnlyFeatured((current) => !current)}
             aria-pressed={onlyFeatured}
-            className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition ${
+            className={`inline-flex w-full items-center justify-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition sm:w-auto ${
               onlyFeatured
                 ? 'border-indigo-500/40 bg-indigo-500/15 text-indigo-300'
                 : 'border-zinc-800 bg-zinc-900/40 text-zinc-400 hover:text-zinc-200'
@@ -273,7 +273,7 @@ export function PortfolioClient({ initialItems, categories }: PortfolioClientPro
       </div>
 
       {deleteItem ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm">
+        <div className="admin-dialog-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm">
           <div
             className="w-full max-w-md rounded-xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl"
             role="alertdialog"

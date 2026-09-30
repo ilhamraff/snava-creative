@@ -303,7 +303,7 @@ export function ServiceForm({ initialData, categories }: ServiceFormProps) {
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Top Header with Back Link and Actions */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-800/80 pb-5">
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-start gap-3">
           <Link
             href="/admin/layanan"
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/60 text-zinc-400 transition hover:bg-zinc-800 hover:text-white"
@@ -311,8 +311,8 @@ export function ServiceForm({ initialData, categories }: ServiceFormProps) {
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
-          <div>
-            <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+          <div className="min-w-0">
+            <h1 className="break-words text-xl font-bold tracking-tight text-white sm:text-2xl">
               {isEdit ? `Edit Layanan: ${initialData.title}` : 'Tambah Layanan Baru'}
             </h1>
             <p className="text-xs text-zinc-400">
@@ -323,17 +323,17 @@ export function ServiceForm({ initialData, categories }: ServiceFormProps) {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex w-full items-center gap-2 sm:w-auto">
           <Link
             href="/admin/layanan"
-            className="rounded-lg border border-zinc-800 px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-zinc-800 transition"
+            className="flex-1 rounded-lg border border-zinc-800 px-4 py-2 text-center text-xs font-medium text-zinc-300 hover:bg-zinc-800 transition sm:flex-none"
           >
             Batal
           </Link>
           <button
             type="submit"
             disabled={isPending || !title.trim() || !slug.trim()}
-            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2 text-xs font-semibold text-white shadow-md shadow-indigo-600/25 transition hover:bg-indigo-500 disabled:opacity-50"
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-indigo-600 px-5 py-2 text-xs font-semibold text-white shadow-md shadow-indigo-600/25 transition hover:bg-indigo-500 disabled:opacity-50 sm:flex-none"
           >
             {isPending ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -344,7 +344,7 @@ export function ServiceForm({ initialData, categories }: ServiceFormProps) {
       </div>
 
       {/* Tabs Navigation Bar */}
-      <div className="flex flex-wrap items-center gap-1.5 border-b border-zinc-800/80 pb-3">
+      <div className="flex items-center gap-1.5 overflow-x-auto border-b border-zinc-800/80 pb-3">
         {tabsConfig.map((tab) => {
           const IconComp = tab.icon
           const isCurrent = activeTab === tab.id
@@ -353,7 +353,7 @@ export function ServiceForm({ initialData, categories }: ServiceFormProps) {
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-medium transition cursor-pointer ${
+              className={`inline-flex shrink-0 items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-medium transition cursor-pointer ${
                 isCurrent
                   ? 'bg-zinc-800 text-white shadow-sm ring-1 ring-zinc-700/80'
                   : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60'
@@ -778,21 +778,21 @@ export function ServiceForm({ initialData, categories }: ServiceFormProps) {
       )}
 
       {/* Floating or Bottom Save Bar */}
-      <div className="flex items-center justify-between border-t border-zinc-800/80 pt-4">
+      <div className="flex flex-col gap-3 border-t border-zinc-800/80 pt-4 sm:flex-row sm:items-center sm:justify-between">
         <span className="text-xs text-zinc-500">
           Semua tab akan tersimpan bersamaan saat Anda menekan tombol simpan.
         </span>
-        <div className="flex items-center gap-2">
+        <div className="flex w-full items-center gap-2 sm:w-auto">
           <Link
             href="/admin/layanan"
-            className="rounded-lg border border-zinc-800 px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-zinc-800 transition"
+            className="flex-1 rounded-lg border border-zinc-800 px-4 py-2 text-center text-xs font-medium text-zinc-300 hover:bg-zinc-800 transition sm:flex-none"
           >
             Batal
           </Link>
           <button
             type="submit"
             disabled={isPending || !title.trim() || !slug.trim()}
-            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2 text-xs font-semibold text-white shadow-md shadow-indigo-600/25 transition hover:bg-indigo-500 disabled:opacity-50 cursor-pointer"
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-indigo-600 px-5 py-2 text-xs font-semibold text-white shadow-md shadow-indigo-600/25 transition hover:bg-indigo-500 disabled:opacity-50 cursor-pointer sm:flex-none"
           >
             {isPending ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
