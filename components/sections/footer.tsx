@@ -3,8 +3,10 @@
 import { Container } from '@/components/ui/container'
 import type { SiteSettings, FooterData } from '@/lib/types'
 import { getSocialIcon } from '@/lib/utils/social-icons'
+import { resolveSiteHref } from '@/lib/utils/href'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import { useTheme } from '@/components/theme-provider'
 
 interface FooterSectionProps {
@@ -23,7 +25,7 @@ export function FooterSection({ siteSettings, footerData }: FooterSectionProps) 
           {/* Brand */}
           <div className="lg:col-span-1 flex flex-col justify-between">
             <div>
-              <a href="#" className="flex items-center">
+              <Link href="/" className="flex items-center">
                 <Image
                   src={logoSrc}
                   alt={siteSettings.siteName}
@@ -31,7 +33,7 @@ export function FooterSection({ siteSettings, footerData }: FooterSectionProps) 
                   height={40}
                   className="h-10 w-auto object-contain"
                 />
-              </a>
+              </Link>
               <p className="mt-4 text-sm text-muted font-light leading-relaxed max-w-xs">
                 {footerData.description}
               </p>
@@ -64,7 +66,7 @@ export function FooterSection({ siteSettings, footerData }: FooterSectionProps) 
               {footerData.quickLinks.map((link) => (
                 <li key={link.label}>
                   <a
-                    href={link.href}
+                    href={resolveSiteHref(link.href)}
                     className="text-sm font-light text-muted hover:text-foreground transition-colors"
                   >
                     {link.label}
@@ -81,7 +83,7 @@ export function FooterSection({ siteSettings, footerData }: FooterSectionProps) 
               {footerData.serviceLinks.map((link) => (
                 <li key={link.label}>
                   <a
-                    href={link.href}
+                    href={resolveSiteHref(link.href)}
                     className="text-sm font-light text-muted hover:text-foreground transition-colors"
                   >
                     {link.label}
@@ -127,7 +129,8 @@ export function FooterSection({ siteSettings, footerData }: FooterSectionProps) 
             className="text-xs font-semibold uppercase tracking-widest text-muted hover:text-foreground transition-colors"
             onClick={(e) => {
               e.preventDefault()
-              window.scrollTo({ top: 0, behavior: 'smooth' })
+              const shouldReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+              window.scrollTo({ top: 0, behavior: shouldReduceMotion ? 'auto' : 'smooth' })
             }}
           >
             Back to Top

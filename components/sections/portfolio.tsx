@@ -9,6 +9,9 @@ import type { PortfolioItem } from '@/lib/types'
 import { cn } from '@/lib/utils/cn'
 import { ArrowRight } from 'lucide-react'
 
+const FILTER_LAYOUT = { type: 'spring', duration: 0.5, bounce: 0.2 } as const
+const FILTER_FADE = { duration: 0.2, ease: [0.23, 1, 0.32, 1] } as const
+
 interface PortfolioSectionProps {
   categories: string[]
   items: PortfolioItem[]
@@ -18,11 +21,19 @@ interface PortfolioSectionProps {
 
 export function PortfolioSection({ categories, items, showViewAll = false, hideHeader = false }: PortfolioSectionProps) {
   const [active, setActive] = useState('All')
+  const [hasFiltered, setHasFiltered] = useState(false)
 
   const filtered =
     active === 'All'
       ? items
       : items.filter((p) => p.category === active)
+
+  const handleCategoryChange = (category: string) => {
+    if (category === active) return
+
+    setHasFiltered(true)
+    setActive(category)
+  }
 
   return (
     <section id="portfolio" className="py-24 lg:py-32 bg-background">
@@ -44,7 +55,7 @@ export function PortfolioSection({ categories, items, showViewAll = false, hideH
             {categories.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setActive(cat)}
+                onClick={() => handleCategoryChange(cat)}
                 className={cn(
                   'text-sm tracking-wider uppercase transition-colors duration-300 relative',
                   active === cat
@@ -56,6 +67,7 @@ export function PortfolioSection({ categories, items, showViewAll = false, hideH
                 {active === cat && (
                   <motion.div
                     layoutId="portfolio-active-tab"
+                    transition={FILTER_LAYOUT}
                     className="absolute -bottom-2.25 left-0 right-0 h-px bg-foreground"
                   />
                 )}
@@ -74,10 +86,15 @@ export function PortfolioSection({ categories, items, showViewAll = false, hideH
               <motion.div
                 key={item.slug}
                 layout
-                initial={{ opacity: 0, y: 24 }}
+                initial={hasFiltered ? { opacity: 0 } : { opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.96 }}
-                transition={{ duration: 0.5, delay: index * 0.04, ease: [0.16, 1, 0.3, 1] }}
+                exit={hasFiltered ? { opacity: 0 } : { opacity: 0, scale: 0.96 }}
+                transition={{
+                  layout: FILTER_LAYOUT,
+                  ...(hasFiltered
+                    ? FILTER_FADE
+                    : { duration: 0.5, delay: index * 0.04, ease: [0.16, 1, 0.3, 1] }),
+                }}
                 className="group cursor-pointer flex flex-col"
               >
                   <div className="relative aspect-4/5 sm:aspect-3/4 lg:aspect-4/5 overflow-hidden bg-surface mb-5">

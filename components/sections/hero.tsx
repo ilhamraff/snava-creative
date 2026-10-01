@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import type { HeroData } from '@/lib/types'
 import { ArrowRight } from 'lucide-react'
 import { motion } from 'motion/react'
+import { resolveSiteHref } from '@/lib/utils/href'
 
 interface HeroSectionProps {
   data: HeroData
@@ -57,7 +58,7 @@ export function HeroSection({ data }: HeroSectionProps) {
             </Button> */}
 
             <a 
-              href={data.ctaSecondary.url}
+              href={resolveSiteHref(data.ctaSecondary.url)}
               className="text-sm font-medium text-muted hover:text-foreground transition-colors inline-flex items-center gap-2 group uppercase tracking-widest border-b border-transparent hover:border-foreground pb-1"
             >
               {data.ctaSecondary.label}

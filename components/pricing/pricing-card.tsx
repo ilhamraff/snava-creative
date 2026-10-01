@@ -90,7 +90,7 @@ export function PricingCard({ plan }: PricingCardProps) {
         <Button 
           href={ctaUrl} 
           variant="secondary"
-          className="w-full sm:w-auto bg-transparent border-foreground/20 hover:border-foreground hover:bg-foreground hover:text-background transition-all"
+          className="w-full sm:w-auto bg-transparent border-foreground/20 hover:border-foreground hover:bg-foreground hover:text-background"
         >
           {ctaLabel}
         </Button>

@@ -2,6 +2,7 @@ import { Container } from '@/components/ui/container'
 import { Button } from '@/components/ui/button'
 import { getFinalCtaData } from '@/lib/data/get-site-settings'
 import { ArrowRight } from 'lucide-react'
+import { resolveSiteHref } from '@/lib/utils/href'
 
 export interface CTASectionProps {
   headline?: string
@@ -47,7 +48,7 @@ export async function FinalCTASection({
             
             {displayCtaSecondary && (
               <a 
-                href={displayCtaSecondary.url}
+                href={resolveSiteHref(displayCtaSecondary.url)}
                 className="text-sm font-medium text-background/70 hover:text-background transition-colors inline-flex items-center gap-2 group uppercase tracking-widest border-b border-transparent hover:border-background pb-1"
               >
                 {displayCtaSecondary.label}

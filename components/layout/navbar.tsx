@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { Menu, X } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { cn } from '@/lib/utils/cn'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
@@ -41,7 +42,7 @@ export function Navbar() {
     <>
       <header
         className={cn(
-          'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
+          'fixed top-0 left-0 right-0 z-50 transition-[background-color,border-color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]',
           scrolled
             ? 'bg-background/80 backdrop-blur-xl border-b border-border'
             : 'bg-transparent'
@@ -49,7 +50,7 @@ export function Navbar() {
       >
         <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-6 lg:px-8">
           {/* Logo */}
-          <a href="/" className="flex items-center">
+          <Link href="/" className="flex items-center">
             <Image
               src={logoSrc}
               alt={siteSettings.siteName}
@@ -58,7 +59,7 @@ export function Navbar() {
               className="h-12 w-auto object-contain"
               priority
             />
-          </a>
+          </Link>
 
           {/* Desktop Links */}
           <div className="hidden md:flex items-center gap-8">
@@ -76,7 +77,7 @@ export function Navbar() {
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3">
             <ThemeToggle />
-            <Button href="#final-cta" size="sm">
+            <Button href="/#final-cta" size="sm">
               Start Project
             </Button>
           </div>
@@ -131,7 +132,7 @@ export function Navbar() {
                 transition={{ delay: 0.15 + navLinks.length * 0.05 }}
               >
                 <Button
-                  href="#final-cta"
+                  href="/#final-cta"
                   size="lg"
                   onClick={() => setMobileOpen(false)}
                 >

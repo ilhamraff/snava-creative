@@ -3,7 +3,10 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { Hind, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
+import { MotionProvider } from "@/components/motion-provider";
 import { Navbar } from "@/components/layout/navbar";
+import { BackToTopButton } from "@/components/ui/back-to-top-button";
+import { AdminReturnButton } from "@/components/ui/admin-return-button";
 import "./styles.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -140,10 +143,14 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body>
+      <body className="theme-transition">
         <ThemeProvider>
-          <Navbar />
-          <main>{children}</main>
+          <MotionProvider>
+            <Navbar />
+            <main>{children}</main>
+            <AdminReturnButton />
+            <BackToTopButton />
+          </MotionProvider>
         </ThemeProvider>
       </body>
     </html>

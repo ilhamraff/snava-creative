@@ -2,6 +2,7 @@ import Image from 'next/image'
 import { Container } from '@/components/ui/container'
 import { Button } from '@/components/ui/button'
 import { ArrowRight } from 'lucide-react'
+import { resolveSiteHref } from '@/lib/utils/href'
 
 export interface ServiceHeroProps {
   eyebrow?: string
@@ -49,7 +50,7 @@ export function ServiceHero({
               )}
               {ctaSecondary && (
                 <a 
-                  href={ctaSecondary.url}
+                  href={resolveSiteHref(ctaSecondary.url)}
                   className="text-sm font-medium text-muted hover:text-foreground transition-colors inline-flex items-center gap-2 group uppercase tracking-widest border-b border-transparent hover:border-foreground pb-1"
                 >
                   {ctaSecondary.label}

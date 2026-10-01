@@ -47,11 +47,11 @@ export function ServicesSection({ title, description, services }: ServicesSectio
                 <motion.div 
                   key={service.title} 
                   variants={fadeInUp}
-                  className="group relative border-b border-border/50 transition-colors duration-500 hover:bg-foreground/5"
+                  className="group relative border-b border-border/50 transition-colors duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-foreground/5"
                 >
                   <Link href={`/services/${service.slug}`} className="flex flex-col md:flex-row md:items-center gap-6 px-4 py-8 md:py-12 w-full h-full">
                     <div className="w-16 md:w-32 shrink-0">
-                      <span className="font-mono text-sm md:text-base text-muted group-hover:text-foreground transition-colors duration-500">
+                      <span className="font-mono text-sm md:text-base text-muted group-hover:text-foreground transition-colors duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]">
                         {number}
                       </span>
                     </div>
@@ -65,9 +65,9 @@ export function ServicesSection({ title, description, services }: ServicesSectio
                       </p>
                     </div>
 
-                    <div className="shrink-0 flex items-center mt-2 md:mt-0 text-muted group-hover:text-foreground transition-colors duration-500">
+                    <div className="shrink-0 flex items-center mt-2 md:mt-0 text-muted group-hover:text-foreground transition-colors duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]">
                       <span className="md:hidden text-sm font-medium uppercase tracking-widest mr-3">Detail Layanan</span>
-                      <ArrowUpRight className="w-6 h-6 md:w-8 md:h-8 transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-500" />
+                      <ArrowUpRight className="w-6 h-6 md:w-8 md:h-8 transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]" />
                     </div>
                   </Link>
                 </motion.div>

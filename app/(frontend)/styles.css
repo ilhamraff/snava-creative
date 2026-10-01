@@ -93,13 +93,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Smooth theme transition */
-html:not(.no-transition),
-html:not(.no-transition) body,
-html:not(.no-transition) * {
-  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
-}
-
 ::selection {
   background-color: var(--color-accent);
   color: #FFFFFF;
@@ -132,6 +125,12 @@ html:not(.no-transition) * {
 
 /* Utilities */
 @layer utilities {
+  .theme-transition {
+    transition-property: background-color, color, border-color;
+    transition-duration: 200ms;
+    transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
   .hide-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -146,12 +145,14 @@ html:not(.no-transition) * {
    ============================================================ */
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  ::before,
-  ::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+  html {
+    scroll-behavior: auto;
+  }
+
+  .animate-marquee,
+  .animate-float-slow,
+  .animate-float-reverse,
+  .animate-float-medium {
+    animation: none !important;
   }
 }

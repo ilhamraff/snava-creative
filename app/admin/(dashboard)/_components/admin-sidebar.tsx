@@ -17,6 +17,7 @@ import {
   LogOut,
   Menu,
   X,
+  ExternalLink,
 } from 'lucide-react'
 
 interface NavItem {
@@ -193,6 +194,23 @@ export function AdminSidebar({ user }: { user: { email?: string } }) {
             </div>
           </div>
         </nav>
+
+        <div className="border-t border-zinc-800/80 px-3 py-3">
+          <Link
+            href="/"
+            target="_blank"
+            rel="noopener noreferrer"
+            prefetch={false}
+            onClick={closeSidebar}
+            className="group flex items-center justify-between gap-3 rounded-lg border border-zinc-800/80 bg-zinc-900/50 px-3 py-2.5 text-xs font-medium text-zinc-300 transition-colors duration-150 hover:border-indigo-500/40 hover:bg-indigo-950/30 hover:text-indigo-300"
+          >
+            <span className="flex items-center gap-3">
+              <ExternalLink className="h-4 w-4 text-zinc-500 transition-colors group-hover:text-indigo-400" aria-hidden="true" />
+              Lihat Website
+            </span>
+            <span className="text-[10px] font-normal text-zinc-500">Tab baru</span>
+          </Link>
+        </div>
 
         {/* User Footer Profile */}
         <div className="border-t border-zinc-800/80 p-3 bg-zinc-950/60">
