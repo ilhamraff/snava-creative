@@ -1,20 +1,51 @@
-'use client'
+"use client";
 
-import { motion } from 'motion/react'
-import { Container } from '@/components/ui/container'
-import type { Service } from '@/lib/types'
-import { staggerContainer, fadeInUp } from '@/lib/utils/motion'
-import Link from 'next/link'
-import { ArrowUpRight } from 'lucide-react'
-
+import { motion } from "motion/react";
+import { Container } from "@/components/ui/container";
+import type { Service } from "@/lib/types";
+import { staggerContainer, fadeInUp } from "@/lib/utils/motion";
+import Link, { useLinkStatus } from "next/link";
+import { ArrowUpRight, Loader2 } from "lucide-react";
 
 interface ServicesSectionProps {
-  title: string
-  description: string
-  services: Service[]
+  title: string;
+  description: string;
+  services: Service[];
 }
 
-export function ServicesSection({ title, description, services }: ServicesSectionProps) {
+function ServiceNavigationStatus() {
+  const { pending } = useLinkStatus();
+
+  return (
+    <span className="mt-2 flex min-h-8 shrink-0 items-center text-foreground md:mt-0 md:w-44 md:justify-end">
+      {pending ? (
+        <span
+          role="status"
+          className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wider"
+        >
+          <Loader2
+            className="h-4 w-4 animate-spin motion-reduce:animate-none"
+            aria-hidden="true"
+          />
+          {/* Membuka layanan... */}
+        </span>
+      ) : (
+        <span className="inline-flex items-center text-muted transition-colors duration-200 group-hover:text-foreground">
+          <span className="mr-3 text-sm font-medium uppercase tracking-widest md:hidden">
+            Detail Layanan
+          </span>
+          <ArrowUpRight className="h-6 w-6 transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:translate-x-1 group-hover:-translate-y-1 md:h-8 md:w-8" />
+        </span>
+      )}
+    </span>
+  );
+}
+
+export function ServicesSection({
+  title,
+  description,
+  services,
+}: ServicesSectionProps) {
   return (
     <section id="layanan" className="py-24 lg:py-32 bg-background">
       <Container>
@@ -35,27 +66,30 @@ export function ServicesSection({ title, description, services }: ServicesSectio
           variants={staggerContainer}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: '-50px' }}
+          viewport={{ once: true, margin: "-50px" }}
           className="border-t border-border/50"
         >
           {services
             .sort((a, b) => a.order - b.order)
             .map((service, index) => {
-              const number = String(index + 1).padStart(2, '0')
-              
+              const number = String(index + 1).padStart(2, "0");
+
               return (
-                <motion.div 
-                  key={service.title} 
+                <motion.div
+                  key={service.title}
                   variants={fadeInUp}
                   className="group relative border-b border-border/50 transition-colors duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-foreground/5"
                 >
-                  <Link href={`/services/${service.slug}`} className="flex flex-col md:flex-row md:items-center gap-6 px-4 py-8 md:py-12 w-full h-full">
+                  <Link
+                    href={`/services/${service.slug}`}
+                    className="flex flex-col md:flex-row md:items-center gap-6 px-4 py-8 md:py-12 w-full h-full"
+                  >
                     <div className="w-16 md:w-32 shrink-0">
                       <span className="font-mono text-sm md:text-base text-muted group-hover:text-foreground transition-colors duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]">
                         {number}
                       </span>
                     </div>
-                    
+
                     <div className="flex-1 md:pr-12">
                       <h3 className="font-display text-2xl md:text-4xl font-medium text-foreground mb-4">
                         {service.title}
@@ -65,16 +99,13 @@ export function ServicesSection({ title, description, services }: ServicesSectio
                       </p>
                     </div>
 
-                    <div className="shrink-0 flex items-center mt-2 md:mt-0 text-muted group-hover:text-foreground transition-colors duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]">
-                      <span className="md:hidden text-sm font-medium uppercase tracking-widest mr-3">Detail Layanan</span>
-                      <ArrowUpRight className="w-6 h-6 md:w-8 md:h-8 transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]" />
-                    </div>
+                    <ServiceNavigationStatus />
                   </Link>
                 </motion.div>
-              )
+              );
             })}
         </motion.div>
       </Container>
     </section>
-  )
+  );
 }

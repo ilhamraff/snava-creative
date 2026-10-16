@@ -39,24 +39,33 @@ export function PortfolioCarousel({
             className="mb-0"
             titleClassName="text-background"
           />
+
+          {items.length > 1 && (
+            <p className="flex items-center gap-2 text-sm text-background/80 md:hidden">
+              Geser untuk melihat karya lainnya
+              <ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" />
+            </p>
+          )}
           
           {/* Navigation Buttons */}
-          <div className="hidden md:flex items-center gap-4">
-            <button
-              onClick={() => scroll('left')}
-              className="w-12 h-12 flex items-center justify-center border border-background/20 hover:bg-background hover:text-foreground transition-colors duration-300"
-              aria-label="Previous project"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => scroll('right')}
-              className="w-12 h-12 flex items-center justify-center border border-background/20 hover:bg-background hover:text-foreground transition-colors duration-300"
-              aria-label="Next project"
-            >
-              <ArrowRight className="w-5 h-5" />
-            </button>
-          </div>
+          {items.length > 1 && (
+            <div className="hidden md:flex items-center gap-4">
+              <button
+                onClick={() => scroll('left')}
+                className="w-12 h-12 flex items-center justify-center border border-background/20 hover:bg-background hover:text-foreground transition-colors duration-300"
+                aria-label="Previous project"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => scroll('right')}
+                className="w-12 h-12 flex items-center justify-center border border-background/20 hover:bg-background hover:text-foreground transition-colors duration-300"
+                aria-label="Next project"
+              >
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            </div>
+          )}
         </div>
       </Container>
 
